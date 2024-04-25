@@ -7,12 +7,15 @@ if (!token || !appURL) {
     throw Error('token or app url not found');
 }
 const bot = new TelegramBot(token, { polling: true });
-bot.on('message', (msg) => {
+bot.on('message', async (msg) => {
     const chatId = msg.chat.id;
+    const text = msg.text;
     const options = {
         reply_markup: {
-            inline_keyboard: [[{ text: 'Open courses', web_app: { url: appURL } }]],
+            inline_keyboard: [[{ text: 'Courses', web_app: { url: appURL } }]],
         },
     };
-    bot.sendMessage(chatId, 'Click the button below to open the app:', options);
+    if (text === '/start') {
+        await bot.sendMessage(chatId, 'Click the button below if you want to buy or create your own online course', options);
+    }
 });
