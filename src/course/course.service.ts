@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { CloudinaryService } from '../cloudinary/cloudinary.service';
 import { CourseCreatedDto } from '../dto';
 import { MyLogger } from '../logger/my-logger.service';
 import { PrismaService } from '../prisma/prisma.service';
@@ -7,11 +8,13 @@ import { PrismaService } from '../prisma/prisma.service';
 export class CourseService {
   constructor(
     private prisma: PrismaService,
+    private cloudinaryService: CloudinaryService,
     private readonly logger: MyLogger,
   ) {}
 
   async create(dto: CourseCreatedDto) {
     console.log('dto', dto);
+
     return await this.prisma.course.create({
       data: {
         name: dto.name,
@@ -20,7 +23,6 @@ export class CourseService {
         subcategory: dto.subcategory,
         price: dto.price,
         currency: dto.currency,
-        imageUrl: dto.imageUrl,
         user: {
           connectOrCreate: {
             where: {

@@ -1,11 +1,15 @@
+import { InjectRedis } from '@nestjs-modules/ioredis';
 import {
   Injectable,
   InternalServerErrorException,
   OnModuleInit,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import axios from 'axios';
+import { Redis } from 'ioredis';
 import * as TelegramBot from 'node-telegram-bot-api';
 import { CourseService } from '../course/course.service';
+import { ImageService } from '../image/image.service';
 
 @Injectable()
 export class TelegramBotService implements OnModuleInit {
@@ -15,6 +19,8 @@ export class TelegramBotService implements OnModuleInit {
   constructor(
     private configService: ConfigService,
     private courseService: CourseService,
+    private imageService: ImageService,
+    @InjectRedis() private readonly redisClient: Redis,
   ) {
     this.webAppURL = this.configService.get<string>('WEB_APP_URL');
     if (!this.webAppURL) {
@@ -65,11 +71,14 @@ export class TelegramBotService implements OnModuleInit {
           console.log('data', data);
 
           try {
-            await this.courseService.create({
+            const course = await this.courseService.create({
               ...data,
               userId: msg.from.id,
               userName: msg.from.first_name,
             });
+
+            // Save courseId in Redis with a chatId-dependent key
+            await this.redisClient.set(`courseId:${chatId}`, course.id);
           } catch (error) {
             throw new InternalServerErrorException(
               'Something went wrong, please try again',
@@ -79,10 +88,38 @@ export class TelegramBotService implements OnModuleInit {
 
           await this.bot.sendMessage(
             chatId,
-            `🎉 You have successfully created the ${data?.shortTitle} course! Now let's add a video. You can submit the video right away or start by creating a title for the module. If you submit a video without first creating a title for the module, all videos will be saved in one common module.`,
+            `🎉 Congratulations, you've successfully created a ${data?.name} course! 🌟 Now let's add an image. Just send a suitable photo directly to this chat! 📸`,
           );
         } catch (error) {
           console.error(error);
+        }
+      }
+
+      console.log('msg.photo', msg.photo);
+      if (msg.photo) {
+        const courseId = await this.redisClient.get(`courseId:${chatId}`);
+        console.log('courseId', courseId);
+        if (courseId) {
+          // Get a link to the file
+          const fileId = msg.photo[msg.photo.length - 1].file_id; // last (largest) photo
+          console.log('fileId', fileId);
+          const fileLink = await this.bot.getFileLink(fileId);
+          console.log('fileLink', fileLink);
+          // Upload the file using axios
+          const response = await axios({
+            method: 'get',
+            url: fileLink,
+            responseType: 'stream',
+          });
+
+          console.log('response.data', response.data);
+
+          try {
+            await this.imageService.upload(response.data, courseId);
+            await this.bot.sendMessage(chatId, 'Image successfully uploaded!');
+          } catch (error) {
+            await this.bot.sendMessage(chatId, 'Error uploading the image.');
+          }
         }
       }
     });
