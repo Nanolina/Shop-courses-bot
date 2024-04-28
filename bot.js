@@ -91,6 +91,10 @@ bot.on('message', async (msg) => {
   }
 });
 
+app.get('/', (req, res) => {
+  res.send('Hello World!');
+});
+
 app.post('/course', async function (req, res) {
   const { queryId, course } = req.body;
   console.log('queryId, course', { queryId, course });
