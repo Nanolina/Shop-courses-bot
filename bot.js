@@ -5,10 +5,10 @@ import TelegramBot from 'node-telegram-bot-api';
 dotenv.config();
 
 const token = process.env.BOT_TOKEN;
-const appURL = process.env.WEB_APP_URL;
+const webAppURL = process.env.WEB_APP_URL;
 
-if (!token || !appURL) {
-  throw Error('token or app url not found');
+if (!token || !webAppURL) {
+  throw Error('token or web app url not found');
 }
 
 const bot = new TelegramBot(token, { polling: true });
@@ -23,13 +23,13 @@ const getOptions = (type) => {
   let typeKeyboard;
   switch (type) {
     case 'create':
-      url = `${appURL}/create`;
+      url = `${webAppURL}/create`;
       text = 'Fill out the form to create a course';
       typeKeyboard = 'keyboard';
       break;
     default:
     case 'start':
-      url = appURL;
+      url = webAppURL;
       text = 'View courses';
       typeKeyboard = 'inline_keyboard';
       break;
@@ -47,6 +47,7 @@ bot.on('message', async (msg) => {
   const text = msg.text;
   const dataFromUser = msg?.web_app_data?.data;
   console.log('msg', msg);
+  console.log('dataFromUser', dataFromUser);
 
   switch (text) {
     case '/create':
@@ -66,9 +67,12 @@ bot.on('message', async (msg) => {
       break;
   }
 
-  if (dataFromUser) {
+  console.log('msg', msg);
+  if (msg?.web_app_data?.data) {
     try {
-      const data = JSON.parse(dataFromUser);
+      const data = JSON.parse(msg?.web_app_data?.data);
+      console.log('data', data);
+      await bot.sendMessage('THANK YOU!');
       await bot.sendMessage(
         chatId,
         `You've created a course ${data?.shortTitle}. Let's now get down to adding videos for your course. Could you please answer if your course will be divided into modules?`,
@@ -95,7 +99,8 @@ app.get('/', (req, res) => {
   res.send('Hello World!');
 });
 
-app.post('/course', async function (req, res) {
+app.post('/course', async (req, res) => {
+  console.log('req.body', req.body);
   const { queryId, course } = req.body;
   console.log('queryId, course', { queryId, course });
 
