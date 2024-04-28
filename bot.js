@@ -1,15 +1,21 @@
+import cors from 'cors';
 import * as dotenv from 'dotenv';
+import express from 'express';
 import TelegramBot from 'node-telegram-bot-api';
 dotenv.config();
 
 const token = process.env.BOT_TOKEN;
-const appURL = process.env.APP_URL;
+const appURL = process.env.WEB_APP_URL;
 
 if (!token || !appURL) {
   throw Error('token or app url not found');
 }
 
 const bot = new TelegramBot(token, { polling: true });
+const app = express();
+
+app.use(express.json());
+app.use(cors());
 
 const getOptions = (type) => {
   let url;
@@ -17,7 +23,7 @@ const getOptions = (type) => {
   let typeKeyboard;
   switch (type) {
     case 'create':
-      url = `${appURL}create`;
+      url = `${appURL}/create`;
       text = 'Fill out the form to create a course';
       typeKeyboard = 'keyboard';
       break;
@@ -84,3 +90,35 @@ bot.on('message', async (msg) => {
     }
   }
 });
+
+app.post('/course', async function (req, res) {
+  const { queryId, course } = req.body;
+  console.log('queryId, course', { queryId, course });
+
+  try {
+    await bot.answerWebAppQuery(queryId, {
+      type: 'article',
+      id: queryId,
+      title: 'Successful purchase',
+      input_message_content: {
+        message_text: `Congratulations! You have successfully created your own course ${course.shortTitle}`,
+      },
+    });
+
+    return res.status(200).json({});
+  } catch (error) {
+    await bot.answerWebAppQuery(queryId, {
+      type: 'article',
+      id: queryId,
+      title: 'Failed to create a course, please try again',
+      input_message_content: {
+        message_text: 'Failed to create a course, please try again',
+      },
+    });
+
+    return res.status(500).json({});
+  }
+});
+
+const PORT = 8000;
+app.listen(PORT, () => console.log('server started on PORT', PORT));
