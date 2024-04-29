@@ -1,11 +1,6 @@
 import { InjectRedis } from '@nestjs-modules/ioredis';
-import {
-  Injectable,
-  InternalServerErrorException,
-  OnModuleInit,
-} from '@nestjs/common';
+import { Injectable, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import axios from 'axios';
 import { Redis } from 'ioredis';
 import * as TelegramBot from 'node-telegram-bot-api';
 import { CourseService } from '../course/course.service';
@@ -41,11 +36,44 @@ export class TelegramBotService implements OnModuleInit {
   private setupListeners() {
     this.bot.on('message', async (msg) => {
       const chatId = msg.chat.id;
-      const text = msg.text;
 
+      // Check if there is a photo in the message
+      if (msg.photo) {
+        const courseId = await this.redisClient.get(`courseId:${chatId}`);
+        if (courseId) {
+          // Get a reference to the file
+          const fileId = msg.photo[msg.photo.length - 1].file_id; // выбор самого крупного изображения
+          const temporaryImageUrl = await this.bot.getFileLink(fileId);
+
+          // Send a message about the start of loading
+          const message = await this.bot.sendMessage(
+            chatId,
+            '⏳ Uploading an image...',
+          );
+
+          try {
+            await this.imageService.upload(temporaryImageUrl, courseId);
+            // Update the message after loading
+            await this.bot.editMessageText(
+              '✅ The image has been successfully uploaded!',
+              { chat_id: chatId, message_id: message.message_id },
+            );
+          } catch (error) {
+            await this.bot.editMessageText(
+              '⚠️ Error loading the image, please try again',
+              { chat_id: chatId, message_id: message.message_id },
+            );
+          }
+        }
+
+        // Finish processing the message if it is a photo
+        return;
+      }
+
+      // Check text commands
+      const text = msg.text;
       switch (text) {
         case '/create':
-          console.log('create');
           await this.bot.sendMessage(
             chatId,
             '✍️ Click the button below if you want to create your own online course',
@@ -54,8 +82,6 @@ export class TelegramBotService implements OnModuleInit {
           break;
 
         case '/start':
-        default:
-          console.log('start');
           await this.bot.sendMessage(
             chatId,
             '🛒 Click the button below if you want to buy an online course',
@@ -64,12 +90,10 @@ export class TelegramBotService implements OnModuleInit {
           break;
       }
 
+      // Process web_app data
       if (msg?.web_app_data?.data) {
         try {
           const data = JSON.parse(msg.web_app_data.data);
-          console.log('msg', msg);
-          console.log('data', data);
-
           try {
             const course = await this.courseService.create({
               ...data,
@@ -79,48 +103,63 @@ export class TelegramBotService implements OnModuleInit {
 
             // Save courseId in Redis with a chatId-dependent key
             await this.redisClient.set(`courseId:${chatId}`, course.id);
+
+            await this.bot.sendMessage(
+              chatId,
+              `🎉 Congratulations, you've successfully created a ${data.name} course! 🌟 Now let's add an image. Just send a suitable photo directly to this chat! 📸`,
+            );
           } catch (error) {
-            throw new InternalServerErrorException(
-              'Something went wrong, please try again',
-              error?.message,
+            await this.bot.sendMessage(
+              chatId,
+              '⚠️ Something went wrong, please try again',
+              {
+                reply_markup: {
+                  inline_keyboard: [
+                    [
+                      {
+                        text: 'Create a Course',
+                        callback_data: '/create',
+                      },
+                    ],
+                  ],
+                },
+              },
             );
           }
-
+        } catch (error) {
           await this.bot.sendMessage(
             chatId,
-            `🎉 Congratulations, you've successfully created a ${data?.name} course! 🌟 Now let's add an image. Just send a suitable photo directly to this chat! 📸`,
+            '⚠️ Something went wrong, please try again',
+            {
+              reply_markup: {
+                inline_keyboard: [
+                  [
+                    {
+                      text: 'Create a Course',
+                      callback_data: '/create',
+                    },
+                  ],
+                ],
+              },
+            },
           );
-        } catch (error) {
-          console.error(error);
         }
       }
+    });
 
-      console.log('msg.photo', msg.photo);
-      if (msg.photo) {
-        const courseId = await this.redisClient.get(`courseId:${chatId}`);
-        console.log('courseId', courseId);
-        if (courseId) {
-          // Get a link to the file
-          const fileId = msg.photo[msg.photo.length - 1].file_id; // last (largest) photo
-          console.log('fileId', fileId);
-          const fileLink = await this.bot.getFileLink(fileId);
-          console.log('fileLink', fileLink);
-          // Upload the file using axios
-          const response = await axios({
-            method: 'get',
-            url: fileLink,
-            responseType: 'stream',
-          });
+    // Callback request handler for inline buttons
+    this.bot.on('callback_query', async (callbackQuery) => {
+      const message = callbackQuery.message;
+      const data = callbackQuery.data;
+      const chatId = message.chat.id;
 
-          console.log('response.data', response.data);
-
-          try {
-            await this.imageService.upload(response.data, courseId);
-            await this.bot.sendMessage(chatId, 'Image successfully uploaded!');
-          } catch (error) {
-            await this.bot.sendMessage(chatId, 'Error uploading the image.');
-          }
-        }
+      if (data === '/create') {
+        // Clicking the button to create a course
+        await this.bot.sendMessage(
+          chatId,
+          '📝 Please fill out the form to create a course.',
+          this.getOptions('create'),
+        );
       }
     });
   }
@@ -128,26 +167,27 @@ export class TelegramBotService implements OnModuleInit {
   private getOptions(type: string) {
     let url;
     let text;
-    let typeKeyboard;
+    let replyMarkup;
 
     switch (type) {
       case 'create':
         url = `${this.webAppURL}/create`;
         text = '📝 Please fill out the form to create a course.';
-        typeKeyboard = 'keyboard';
+        replyMarkup = {
+          keyboard: [[{ text, web_app: { url } }]],
+          resize_keyboard: true,
+        };
         break;
-      default:
       case 'start':
+      default:
         url = this.webAppURL;
         text = '📚 View courses';
-        typeKeyboard = 'inline_keyboard';
+        replyMarkup = {
+          inline_keyboard: [[{ text, web_app: { url } }]],
+        };
         break;
     }
 
-    return {
-      reply_markup: {
-        [typeKeyboard]: [[{ text, web_app: { url } }]],
-      },
-    };
+    return { reply_markup: replyMarkup };
   }
 }

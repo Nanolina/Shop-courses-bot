@@ -1,25 +1,31 @@
 import { Injectable } from '@nestjs/common';
-import { UploadApiErrorResponse, UploadApiResponse, v2 } from 'cloudinary';
-import * as streamifier from 'streamifier';
+import {
+  UploadApiErrorResponse,
+  UploadApiResponse,
+  v2 as cloudinary,
+  v2,
+} from 'cloudinary';
 
 @Injectable()
 export class CloudinaryService {
-  uploadImage(
-    file: Express.Multer.File,
+  uploadImageUrl(
+    imageUrl: string,
   ): Promise<UploadApiErrorResponse | UploadApiResponse> {
     return new Promise<UploadApiErrorResponse | UploadApiResponse>(
       (resolve, reject) => {
-        const upload = v2.uploader.upload_stream(
+        cloudinary.uploader.upload(
+          imageUrl,
           {
-            folder: 'course-logo',
+            folder: 'course',
           },
           (error, result) => {
-            if (error) return reject(error);
-            resolve(result);
+            if (error) {
+              reject(error);
+            } else {
+              resolve(result);
+            }
           },
         );
-
-        streamifier.createReadStream(file.buffer).pipe(upload);
       },
     );
   }

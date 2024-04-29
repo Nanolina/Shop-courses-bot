@@ -11,20 +11,44 @@ export class ImageService {
     private readonly logger: MyLogger,
   ) {}
 
-  async upload(image: any, courseId: string) {
-    // Upload image to Cloudinary
-    let imageFromCloudinary;
-    if (image) {
+  async upload(temporaryImageUrl: string, courseId: string) {
+    // Try to get the current image for the course
+    const currentImage = await this.prisma.image.findUnique({
+      where: { courseId },
+    });
+
+    // Delete the old image from Cloudinary
+    if (currentImage && currentImage.publicId) {
       try {
-        imageFromCloudinary = await this.cloudinaryService.uploadImage(image);
+        await this.cloudinaryService.deleteFile(currentImage.publicId);
       } catch (error) {
-        this.logger.error({ method: 'image-upload-cloudinary', error });
+        this.logger.error({
+          method: 'image-delete-cloudinary',
+          error,
+        });
       }
     }
 
-    return await this.prisma.image.create({
-      data: {
+    // Upload a new image to Cloudinary
+    let imageFromCloudinary;
+    try {
+      imageFromCloudinary =
+        await this.cloudinaryService.uploadImageUrl(temporaryImageUrl);
+    } catch (error) {
+      this.logger.error({ method: 'image-upload-cloudinary', error });
+      throw new Error('Failed to upload new image');
+    }
+
+    return await this.prisma.image.upsert({
+      where: {
         courseId,
+      },
+      create: {
+        courseId,
+        url: imageFromCloudinary?.url,
+        publicId: imageFromCloudinary?.public_id,
+      },
+      update: {
         url: imageFromCloudinary?.url,
         publicId: imageFromCloudinary?.public_id,
       },

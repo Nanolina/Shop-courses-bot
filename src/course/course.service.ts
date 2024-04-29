@@ -13,8 +13,6 @@ export class CourseService {
   ) {}
 
   async create(dto: CourseCreatedDto) {
-    console.log('dto', dto);
-
     return await this.prisma.course.create({
       data: {
         name: dto.name,
