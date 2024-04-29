@@ -1,6 +1,5 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { AppService } from './app.service';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { CourseModule } from './course/course.module';
 import { CourseService } from './course/course.service';
@@ -20,12 +19,6 @@ import { TelegramBotService } from './telegram-bot/telegram-bot.service';
       isGlobal: true,
     }),
   ],
-  providers: [
-    AppService,
-    PrismaService,
-    TelegramBotService,
-    CourseService,
-    ImageService,
-  ],
+  providers: [PrismaService, TelegramBotService, CourseService, ImageService],
 })
 export class AppModule {}
