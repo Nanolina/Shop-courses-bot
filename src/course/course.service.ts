@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { CloudinaryService } from '../cloudinary/cloudinary.service';
 import { CourseCreatedDto } from '../dto';
 import { MyLogger } from '../logger/my-logger.service';
 import { PrismaService } from '../prisma/prisma.service';
@@ -8,7 +7,6 @@ import { PrismaService } from '../prisma/prisma.service';
 export class CourseService {
   constructor(
     private prisma: PrismaService,
-    private cloudinaryService: CloudinaryService,
     private readonly logger: MyLogger,
   ) {}
 
@@ -34,5 +32,16 @@ export class CourseService {
         },
       },
     });
+  }
+
+  async findAll() {
+    const courses = await this.prisma.course.findMany({
+      include: {
+        logo: true,
+      },
+    });
+
+    console.log('courses', courses);
+    return courses;
   }
 }
