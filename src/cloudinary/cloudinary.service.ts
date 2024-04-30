@@ -5,6 +5,7 @@ import {
   v2 as cloudinary,
   v2,
 } from 'cloudinary';
+import * as streamifier from 'streamifier';
 
 @Injectable()
 export class CloudinaryService {
@@ -26,6 +27,26 @@ export class CloudinaryService {
             }
           },
         );
+      },
+    );
+  }
+
+  uploadCourseImage(
+    file: Express.Multer.File,
+  ): Promise<UploadApiErrorResponse | UploadApiResponse> {
+    return new Promise<UploadApiErrorResponse | UploadApiResponse>(
+      (resolve, reject) => {
+        const upload = v2.uploader.upload_stream(
+          {
+            folder: 'course',
+          },
+          (error, result) => {
+            if (error) return reject(error);
+            resolve(result);
+          },
+        );
+
+        streamifier.createReadStream(file.buffer).pipe(upload);
       },
     );
   }
