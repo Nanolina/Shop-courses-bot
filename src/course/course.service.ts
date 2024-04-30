@@ -31,15 +31,15 @@ export class CourseService {
           description: dto.description,
           category: dto.category,
           subcategory: dto.subcategory,
-          price: dto.price,
+          price: parseFloat(dto.price),
           currency: dto.currency,
           user: {
             connectOrCreate: {
               where: {
-                id: dto.userId,
+                id: parseFloat(dto.userId),
               },
               create: {
-                id: dto.userId,
+                id: parseFloat(dto.userId),
                 name: dto.userName,
               },
             },

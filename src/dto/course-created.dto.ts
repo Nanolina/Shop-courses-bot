@@ -1,4 +1,9 @@
-import { IsDefined, IsNumber, IsOptional, IsString } from 'class-validator';
+import {
+  IsDefined,
+  IsNumberString,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 
 export class CourseCreatedDto {
   @IsDefined()
@@ -18,20 +23,16 @@ export class CourseCreatedDto {
   subcategory?: string;
 
   @IsDefined()
-  @IsNumber()
-  price: number;
+  @IsNumberString()
+  price: string;
 
   @IsDefined()
   @IsString()
   currency: string;
 
   @IsDefined()
-  @IsString()
-  imageUrl: string;
-
-  @IsDefined()
-  @IsNumber()
-  userId: number;
+  @IsNumberString()
+  userId: string;
 
   @IsOptional()
   @IsString()
