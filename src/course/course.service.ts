@@ -47,6 +47,9 @@ export class CourseService {
       where: {
         id,
       },
+      include: {
+        image: true,
+      },
     });
   }
 }
