@@ -35,13 +35,18 @@ export class CourseService {
   }
 
   async findAll() {
-    const courses = await this.prisma.course.findMany({
+    return await this.prisma.course.findMany({
       include: {
         image: true,
       },
     });
+  }
 
-    console.log('courses', courses);
-    return courses;
+  async findOne(id: string) {
+    return await this.prisma.course.findFirst({
+      where: {
+        id,
+      },
+    });
   }
 }
