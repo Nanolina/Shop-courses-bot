@@ -37,7 +37,7 @@ export class CourseService {
   async findAll() {
     const courses = await this.prisma.course.findMany({
       include: {
-        logo: true,
+        image: true,
       },
     });
 
