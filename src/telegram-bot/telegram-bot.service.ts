@@ -10,6 +10,7 @@ import { ImageService } from '../image/image.service';
 export class TelegramBotService implements OnModuleInit {
   private bot: TelegramBot;
   private readonly webAppURL: string;
+  private lastPhotoTime: Record<number, number> = {}; // Track last photo processing time per chat
 
   constructor(
     private configService: ConfigService,
@@ -39,6 +40,7 @@ export class TelegramBotService implements OnModuleInit {
       const userId = msg.from.id;
       const userName = msg.from.username;
       const dataFromWeb = msg?.web_app_data?.data;
+      const currentTime = Date.now();
 
       if (!userId) {
         await this.bot.sendMessage(
@@ -48,12 +50,20 @@ export class TelegramBotService implements OnModuleInit {
         );
       }
 
-      if (msg.photo) {
-        // Check if there is a photo in the message
+      if (
+        msg.photo &&
+        (!this.lastPhotoTime[chatId] ||
+          currentTime - this.lastPhotoTime[chatId] > 3000)
+      ) {
+        // 3000 milliseconds threshold
+        this.lastPhotoTime[chatId] = currentTime; // Update last photo time
+        const largestPhoto = msg.photo.sort(
+          (a, b) => b.file_size - a.file_size,
+        )[0];
         const courseId = await this.redisClient.get(`courseId:${chatId}`);
         if (courseId) {
           // Get a reference to the file
-          const fileId = msg.photo[1].file_id;
+          const fileId = largestPhoto.file_id;
           const temporaryImageUrl = await this.bot.getFileLink(fileId);
 
           // Send a message about the start of loading
@@ -67,12 +77,19 @@ export class TelegramBotService implements OnModuleInit {
 
             // Update the message after loading
             await this.bot.editMessageText(
-              '✅ The image has been successfully uploaded!',
+              '✅ The image has been successfully uploaded! Let’s now create the first module.',
               { chat_id: chatId, message_id: message.message_id },
+            );
+
+            // Clicking the button to see my courses
+            await this.bot.sendMessage(
+              chatId,
+              'If you want to create/edit modules or your own courses press button below',
+              this.getOptions('mycreatedcourses'),
             );
           } catch (error) {
             await this.bot.editMessageText(
-              '⚠️ Error loading the image, please try again',
+              '❌ Error loading the image, please try again',
               { chat_id: chatId, message_id: message.message_id },
             );
           }
@@ -165,26 +182,34 @@ export class TelegramBotService implements OnModuleInit {
       const data = callbackQuery.data;
       const chatId = message.chat.id;
 
+      // Clicking the button to create a course
       if (data === '/create') {
-        // Clicking the button to create a course
         await this.bot.sendMessage(
           chatId,
-          '📝 Please fill out the form to create a course.',
+          '📝 Create new course',
           this.getOptions('create'),
         );
       }
     });
   }
 
-  private getOptions(type: string) {
+  private getOptions(type: string, userId?: number) {
     let url;
     let text;
     let replyMarkup;
 
     switch (type) {
       case 'create':
-        url = `${this.webAppURL}/create`;
-        text = '📝 Please fill out the form to create a course.';
+        url = `${this.webAppURL}/course/create`;
+        text = '📝 Create';
+        replyMarkup = {
+          keyboard: [[{ text, web_app: { url } }]],
+          resize_keyboard: true,
+        };
+        break;
+      case 'mycreatedcourses':
+        url = `${this.webAppURL}/course/user/${userId}`;
+        text = 'Press me to see your courses';
         replyMarkup = {
           keyboard: [[{ text, web_app: { url } }]],
           resize_keyboard: true,
