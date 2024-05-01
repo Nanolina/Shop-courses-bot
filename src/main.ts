@@ -9,12 +9,12 @@ async function bootstrap() {
   const pathPrivateKey = process.env.PATH_PRIVATE_KEY;
   const pathCertificate = process.env.PATH_CERTIFICATE;
 
-  const httpsOptions: HttpsOptions = {
-    key: readFileSync(pathPrivateKey),
-    cert: readFileSync(pathCertificate),
-  };
+  // const httpsOptions: HttpsOptions = {
+  //   key: readFileSync(pathPrivateKey),
+  //   cert: readFileSync(pathCertificate),
+  // };
 
-  const app = await NestFactory.create(AppModule, { httpsOptions, cors: true });
+  const app = await NestFactory.create(AppModule, { cors: true });
 
   // Config
   const configService = app.get(ConfigService);

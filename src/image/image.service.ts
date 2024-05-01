@@ -11,10 +11,15 @@ export class ImageService {
     private readonly logger: MyLogger,
   ) {}
 
-  async upload(temporaryImageUrl: string, courseId: string) {
+  async upload(temporaryImageUrl: string, courseId: string, userId: number) {
     // Try to get the current image for the course
     const currentImage = await this.prisma.image.findUnique({
-      where: { courseId },
+      where: {
+        courseId,
+        course: {
+          userId,
+        },
+      },
     });
 
     // Delete the old image from Cloudinary
@@ -42,6 +47,9 @@ export class ImageService {
     return await this.prisma.image.upsert({
       where: {
         courseId,
+        course: {
+          userId,
+        },
       },
       create: {
         courseId,
