@@ -6,15 +6,22 @@ import { readFileSync } from 'fs';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
-  const pathPrivateKey = process.env.PATH_PRIVATE_KEY;
-  const pathCertificate = process.env.PATH_CERTIFICATE;
+  let appOptions = {};
 
-  const httpsOptions: HttpsOptions = {
-    key: readFileSync(pathPrivateKey),
-    cert: readFileSync(pathCertificate),
-  };
+  if (process.env.ENABLE_HTTPS === 'true') {
+    const pathPrivateKey = process.env.PATH_PRIVATE_KEY;
+    const pathCertificate = process.env.PATH_CERTIFICATE;
+    const httpsOptions: HttpsOptions = {
+      key: readFileSync(pathPrivateKey),
+      cert: readFileSync(pathCertificate),
+    };
+    appOptions = { httpsOptions };
+  }
 
-  const app = await NestFactory.create(AppModule, { httpsOptions, cors: true });
+  const app = await NestFactory.create(AppModule, {
+    cors: true,
+    ...appOptions,
+  });
 
   // Config
   const configService = app.get(ConfigService);
