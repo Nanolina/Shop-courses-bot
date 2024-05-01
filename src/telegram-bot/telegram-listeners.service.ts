@@ -89,6 +89,13 @@ export class TelegramListenersService {
             this.utilsService.getOptions('create'),
           );
           break;
+        case '/mycreatedcourses':
+          await bot.sendMessage(
+            chatId,
+            '✍️ Want to add or change modules in the course? Click below! 📝',
+            this.utilsService.getOptions('mycreatedcourses'),
+          );
+          break;
         case '/start':
           await bot.sendMessage(
             chatId,
