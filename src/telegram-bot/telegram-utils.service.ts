@@ -6,6 +6,7 @@ export class TelegramUtilsService {
   constructor(private configService: ConfigService) {}
 
   getWebUrl(userId: number) {
+    console.log('userId', userId);
     const AlinaId = this.configService.get<string>('ALINA_ID');
     const SnegannaId = this.configService.get<string>('SNEGANNA_ID');
     const webAppURLDefault = this.configService.get<string>(
