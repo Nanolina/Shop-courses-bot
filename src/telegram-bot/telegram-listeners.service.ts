@@ -103,6 +103,13 @@ export class TelegramListenersService {
             this.utilsService.getOptions('start', webAppUrl),
           );
           break;
+        case '/module':
+          await bot.sendMessage(
+            chatId,
+            '✍️ Ready to create modules? Click below! 📝',
+            this.utilsService.getOptions('modules', webAppUrl),
+          );
+          break;
       }
 
       // Process web_app data
