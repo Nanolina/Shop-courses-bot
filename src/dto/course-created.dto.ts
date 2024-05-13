@@ -32,8 +32,4 @@ export class CourseCreatedDto {
   @IsDefined()
   @IsNumber()
   userId: number;
-
-  @IsOptional()
-  @IsString()
-  userName?: string;
 }

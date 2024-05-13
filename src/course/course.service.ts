@@ -3,6 +3,16 @@ import { CourseCreatedDto } from '../dto';
 import { MyLogger } from '../logger/my-logger.service';
 import { PrismaService } from '../prisma/prisma.service';
 
+const include = {
+  include: {
+    modules: {
+      include: {
+        course: true,
+      },
+    },
+  },
+};
+
 @Injectable()
 export class CourseService {
   constructor(
@@ -27,7 +37,6 @@ export class CourseService {
               },
               create: {
                 id: dto.userId,
-                name: dto.userName,
               },
             },
           },
@@ -40,11 +49,7 @@ export class CourseService {
   }
 
   async findAll() {
-    return await this.prisma.course.findMany({
-      include: {
-        image: true,
-      },
-    });
+    return await this.prisma.course.findMany(include);
   }
 
   async findOne(id: string) {
@@ -52,9 +57,7 @@ export class CourseService {
       where: {
         id,
       },
-      include: {
-        image: true,
-      },
+      ...include,
     });
   }
 }
