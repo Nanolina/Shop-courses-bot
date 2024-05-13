@@ -3,23 +3,36 @@ import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class TelegramUtilsService {
-  private readonly webAppURL: string;
+  constructor(private configService: ConfigService) {}
 
-  constructor(private configService: ConfigService) {
-    this.webAppURL = this.configService.get<string>('WEB_APP_URL');
-    if (!this.webAppURL) {
-      throw new Error('WEB_APP_URL is not defined in the env');
+  getWebUrl(userId: string) {
+    const AlinaId = this.configService.get<string>('ALINA_ID');
+    const SnegannaId = this.configService.get<string>('SNEGANNA_ID');
+    const webAppURLDefault = this.configService.get<string>(
+      'WEB_APP_URL_DEFAULT',
+    );
+    const webAppUrlAlina = this.configService.get<string>('WEB_APP_URL_ALINA');
+    const webAppUrlSneganna = this.configService.get<string>(
+      'WEB_APP_URL_SNEGANNA',
+    );
+
+    if (userId === AlinaId) {
+      return webAppUrlAlina;
+    } else if (userId === SnegannaId) {
+      return webAppUrlSneganna;
+    } else {
+      return webAppURLDefault;
     }
   }
 
-  getOptions(type: string, userId?: number) {
+  async getOptions(type: string, webAppUrl: string, userId?: number) {
     let url;
     let text;
     let replyMarkup;
 
     switch (type) {
       case 'create':
-        url = `${this.webAppURL}/course/create`;
+        url = `${webAppUrl}/course/create`;
         text = '📝 Create';
         replyMarkup = {
           keyboard: [[{ text, web_app: { url } }]],
@@ -27,7 +40,7 @@ export class TelegramUtilsService {
         };
         break;
       case 'mycreatedcourses':
-        url = `${this.webAppURL}/course/user/${userId}`;
+        url = `${webAppUrl}/course/user/${userId}`;
         text = 'Press me to see your courses';
         replyMarkup = {
           keyboard: [[{ text, web_app: { url } }]],
@@ -36,7 +49,7 @@ export class TelegramUtilsService {
         break;
       case 'start':
       default:
-        url = this.webAppURL;
+        url = webAppUrl;
         text = '📚 View courses';
         replyMarkup = {
           inline_keyboard: [[{ text, web_app: { url } }]],

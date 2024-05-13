@@ -8,18 +8,12 @@ import { TelegramListenersService } from './telegram-listeners.service';
 @Injectable()
 export class TelegramBotService implements OnModuleInit {
   private bot: TelegramBot;
-  private readonly webAppURL: string;
 
   constructor(
     private configService: ConfigService,
     private listenersService: TelegramListenersService,
     @InjectRedis() private readonly redisClient: Redis,
-  ) {
-    this.webAppURL = this.configService.get<string>('WEB_APP_URL');
-    if (!this.webAppURL) {
-      throw new Error('WEB_APP_URL is not defined in the env');
-    }
-  }
+  ) {}
 
   onModuleInit() {
     const token = this.configService.get<string>('BOT_TOKEN');

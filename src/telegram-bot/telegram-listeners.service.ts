@@ -25,12 +25,13 @@ export class TelegramListenersService {
       const userName = from.username;
       const dataFromWeb = web_app_data?.data;
       const currentTime = Date.now();
+      const webAppUrl = this.utilsService.getWebUrl(userId);
 
       if (!userId) {
         await bot.sendMessage(
           chatId,
           '❌ Oops! You are unauthorized 😢',
-          this.utilsService.getOptions('start'),
+          this.utilsService.getOptions('start', webAppUrl),
         );
       }
 
@@ -67,7 +68,7 @@ export class TelegramListenersService {
             await bot.sendMessage(
               chatId,
               '📚 To manage your courses or modules, press the button below! 🔧',
-              this.utilsService.getOptions('mycreatedcourses'),
+              this.utilsService.getOptions('mycreatedcourses', webAppUrl),
             );
           } catch (error) {
             await bot.editMessageText(TRY_AGAIN_ERROR, {
@@ -86,21 +87,21 @@ export class TelegramListenersService {
           await bot.sendMessage(
             chatId,
             '✍️ Ready to create your own online course? Click below! 📝',
-            this.utilsService.getOptions('create'),
+            this.utilsService.getOptions('create', webAppUrl),
           );
           break;
         case '/mycreatedcourses':
           await bot.sendMessage(
             chatId,
             '✍️ Want to add or change modules in the course? Click below! 📝',
-            this.utilsService.getOptions('mycreatedcourses'),
+            this.utilsService.getOptions('mycreatedcourses', webAppUrl),
           );
           break;
         case '/start':
           await bot.sendMessage(
             chatId,
             '🛒 Looking to buy an online course? Start here! 🎓',
-            this.utilsService.getOptions('start'),
+            this.utilsService.getOptions('start', webAppUrl),
           );
           break;
       }
@@ -140,11 +141,13 @@ export class TelegramListenersService {
     bot.on('callback_query', async (callbackQuery) => {
       const { message, data } = callbackQuery;
       const chatId = message.chat.id;
+      console.log('message', message);
+      const webAppUrl = this.utilsService.getWebUrl(message.userId);
       if (data === '/create') {
         await bot.sendMessage(
           chatId,
           '📝 Let’s start creating your new course! 🎨',
-          this.utilsService.getOptions('create'),
+          this.utilsService.getOptions('create', webAppUrl),
         );
       }
     });
