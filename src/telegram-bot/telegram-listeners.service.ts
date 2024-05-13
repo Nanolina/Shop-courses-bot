@@ -22,7 +22,6 @@ export class TelegramListenersService {
       const { chat, from, photo, text, web_app_data } = msg;
       const chatId = chat.id;
       const userId = from.id;
-      const userName = from.username;
       const dataFromWeb = web_app_data?.data;
       const currentTime = Date.now();
       const webAppUrl = this.utilsService.getWebUrl(userId);
@@ -56,7 +55,7 @@ export class TelegramListenersService {
           );
 
           try {
-            await this.imageService.upload(temporaryImageUrl, courseId, userId);
+            await this.imageService.upload(temporaryImageUrl, courseId);
 
             // Update the message after loading
             await bot.editMessageText(
@@ -113,7 +112,6 @@ export class TelegramListenersService {
           const course = await this.courseService.create({
             ...data,
             userId,
-            userName,
           });
           if (course) {
             await this.redisClient.set(`courseId:${chatId}`, course.id);

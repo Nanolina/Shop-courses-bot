@@ -11,14 +11,12 @@ export class ImageService {
     private readonly logger: MyLogger,
   ) {}
 
-  async upload(temporaryImageUrl: string, courseId: string, userId: number) {
+  async upload(temporaryImageUrl: string, courseId: string) {
     // Try to get the current image for the course
     const currentImage = await this.prisma.image.findUnique({
       where: {
-        courseId,
-        course: {
-          userId,
-        },
+        type: 'Course',
+        typeId: courseId,
       },
     });
 
@@ -46,13 +44,12 @@ export class ImageService {
 
     return await this.prisma.image.upsert({
       where: {
-        courseId,
-        course: {
-          userId,
-        },
+        type: 'Course',
+        typeId: courseId,
       },
       create: {
-        courseId,
+        type: 'Course',
+        typeId: courseId,
         url: imageFromCloudinary?.url,
         publicId: imageFromCloudinary?.public_id,
       },
