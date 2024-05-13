@@ -56,6 +56,14 @@ export class TelegramUtilsService {
           inline_keyboard: [[{ text, web_app: { url } }]],
         };
         break;
+      case 'module':
+        url = `${webAppUrl}/module`;
+        text = '📝 Create modules';
+        replyMarkup = {
+          keyboard: [[{ text, web_app: { url } }]],
+          resize_keyboard: true,
+        };
+        break;
     }
 
     return { reply_markup: replyMarkup };
