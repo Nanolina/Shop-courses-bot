@@ -1,7 +1,5 @@
-import { InjectRedis } from '@nestjs-modules/ioredis';
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { Redis } from 'ioredis';
 import * as TelegramBot from 'node-telegram-bot-api';
 import { TelegramListenersService } from './telegram-listeners.service';
 
@@ -12,7 +10,6 @@ export class TelegramBotService implements OnModuleInit {
   constructor(
     private configService: ConfigService,
     private listenersService: TelegramListenersService,
-    @InjectRedis() private readonly redisClient: Redis,
   ) {}
 
   onModuleInit() {

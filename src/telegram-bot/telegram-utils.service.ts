@@ -5,7 +5,7 @@ import { ConfigService } from '@nestjs/config';
 export class TelegramUtilsService {
   constructor(private configService: ConfigService) {}
 
-  getWebUrl(userId: string) {
+  getWebUrl(userId: number) {
     const AlinaId = this.configService.get<string>('ALINA_ID');
     const SnegannaId = this.configService.get<string>('SNEGANNA_ID');
     const webAppURLDefault = this.configService.get<string>(
@@ -16,16 +16,16 @@ export class TelegramUtilsService {
       'WEB_APP_URL_SNEGANNA',
     );
 
-    if (userId === AlinaId) {
+    if (userId === Number(AlinaId)) {
       return webAppUrlAlina;
-    } else if (userId === SnegannaId) {
+    } else if (userId === Number(SnegannaId)) {
       return webAppUrlSneganna;
     } else {
       return webAppURLDefault;
     }
   }
 
-  async getOptions(type: string, webAppUrl: string, userId?: number) {
+  getOptions(type: string, webAppUrl: string, userId?: number) {
     let url;
     let text;
     let replyMarkup;
