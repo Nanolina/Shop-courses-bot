@@ -49,7 +49,6 @@ export class TelegramUtilsService {
         };
         break;
       case 'start':
-      default:
         url = webAppUrl;
         text = '📚 View courses';
         replyMarkup = {
@@ -57,6 +56,7 @@ export class TelegramUtilsService {
         };
         break;
       case 'module':
+      default:
         url = `${webAppUrl}/module`;
         text = '📝 Create modules';
         replyMarkup = {

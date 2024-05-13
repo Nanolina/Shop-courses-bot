@@ -107,7 +107,7 @@ export class TelegramListenersService {
           await bot.sendMessage(
             chatId,
             '✍️ Ready to create modules? Click below! 📝',
-            this.utilsService.getOptions('modules', webAppUrl),
+            this.utilsService.getOptions('module', webAppUrl),
           );
           break;
       }
