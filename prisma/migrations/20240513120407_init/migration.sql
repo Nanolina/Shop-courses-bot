@@ -1,7 +1,9 @@
+-- CreateEnum
+CREATE TYPE "ImageType" AS ENUM ('Course', 'Lesson');
+
 -- CreateTable
 CREATE TABLE "User" (
     "id" INTEGER NOT NULL,
-    "name" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -37,10 +39,22 @@ CREATE TABLE "Module" (
 );
 
 -- CreateTable
+CREATE TABLE "Lesson" (
+    "id" TEXT NOT NULL,
+    "name" TEXT,
+    "description" TEXT,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "Lesson_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "Video" (
     "id" TEXT NOT NULL,
     "url" TEXT NOT NULL,
-    "moduleId" TEXT NOT NULL,
+    "publicId" TEXT,
+    "lessonId" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -52,7 +66,8 @@ CREATE TABLE "Image" (
     "id" TEXT NOT NULL,
     "url" TEXT NOT NULL,
     "publicId" TEXT,
-    "courseId" TEXT NOT NULL,
+    "type" "ImageType" NOT NULL,
+    "typeId" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -62,7 +77,7 @@ CREATE TABLE "Image" (
 -- CreateTable
 CREATE TABLE "CoursePurchase" (
     "id" TEXT NOT NULL,
-    "userId" INTEGER NOT NULL,
+    "customerId" INTEGER NOT NULL,
     "courseId" TEXT NOT NULL,
     "purchaseDate" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -75,7 +90,10 @@ CREATE TABLE "CoursePurchase" (
 CREATE UNIQUE INDEX "User_id_key" ON "User"("id");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Image_courseId_key" ON "Image"("courseId");
+CREATE UNIQUE INDEX "Video_lessonId_key" ON "Video"("lessonId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Image_typeId_key" ON "Image"("typeId");
 
 -- AddForeignKey
 ALTER TABLE "Course" ADD CONSTRAINT "Course_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -84,13 +102,10 @@ ALTER TABLE "Course" ADD CONSTRAINT "Course_userId_fkey" FOREIGN KEY ("userId") 
 ALTER TABLE "Module" ADD CONSTRAINT "Module_courseId_fkey" FOREIGN KEY ("courseId") REFERENCES "Course"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Video" ADD CONSTRAINT "Video_moduleId_fkey" FOREIGN KEY ("moduleId") REFERENCES "Module"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "Image" ADD CONSTRAINT "Image_courseId_fkey" FOREIGN KEY ("courseId") REFERENCES "Course"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Video" ADD CONSTRAINT "Video_lessonId_fkey" FOREIGN KEY ("lessonId") REFERENCES "Lesson"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "CoursePurchase" ADD CONSTRAINT "CoursePurchase_courseId_fkey" FOREIGN KEY ("courseId") REFERENCES "Course"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "CoursePurchase" ADD CONSTRAINT "CoursePurchase_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "CoursePurchase" ADD CONSTRAINT "CoursePurchase_customerId_fkey" FOREIGN KEY ("customerId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

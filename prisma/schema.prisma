@@ -9,7 +9,6 @@ datasource db {
 
 model User {
   id        Int              @id @unique
-  name      String?
   createdAt DateTime         @default(now())
   updatedAt DateTime         @updatedAt
   courses   Course[]
@@ -29,7 +28,6 @@ model Course {
   updatedAt   DateTime         @updatedAt
   user        User             @relation(fields: [userId], references: [id])
   purchases   CoursePurchase[]
-  image       Image?
   modules     Module[]
 }
 
@@ -41,35 +39,49 @@ model Module {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   course      Course   @relation(fields: [courseId], references: [id])
-  videos      Video[]
+}
+
+model Lesson {
+  id          String   @id @default(uuid())
+  name        String?
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  video       Video?
 }
 
 model Video {
   id        String   @id @default(uuid())
   url       String
-  moduleId  String
+  publicId  String?
+  lessonId  String   @unique
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  module    Module   @relation(fields: [moduleId], references: [id])
+  lesson    Lesson   @relation(fields: [lessonId], references: [id])
 }
 
 model Image {
-  id        String   @id @default(uuid())
+  id        String    @id @default(uuid())
   url       String
   publicId  String?
-  courseId  String   @unique
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  course    Course   @relation(fields: [courseId], references: [id])
+  type      ImageType
+  typeId    String    @unique
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 }
 
 model CoursePurchase {
   id           String   @id @default(uuid())
-  userId       Int
+  customerId   Int
   courseId     String
   purchaseDate DateTime @default(now())
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
   course       Course   @relation(fields: [courseId], references: [id])
-  user         User     @relation(fields: [userId], references: [id])
+  customer     User     @relation(fields: [customerId], references: [id])
+}
+
+enum ImageType {
+  Course
+  Lesson
 }
