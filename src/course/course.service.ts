@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { CourseCreatedDto } from '../dto';
+import { CourseCreatedDto } from './dto';
 import { MyLogger } from '../logger/my-logger.service';
 import { PrismaService } from '../prisma/prisma.service';
 

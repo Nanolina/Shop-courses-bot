@@ -7,6 +7,7 @@ import { LoggerModule } from './logger/logger.module';
 import { PrismaService } from './prisma/prisma.service';
 import { RedisAppModule } from './redis/redis.module';
 import { TelegramModule } from './telegram-bot/telegram.module';
+import { ModuleModule } from './module/module.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { TelegramModule } from './telegram-bot/telegram.module';
     ConfigModule.forRoot({
       isGlobal: true,
     }),
+    ModuleModule,
   ],
   providers: [PrismaService, ImageService],
 })
