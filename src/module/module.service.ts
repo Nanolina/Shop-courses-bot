@@ -10,13 +10,13 @@ export class ModuleService {
     private readonly logger: MyLogger,
   ) {}
 
-  async create(dto: CreateModuleDto) {
+  async create(courseId: string, dto: CreateModuleDto) {
     try {
       return await this.prisma.module.create({
         data: {
+          courseId,
           name: dto.name,
           description: dto.description,
-          courseId: dto.courseId,
         },
       });
     } catch (error) {
@@ -33,19 +33,19 @@ export class ModuleService {
     });
   }
 
-  async findOne(id: string) {
-    return await this.prisma.course.findFirst({
+  async findOne(moduleId: string) {
+    return await this.prisma.module.findFirst({
       where: {
-        id,
+        id: moduleId,
       },
     });
   }
 
-  async update(id: string, dto: UpdateModuleDto) {
+  async update(moduleId: string, dto: UpdateModuleDto) {
     try {
       return await this.prisma.module.update({
         where: {
-          id,
+          id: moduleId,
         },
         data: {
           name: dto.name,
@@ -53,16 +53,16 @@ export class ModuleService {
         },
       });
     } catch (error) {
-      this.logger.error({ method: 'module-create', error });
+      this.logger.error({ method: 'module-update', error });
       return null;
     }
   }
 
-  async remove(id: string) {
+  async remove(moduleId: string) {
     try {
       return await this.prisma.module.delete({
         where: {
-          id,
+          id: moduleId,
         },
       });
     } catch (error) {
