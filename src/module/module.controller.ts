@@ -11,32 +11,38 @@ import { CreateModuleDto } from './dto/create-module.dto';
 import { UpdateModuleDto } from './dto/update-module.dto';
 import { ModuleService } from './module.service';
 
-@Controller('module')
+@Controller()
 export class ModuleController {
   constructor(private readonly moduleService: ModuleService) {}
 
-  @Post()
-  create(@Body() createModuleDto: CreateModuleDto) {
-    return this.moduleService.create(createModuleDto);
+  @Post('course/:courseId/module')
+  create(
+    @Param('courseId') courseId: string,
+    @Body() createModuleDto: CreateModuleDto,
+  ) {
+    return this.moduleService.create(courseId, createModuleDto);
   }
 
-  @Get('course/:courseId')
+  @Get('course/:courseId/module')
   findAll(@Param('courseId') courseId: string) {
     return this.moduleService.findAll(courseId);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.moduleService.findOne(id);
+  @Get(':moduleId')
+  findOne(@Param('moduleId') moduleId: string) {
+    return this.moduleService.findOne(moduleId);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateModuleDto: UpdateModuleDto) {
-    return this.moduleService.update(id, updateModuleDto);
+  @Patch(':moduleId')
+  update(
+    @Param('moduleId') moduleId: string,
+    @Body() updateModuleDto: UpdateModuleDto,
+  ) {
+    return this.moduleService.update(moduleId, updateModuleDto);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.moduleService.remove(id);
+  @Delete(':moduleId')
+  remove(@Param('moduleId') moduleId: string) {
+    return this.moduleService.remove(moduleId);
   }
 }

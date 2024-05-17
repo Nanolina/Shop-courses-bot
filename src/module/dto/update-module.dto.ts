@@ -8,8 +8,4 @@ export class UpdateModuleDto {
   @IsOptional()
   @IsString()
   description?: string;
-
-  //   @IsDefined()
-  //   @IsNumber()
-  //   userId: number;
 }

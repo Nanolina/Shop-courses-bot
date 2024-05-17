@@ -1,6 +1,3 @@
--- CreateEnum
-CREATE TYPE "ImageType" AS ENUM ('Course', 'Lesson');
-
 -- CreateTable
 CREATE TABLE "User" (
     "id" INTEGER NOT NULL,
@@ -17,9 +14,11 @@ CREATE TABLE "Course" (
     "description" TEXT,
     "category" TEXT NOT NULL,
     "subcategory" TEXT,
-    "price" DOUBLE PRECISION NOT NULL,
+    "price" INTEGER NOT NULL,
     "currency" TEXT NOT NULL,
     "userId" INTEGER NOT NULL,
+    "imageUrl" TEXT,
+    "imagePublicId" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -29,9 +28,11 @@ CREATE TABLE "Course" (
 -- CreateTable
 CREATE TABLE "Module" (
     "id" TEXT NOT NULL,
-    "name" TEXT,
+    "name" TEXT NOT NULL,
     "description" TEXT,
     "courseId" TEXT NOT NULL,
+    "imageUrl" TEXT,
+    "imagePublicId" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -41,8 +42,11 @@ CREATE TABLE "Module" (
 -- CreateTable
 CREATE TABLE "Lesson" (
     "id" TEXT NOT NULL,
-    "name" TEXT,
+    "name" TEXT NOT NULL,
     "description" TEXT,
+    "moduleId" TEXT NOT NULL,
+    "imageUrl" TEXT,
+    "imagePublicId" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -59,19 +63,6 @@ CREATE TABLE "Video" (
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "Video_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "Image" (
-    "id" TEXT NOT NULL,
-    "url" TEXT NOT NULL,
-    "publicId" TEXT,
-    "type" "ImageType" NOT NULL,
-    "typeId" TEXT NOT NULL,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
-
-    CONSTRAINT "Image_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -92,14 +83,14 @@ CREATE UNIQUE INDEX "User_id_key" ON "User"("id");
 -- CreateIndex
 CREATE UNIQUE INDEX "Video_lessonId_key" ON "Video"("lessonId");
 
--- CreateIndex
-CREATE UNIQUE INDEX "Image_typeId_key" ON "Image"("typeId");
-
 -- AddForeignKey
 ALTER TABLE "Course" ADD CONSTRAINT "Course_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Module" ADD CONSTRAINT "Module_courseId_fkey" FOREIGN KEY ("courseId") REFERENCES "Course"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Lesson" ADD CONSTRAINT "Lesson_moduleId_fkey" FOREIGN KEY ("moduleId") REFERENCES "Module"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Video" ADD CONSTRAINT "Video_lessonId_fkey" FOREIGN KEY ("lessonId") REFERENCES "Lesson"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

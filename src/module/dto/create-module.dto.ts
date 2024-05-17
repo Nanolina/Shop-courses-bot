@@ -8,12 +8,4 @@ export class CreateModuleDto {
   @IsOptional()
   @IsString()
   description?: string;
-
-  @IsDefined()
-  @IsString()
-  courseId: string;
-
-  //   @IsDefined()
-  //   @IsNumber()
-  //   userId: number;
 }

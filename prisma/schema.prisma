@@ -16,38 +16,47 @@ model User {
 }
 
 model Course {
-  id          String           @id @default(uuid())
-  name        String
-  description String?
-  category    String
-  subcategory String?
-  price       Float
-  currency    String
-  userId      Int
-  createdAt   DateTime         @default(now())
-  updatedAt   DateTime         @updatedAt
-  user        User             @relation(fields: [userId], references: [id])
-  purchases   CoursePurchase[]
-  modules     Module[]
+  id            String           @id @default(uuid())
+  name          String
+  description   String?
+  category      String
+  subcategory   String?
+  price         Int
+  currency      String
+  userId        Int
+  imageUrl      String?
+  imagePublicId String?
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+  user          User             @relation(fields: [userId], references: [id])
+  purchases     CoursePurchase[]
+  modules       Module[]
 }
 
 model Module {
-  id          String   @id @default(uuid())
-  name        String?
-  description String?
-  courseId    String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  course      Course   @relation(fields: [courseId], references: [id])
+  id            String   @id @default(uuid())
+  name          String
+  description   String?
+  courseId      String
+  imageUrl      String?
+  imagePublicId String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  lessons       Lesson[]
+  course        Course   @relation(fields: [courseId], references: [id])
 }
 
 model Lesson {
-  id          String   @id @default(uuid())
-  name        String?
-  description String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  video       Video?
+  id            String   @id @default(uuid())
+  name          String
+  description   String?
+  moduleId      String
+  imageUrl      String?
+  imagePublicId String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  module        Module   @relation(fields: [moduleId], references: [id])
+  video         Video?
 }
 
 model Video {
@@ -60,16 +69,6 @@ model Video {
   lesson    Lesson   @relation(fields: [lessonId], references: [id])
 }
 
-model Image {
-  id        String    @id @default(uuid())
-  url       String
-  publicId  String?
-  type      ImageType
-  typeId    String    @unique
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-}
-
 model CoursePurchase {
   id           String   @id @default(uuid())
   customerId   Int
@@ -79,9 +78,4 @@ model CoursePurchase {
   updatedAt    DateTime @updatedAt
   course       Course   @relation(fields: [courseId], references: [id])
   customer     User     @relation(fields: [customerId], references: [id])
-}
-
-enum ImageType {
-  Course
-  Lesson
 }
