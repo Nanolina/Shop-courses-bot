@@ -55,7 +55,7 @@ export class TelegramListenersService {
           );
 
           try {
-            await this.imageService.upload(temporaryImageUrl, courseId);
+            await this.imageService.upload(temporaryImageUrl, courseId, userId);
 
             // Update the message after loading
             await bot.editMessageText(

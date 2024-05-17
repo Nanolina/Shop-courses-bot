@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common';
-import { CourseCreatedDto } from './dto';
 import { MyLogger } from '../logger/my-logger.service';
 import { PrismaService } from '../prisma/prisma.service';
+import { CourseCreatedDto } from './dto';
 
 const include = {
   include: {
     modules: {
       include: {
-        course: true,
+        lessons: true,
       },
     },
   },
