@@ -2,26 +2,27 @@ import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { SOMETHING_WRONG_ERROR } from '../consts';
 import { MyLogger } from '../logger/my-logger.service';
 import { PrismaService } from '../prisma/prisma.service';
-import { CreateModuleDto, UpdateModuleDto } from './dto';
+import { CreateLessonDto } from './dto/create-lesson.dto';
+import { UpdateLessonDto } from './dto/update-lesson.dto';
 
 @Injectable()
-export class ModuleService {
+export class LessonService {
   constructor(
     private prisma: PrismaService,
     private readonly logger: MyLogger,
   ) {}
 
-  async create(courseId: string, dto: CreateModuleDto) {
+  async create(moduleId: string, dto: CreateLessonDto) {
     try {
-      return await this.prisma.module.create({
+      return await this.prisma.lesson.create({
         data: {
-          courseId,
+          moduleId,
           name: dto.name,
           description: dto.description,
         },
       });
     } catch (error) {
-      this.logger.error({ method: 'module-create', error });
+      this.logger.error({ method: 'lesson-create', error });
       throw new InternalServerErrorException(
         SOMETHING_WRONG_ERROR,
         error?.message,
@@ -29,27 +30,27 @@ export class ModuleService {
     }
   }
 
-  async findAll(courseId: string) {
-    return await this.prisma.module.findMany({
+  async findAll(moduleId: string) {
+    return await this.prisma.lesson.findMany({
       where: {
-        courseId,
+        moduleId,
       },
     });
   }
 
-  async findOne(moduleId: string) {
-    return await this.prisma.module.findFirst({
+  async findOne(lessonId: string) {
+    return await this.prisma.lesson.findFirst({
       where: {
-        id: moduleId,
+        id: lessonId,
       },
     });
   }
 
-  async update(moduleId: string, dto: UpdateModuleDto) {
+  async update(lessonId: string, dto: UpdateLessonDto) {
     try {
-      return await this.prisma.module.update({
+      return await this.prisma.lesson.update({
         where: {
-          id: moduleId,
+          id: lessonId,
         },
         data: {
           name: dto.name,
@@ -57,7 +58,7 @@ export class ModuleService {
         },
       });
     } catch (error) {
-      this.logger.error({ method: 'module-update', error });
+      this.logger.error({ method: 'lesson-update', error });
       throw new InternalServerErrorException(
         SOMETHING_WRONG_ERROR,
         error?.message,
@@ -65,15 +66,15 @@ export class ModuleService {
     }
   }
 
-  async remove(moduleId: string) {
+  async remove(lessonId: string) {
     try {
-      return await this.prisma.module.delete({
+      return await this.prisma.lesson.delete({
         where: {
-          id: moduleId,
+          id: lessonId,
         },
       });
     } catch (error) {
-      this.logger.error({ method: 'module-remove', error });
+      this.logger.error({ method: 'lesson-remove', error });
       throw new InternalServerErrorException(
         SOMETHING_WRONG_ERROR,
         error?.message,
