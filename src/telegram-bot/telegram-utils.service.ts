@@ -7,22 +7,25 @@ export class TelegramUtilsService {
 
   getWebUrl(userId: number) {
     console.log('userId', userId);
+    // Alina developer
     const AlinaId = this.configService.get<string>('ALINA_ID');
-    const SnegannaId = this.configService.get<string>('SNEGANNA_ID');
-    const webAppURLDefault = this.configService.get<string>(
-      'WEB_APP_URL_DEFAULT',
-    );
     const webAppUrlAlina = this.configService.get<string>('WEB_APP_URL_ALINA');
+
+    // Sneganna developer
+    const SnegannaId = this.configService.get<string>('SNEGANNA_ID');
     const webAppUrlSneganna = this.configService.get<string>(
       'WEB_APP_URL_SNEGANNA',
     );
+
+    // All users
+    const webAppUrl = this.configService.get<string>('WEB_APP_URL');
 
     if (userId === Number(AlinaId)) {
       return webAppUrlAlina;
     } else if (userId === Number(SnegannaId)) {
       return webAppUrlSneganna;
     } else {
-      return webAppURLDefault;
+      return webAppUrl;
     }
   }
 
