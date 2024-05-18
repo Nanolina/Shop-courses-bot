@@ -19,6 +19,7 @@ CREATE TABLE "Course" (
     "userId" INTEGER NOT NULL,
     "imageUrl" TEXT,
     "imagePublicId" TEXT,
+    "walletAddressSeller" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -69,7 +70,10 @@ CREATE TABLE "Video" (
 CREATE TABLE "CoursePurchase" (
     "id" TEXT NOT NULL,
     "customerId" INTEGER NOT NULL,
+    "sellerId" INTEGER NOT NULL,
     "courseId" TEXT NOT NULL,
+    "walletAddressSeller" TEXT NOT NULL,
+    "walletAddressCustomer" TEXT NOT NULL,
     "purchaseDate" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
