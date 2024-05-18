@@ -21,6 +21,8 @@ async function main() {
             imageUrl:
               'https://www.shutterstock.com/image-vector/blockchain-line-icon-logo-concept-600nw-754816570.jpg',
             imagePublicId: 'blockchain-course-image',
+            walletAddressSeller:
+              '0:12ee206614c0d755460d0728d875c6ce46065c138b1d2ce5d1524b5f74715d61',
             modules: {
               create: [
                 {

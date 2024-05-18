@@ -27,6 +27,10 @@ export class CourseCreatedDto {
 
   @IsDefined()
   @IsString()
+  walletAddressSeller: string;
+
+  @IsDefined()
+  @IsString()
   imageUrl: string;
 
   @IsDefined()

@@ -30,6 +30,7 @@ export class CourseService {
           subcategory: dto.subcategory,
           price: dto.price,
           currency: dto.currency,
+          walletAddressSeller: dto.walletAddressSeller,
           user: {
             connectOrCreate: {
               where: {
