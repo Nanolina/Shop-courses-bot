@@ -67,7 +67,11 @@ export class TelegramListenersService {
             await bot.sendMessage(
               chatId,
               '📚 To manage your courses or modules, press the button below! 🔧',
-              this.utilsService.getOptions('mycreatedcourses', webAppUrl),
+              this.utilsService.getOptions(
+                'mycreatedcourses',
+                webAppUrl,
+                userId,
+              ),
             );
           } catch (error) {
             await bot.editMessageText(TRY_AGAIN_ERROR, {
@@ -92,8 +96,8 @@ export class TelegramListenersService {
         case '/mycreatedcourses':
           await bot.sendMessage(
             chatId,
-            '✍️ Want to add or change modules in the course? Click below! 📝',
-            this.utilsService.getOptions('mycreatedcourses', webAppUrl),
+            '✍️ Want to change your course? Click below! 📝',
+            this.utilsService.getOptions('mycreatedcourses', webAppUrl, userId),
           );
           break;
         case '/start':
