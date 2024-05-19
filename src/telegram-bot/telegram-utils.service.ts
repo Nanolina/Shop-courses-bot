@@ -29,6 +29,7 @@ export class TelegramUtilsService {
     }
   }
 
+  // sendData in the web app can work only for Keyboard button
   getOptions(type: string, webAppUrl: string, userId?: number) {
     let url;
     let text;
@@ -44,6 +45,7 @@ export class TelegramUtilsService {
         };
         break;
       case 'mycreatedcourses':
+        if (!userId) break;
         url = `${webAppUrl}/course/user/${userId}`;
         text = 'Press me to see your courses';
         replyMarkup = {

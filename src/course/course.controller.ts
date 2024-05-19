@@ -10,6 +10,11 @@ export class CourseController {
     return this.courseService.findAll();
   }
 
+  @Get('user/:userId')
+  findAllCreatedCoursesByUser(@Param('userId') userId: number) {
+    return this.courseService.findAllCreatedCoursesByUser(userId);
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.courseService.findOne(id);

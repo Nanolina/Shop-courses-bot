@@ -53,6 +53,17 @@ export class CourseService {
     return await this.prisma.course.findMany(include);
   }
 
+  async findAllCreatedCoursesByUser(userId: number) {
+    console.log('typeof userId', typeof userId);
+    console.log('userId', userId);
+    return await this.prisma.course.findMany({
+      where: {
+        userId,
+      },
+      ...include,
+    });
+  }
+
   async findOne(id: string) {
     return await this.prisma.course.findFirst({
       where: {
