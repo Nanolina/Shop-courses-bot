@@ -11,7 +11,7 @@ export class CourseController {
   }
 
   @Get('user/:userId')
-  findAllCreatedCoursesByUser(@Param('userId') userId: number) {
+  findAllCreatedCoursesByUser(@Param('userId') userId: string) {
     return this.courseService.findAllCreatedCoursesByUser(userId);
   }
 

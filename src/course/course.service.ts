@@ -53,12 +53,12 @@ export class CourseService {
     return await this.prisma.course.findMany(include);
   }
 
-  async findAllCreatedCoursesByUser(userId: number) {
+  async findAllCreatedCoursesByUser(userId: string) {
     console.log('typeof userId', typeof userId);
     console.log('userId', userId);
     return await this.prisma.course.findMany({
       where: {
-        userId,
+        userId: parseInt(userId),
       },
       ...include,
     });

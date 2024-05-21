@@ -28,12 +28,12 @@ export class LessonController {
     return this.lessonService.findAll(moduleId);
   }
 
-  @Get(':lessonId')
+  @Get('lesson/:lessonId')
   findOne(@Param('lessonId') lessonId: string) {
     return this.lessonService.findOne(lessonId);
   }
 
-  @Patch(':lessonId')
+  @Patch('lesson/:lessonId')
   update(
     @Param('lessonId') lessonId: string,
     @Body() updateLessonDto: UpdateLessonDto,
@@ -41,7 +41,7 @@ export class LessonController {
     return this.lessonService.update(lessonId, updateLessonDto);
   }
 
-  @Delete(':lessonId')
+  @Delete('lesson/:lessonId')
   remove(@Param('lessonId') lessonId: string) {
     return this.lessonService.remove(lessonId);
   }
