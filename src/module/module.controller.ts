@@ -28,12 +28,12 @@ export class ModuleController {
     return this.moduleService.findAll(courseId);
   }
 
-  @Get(':moduleId')
+  @Get('module/:moduleId')
   findOne(@Param('moduleId') moduleId: string) {
     return this.moduleService.findOne(moduleId);
   }
 
-  @Patch(':moduleId')
+  @Patch('module/:moduleId')
   update(
     @Param('moduleId') moduleId: string,
     @Body() updateModuleDto: UpdateModuleDto,
@@ -41,7 +41,7 @@ export class ModuleController {
     return this.moduleService.update(moduleId, updateModuleDto);
   }
 
-  @Delete(':moduleId')
+  @Delete('module/:moduleId')
   remove(@Param('moduleId') moduleId: string) {
     return this.moduleService.remove(moduleId);
   }
