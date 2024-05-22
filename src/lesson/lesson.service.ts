@@ -12,7 +12,7 @@ export class LessonService {
     private readonly logger: MyLogger,
   ) {}
 
-  async create(moduleId: string, dto: CreateLessonDto) {
+  async create(dto: CreateLessonDto) {
     try {
       return await this.prisma.lesson.create({
         data: {
@@ -22,7 +22,12 @@ export class LessonService {
           videoUrl: dto.videoUrl,
           module: {
             connect: {
-              id: moduleId,
+              id: dto.moduleId,
+              course: {
+                user: {
+                  tgId: dto.userId,
+                },
+              },
             },
           },
         },
@@ -52,11 +57,18 @@ export class LessonService {
     });
   }
 
-  async update(lessonId: string, dto: UpdateLessonDto) {
+  async update(dto: UpdateLessonDto) {
     try {
       return await this.prisma.lesson.update({
         where: {
-          id: lessonId,
+          id: dto.lessonId,
+          module: {
+            course: {
+              user: {
+                tgId: dto.userId,
+              },
+            },
+          },
         },
         data: {
           name: dto.name,
@@ -74,11 +86,18 @@ export class LessonService {
     }
   }
 
-  async remove(lessonId: string) {
+  async remove(lessonId: string, userId: number) {
     try {
       return await this.prisma.lesson.delete({
         where: {
           id: lessonId,
+          module: {
+            course: {
+              user: {
+                tgId: userId,
+              },
+            },
+          },
         },
       });
     } catch (error) {

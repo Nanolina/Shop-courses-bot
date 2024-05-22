@@ -1,6 +1,17 @@
-import { IsOptional, IsString, IsUrl } from 'class-validator';
+import {
+  IsDefined,
+  IsNumber,
+  IsOptional,
+  IsString,
+  IsUUID,
+  IsUrl,
+} from 'class-validator';
 
 export class UpdateModuleDto {
+  @IsDefined()
+  @IsUUID()
+  moduleId: string;
+
   @IsOptional()
   @IsString()
   name?: string;
@@ -12,4 +23,8 @@ export class UpdateModuleDto {
   @IsOptional()
   @IsUrl()
   imageUrl?: string;
+
+  @IsDefined()
+  @IsNumber()
+  userId: number;
 }

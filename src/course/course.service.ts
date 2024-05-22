@@ -35,10 +35,10 @@ export class CourseService {
           user: {
             connectOrCreate: {
               where: {
-                id: dto.userId,
+                tgId: dto.userId,
               },
               create: {
-                id: dto.userId,
+                tgId: dto.userId,
               },
             },
           },
@@ -57,7 +57,9 @@ export class CourseService {
   async findAllCreatedCoursesByUser(userId: string) {
     const courses = await this.prisma.course.findMany({
       where: {
-        userId: BigInt(userId),
+        user: {
+          tgId: Number(userId),
+        },
       },
       ...include,
     });
@@ -77,12 +79,14 @@ export class CourseService {
     });
   }
 
-  async update(courseId: string, dto: CourseUpdatedDto) {
+  async update(dto: CourseUpdatedDto) {
     try {
       return await this.prisma.course.update({
         where: {
-          id: courseId,
-          userId: dto.userId,
+          id: dto.courseId,
+          user: {
+            tgId: dto.userId,
+          },
         },
         data: {
           name: dto.name,

@@ -8,7 +8,8 @@ async function main() {
   // Creating a User
   const user = await prisma.user.create({
     data: {
-      id: 145,
+      id: 'ca5df41b-f2b0-4442-9c0b-943e2732fa02',
+      tgId: 3458,
       courses: {
         create: [
           {
