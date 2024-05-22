@@ -16,9 +16,15 @@ export class LessonService {
     try {
       return await this.prisma.lesson.create({
         data: {
-          moduleId,
           name: dto.name,
           description: dto.description,
+          imageUrl: dto.imageUrl,
+          videoUrl: dto.videoUrl,
+          module: {
+            connect: {
+              id: moduleId,
+            },
+          },
         },
       });
     } catch (error) {
@@ -55,6 +61,8 @@ export class LessonService {
         data: {
           name: dto.name,
           description: dto.description,
+          imageUrl: dto.imageUrl,
+          videoUrl: dto.videoUrl,
         },
       });
     } catch (error) {

@@ -6,34 +6,34 @@ import {
   IsUrl,
 } from 'class-validator';
 
-export class CourseCreatedDto {
-  @IsDefined()
+export class CourseUpdatedDto {
+  @IsOptional()
   @IsString()
-  name: string;
+  name?: string;
 
   @IsOptional()
   @IsString()
   description?: string;
 
-  @IsDefined()
+  @IsOptional()
   @IsString()
-  category: string;
+  category?: string;
 
   @IsOptional()
   @IsString()
   subcategory?: string;
 
-  @IsDefined()
+  @IsOptional()
   @IsNumber()
-  price: number;
+  price?: number;
 
-  @IsDefined()
+  @IsOptional()
   @IsString()
-  currency: string;
+  currency?: string;
 
-  @IsDefined()
+  @IsOptional()
   @IsString()
-  walletAddressSeller: string;
+  walletAddressSeller?: string;
 
   @IsOptional()
   @IsUrl()

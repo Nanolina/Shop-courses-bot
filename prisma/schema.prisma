@@ -8,7 +8,7 @@ datasource db {
 }
 
 model User {
-  id        Int              @id @unique
+  id        BigInt           @id @unique
   createdAt DateTime         @default(now())
   updatedAt DateTime         @updatedAt
   courses   Course[]
@@ -23,9 +23,8 @@ model Course {
   subcategory         String?
   price               Int
   currency            String
-  userId              Int
+  userId              BigInt
   imageUrl            String?
-  imagePublicId       String?
   walletAddressSeller String
   isActive            Boolean          @default(false)
   createdAt           DateTime         @default(now())
@@ -36,45 +35,33 @@ model Course {
 }
 
 model Module {
-  id            String   @id @default(uuid())
-  name          String
-  description   String?
-  courseId      String
-  imageUrl      String?
-  imagePublicId String?
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-  lessons       Lesson[]
-  course        Course   @relation(fields: [courseId], references: [id])
+  id          String   @id @default(uuid())
+  name        String
+  description String?
+  courseId    String
+  imageUrl    String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  lessons     Lesson[]
+  course      Course   @relation(fields: [courseId], references: [id])
 }
 
 model Lesson {
-  id            String   @id @default(uuid())
-  name          String
-  description   String?
-  moduleId      String
-  imageUrl      String?
-  imagePublicId String?
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-  module        Module   @relation(fields: [moduleId], references: [id])
-  video         Video?
-}
-
-model Video {
-  id        String   @id @default(uuid())
-  url       String
-  publicId  String?
-  lessonId  String   @unique
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  lesson    Lesson   @relation(fields: [lessonId], references: [id])
+  id          String   @id @default(uuid())
+  name        String
+  description String?
+  moduleId    String
+  imageUrl    String?
+  videoUrl    String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  module      Module   @relation(fields: [moduleId], references: [id])
 }
 
 model CoursePurchase {
   id                    String   @id @default(uuid())
-  customerId            Int
-  sellerId              Int
+  customerId            BigInt
+  sellerId              BigInt
   courseId              String
   walletAddressSeller   String
   walletAddressCustomer String

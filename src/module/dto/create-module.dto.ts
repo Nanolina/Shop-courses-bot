@@ -1,4 +1,4 @@
-import { IsDefined, IsOptional, IsString } from 'class-validator';
+import { IsDefined, IsOptional, IsString, IsUrl } from 'class-validator';
 
 export class CreateModuleDto {
   @IsDefined()
@@ -8,4 +8,8 @@ export class CreateModuleDto {
   @IsOptional()
   @IsString()
   description?: string;
+
+  @IsOptional()
+  @IsUrl()
+  imageUrl?: string;
 }

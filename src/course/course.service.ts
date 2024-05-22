@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { MyLogger } from '../logger/my-logger.service';
 import { PrismaService } from '../prisma/prisma.service';
-import { CourseCreatedDto } from './dto';
+import { CourseCreatedDto, CourseUpdatedDto } from './dto';
 
 const include = {
   include: {
@@ -31,6 +31,7 @@ export class CourseService {
           price: dto.price,
           currency: dto.currency,
           walletAddressSeller: dto.walletAddressSeller,
+          imageUrl: dto.imageUrl,
           user: {
             connectOrCreate: {
               where: {
@@ -54,8 +55,6 @@ export class CourseService {
   }
 
   async findAllCreatedCoursesByUser(userId: string) {
-    console.log('typeof userId', typeof userId);
-    console.log('userId', userId);
     return await this.prisma.course.findMany({
       where: {
         userId: parseInt(userId),
@@ -71,5 +70,29 @@ export class CourseService {
       },
       ...include,
     });
+  }
+
+  async update(courseId: string, dto: CourseUpdatedDto) {
+    try {
+      return await this.prisma.course.update({
+        where: {
+          id: courseId,
+          userId: dto.userId,
+        },
+        data: {
+          name: dto.name,
+          description: dto.description,
+          category: dto.category,
+          subcategory: dto.subcategory,
+          price: dto.price,
+          currency: dto.currency,
+          walletAddressSeller: dto.walletAddressSeller,
+          imageUrl: dto.imageUrl,
+        },
+      });
+    } catch (error) {
+      this.logger.error({ method: 'course-update', error });
+      return null;
+    }
   }
 }
