@@ -1,7 +1,7 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import { SOMETHING_WRONG_ERROR } from '../consts';
+import { Injectable } from '@nestjs/common';
 import { MyLogger } from '../logger/my-logger.service';
 import { PrismaService } from '../prisma/prisma.service';
+import { DeleteLessonDto } from './dto';
 import { CreateLessonDto } from './dto/create-lesson.dto';
 import { UpdateLessonDto } from './dto/update-lesson.dto';
 
@@ -33,11 +33,8 @@ export class LessonService {
         },
       });
     } catch (error) {
-      this.logger.error({ method: 'lesson-create', error });
-      throw new InternalServerErrorException(
-        SOMETHING_WRONG_ERROR,
-        error?.message,
-      );
+      this.logger.error({ method: 'lesson-create', error: error?.message });
+      return null;
     }
   }
 
@@ -78,34 +75,28 @@ export class LessonService {
         },
       });
     } catch (error) {
-      this.logger.error({ method: 'lesson-update', error });
-      throw new InternalServerErrorException(
-        SOMETHING_WRONG_ERROR,
-        error?.message,
-      );
+      this.logger.error({ method: 'lesson-update', error: error?.message });
+      return null;
     }
   }
 
-  async remove(lessonId: string, userId: number) {
+  async delete(dto: DeleteLessonDto) {
     try {
       return await this.prisma.lesson.delete({
         where: {
-          id: lessonId,
+          id: dto.lessonId,
           module: {
             course: {
               user: {
-                tgId: userId,
+                tgId: dto.userId,
               },
             },
           },
         },
       });
     } catch (error) {
-      this.logger.error({ method: 'lesson-remove', error });
-      throw new InternalServerErrorException(
-        SOMETHING_WRONG_ERROR,
-        error?.message,
-      );
+      this.logger.error({ method: 'lesson-delete', error: error?.message });
+      return null;
     }
   }
 }

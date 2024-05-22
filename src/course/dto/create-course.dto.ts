@@ -3,42 +3,37 @@ import {
   IsNumber,
   IsOptional,
   IsString,
-  IsUUID,
   IsUrl,
 } from 'class-validator';
 
-export class CourseUpdatedDto {
+export class CreateCourseDto {
   @IsDefined()
-  @IsUUID()
-  courseId: string;
-
-  @IsOptional()
   @IsString()
-  name?: string;
+  name: string;
 
   @IsOptional()
   @IsString()
   description?: string;
 
-  @IsOptional()
+  @IsDefined()
   @IsString()
-  category?: string;
+  category: string;
 
   @IsOptional()
   @IsString()
   subcategory?: string;
 
-  @IsOptional()
+  @IsDefined()
   @IsNumber()
-  price?: number;
+  price: number;
 
-  @IsOptional()
+  @IsDefined()
   @IsString()
-  currency?: string;
+  currency: string;
 
-  @IsOptional()
+  @IsDefined()
   @IsString()
-  walletAddressSeller?: string;
+  walletAddressSeller: string;
 
   @IsOptional()
   @IsUrl()

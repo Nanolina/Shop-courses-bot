@@ -1,5 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { LessonService } from 'src/lesson/lesson.service';
+import { ModuleService } from 'src/module/module.service';
 import { CourseModule } from '../course/course.module';
 import { CourseService } from '../course/course.service';
 import { LoggerModule } from '../logger/logger.module';
@@ -16,6 +18,8 @@ import { TelegramUtilsService } from './telegram-utils.service';
     TelegramUtilsService,
     PrismaService,
     CourseService,
+    ModuleService,
+    LessonService,
   ],
   exports: [TelegramBotService],
 })

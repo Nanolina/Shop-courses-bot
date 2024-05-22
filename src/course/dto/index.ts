@@ -1,2 +1,3 @@
-export { CourseCreatedDto } from './course-created.dto';
-export { CourseUpdatedDto } from './course-updated.dto';
+export { CreateCourseDto } from './create-course.dto';
+export { DeleteCourseDto } from './delete-course.dto';
+export { UpdateCourseDto } from './update-course.dto';
