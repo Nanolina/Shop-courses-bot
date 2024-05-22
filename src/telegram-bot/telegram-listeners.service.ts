@@ -1,6 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import * as TelegramBot from 'node-telegram-bot-api';
+import { COURSE, CREATE, LESSON, MODULE, UPDATE } from '../consts';
 import { CourseService } from '../course/course.service';
+import { LessonService } from '../lesson/lesson.service';
+import { ModuleService } from '../module/module.service';
 import { TRY_AGAIN_ERROR } from './consts';
 import { TelegramUtilsService } from './telegram-utils.service';
 
@@ -8,6 +11,8 @@ import { TelegramUtilsService } from './telegram-utils.service';
 export class TelegramListenersService {
   constructor(
     private courseService: CourseService,
+    private moduleService: ModuleService,
+    private lessonService: LessonService,
     private utilsService: TelegramUtilsService,
   ) {}
 
@@ -60,30 +65,153 @@ export class TelegramListenersService {
 
       // Process web_app data
       if (dataFromWeb) {
+        let data;
         try {
-          const data = JSON.parse(dataFromWeb);
-          const course = await this.courseService.create({
-            ...data,
-            userId,
-          });
-          if (course) {
-            await bot.sendMessage(
-              chatId,
-              `🎉 Congrats! Your ${data.name} course is ready! 🌟 Now, let's add some visuals! 📸 Send me a photo!`,
-            );
-          } else {
-            await bot.sendMessage(
-              chatId,
-              TRY_AGAIN_ERROR,
-              this.utilsService.getRetryOptions(),
-            );
-          }
+          data = JSON.parse(dataFromWeb);
         } catch (error) {
           await bot.sendMessage(
             chatId,
             TRY_AGAIN_ERROR,
             this.utilsService.getRetryOptions(),
           );
+        }
+
+        switch (data.type) {
+          case COURSE:
+            switch (data.method) {
+              // Create course
+              case CREATE:
+                const createdCourse = await this.courseService.create({
+                  ...data,
+                  userId,
+                });
+                if (createdCourse) {
+                  await bot.sendMessage(
+                    chatId,
+                    `🎉 Congrats! Your ${data.name} course is ready! 🌟`,
+                  );
+                } else {
+                  await bot.sendMessage(
+                    chatId,
+                    TRY_AGAIN_ERROR,
+                    this.utilsService.getRetryOptions(),
+                  );
+                }
+                break;
+              // Update course
+              case UPDATE:
+                const updatedCourse = await this.courseService.update({
+                  ...data,
+                  userId,
+                });
+                if (updatedCourse) {
+                  await bot.sendMessage(
+                    chatId,
+                    `🎉 Congrats! Your ${data.name} course has been successfully updated! 🌟`,
+                  );
+                } else {
+                  await bot.sendMessage(
+                    chatId,
+                    TRY_AGAIN_ERROR,
+                    this.utilsService.getRetryOptions(),
+                  );
+                }
+                break;
+              // If nothing
+              default:
+                await bot.sendMessage(chatId, 'Okay');
+            }
+            break;
+          case MODULE:
+            switch (data.method) {
+              // Create module
+              case CREATE:
+                const createdModule = await this.moduleService.create({
+                  ...data,
+                  userId,
+                });
+                if (createdModule) {
+                  await bot.sendMessage(
+                    chatId,
+                    `🎉 Congrats! Your ${data.name} module is ready! 🌟`,
+                  );
+                } else {
+                  await bot.sendMessage(
+                    chatId,
+                    TRY_AGAIN_ERROR,
+                    this.utilsService.getRetryOptions(),
+                  );
+                }
+                break;
+              // Update module
+              case UPDATE:
+                const updatedModule = await this.moduleService.update({
+                  ...data,
+                  userId,
+                });
+                if (updatedModule) {
+                  await bot.sendMessage(
+                    chatId,
+                    `🎉 Congrats! Your ${data.name} module has been successfully updated! 🌟`,
+                  );
+                } else {
+                  await bot.sendMessage(
+                    chatId,
+                    TRY_AGAIN_ERROR,
+                    this.utilsService.getRetryOptions(),
+                  );
+                }
+                break;
+              // If nothing
+              default:
+                await bot.sendMessage(chatId, 'Okay');
+            }
+            break;
+          case LESSON:
+            switch (data.method) {
+              // Create lesson
+              case CREATE:
+                const createdLesson = await this.lessonService.create({
+                  ...data,
+                  userId,
+                });
+                if (createdLesson) {
+                  await bot.sendMessage(
+                    chatId,
+                    `🎉 Congrats! Your ${data.name} lesson is ready! 🌟`,
+                  );
+                } else {
+                  await bot.sendMessage(
+                    chatId,
+                    TRY_AGAIN_ERROR,
+                    this.utilsService.getRetryOptions(),
+                  );
+                }
+                break;
+              // Update lesson
+              case UPDATE:
+                const updatedLesson = await this.lessonService.update({
+                  ...data,
+                  userId,
+                });
+                if (updatedLesson) {
+                  await bot.sendMessage(
+                    chatId,
+                    `🎉 Congrats! Your ${data.name} lesson has been successfully updated! 🌟`,
+                  );
+                } else {
+                  await bot.sendMessage(
+                    chatId,
+                    TRY_AGAIN_ERROR,
+                    this.utilsService.getRetryOptions(),
+                  );
+                }
+                break;
+              // If nothing
+              default:
+                await bot.sendMessage(chatId, 'Okay');
+            }
+            break;
         }
       }
     });

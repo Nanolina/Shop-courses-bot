@@ -1,27 +1,9 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Param,
-  Patch,
-  Post,
-} from '@nestjs/common';
-import { CreateLessonDto } from './dto/create-lesson.dto';
-import { UpdateLessonDto } from './dto/update-lesson.dto';
+import { Controller, Get, Param } from '@nestjs/common';
 import { LessonService } from './lesson.service';
 
 @Controller()
 export class LessonController {
   constructor(private readonly lessonService: LessonService) {}
-
-  @Post('module/:moduleId/lesson')
-  create(
-    @Param('moduleId') moduleId: string,
-    @Body() createLessonDto: CreateLessonDto,
-  ) {
-    return this.lessonService.create(moduleId, createLessonDto);
-  }
 
   @Get('module/:moduleId/lesson')
   findAll(@Param('moduleId') moduleId: string) {
@@ -31,18 +13,5 @@ export class LessonController {
   @Get('lesson/:lessonId')
   findOne(@Param('lessonId') lessonId: string) {
     return this.lessonService.findOne(lessonId);
-  }
-
-  @Patch('lesson/:lessonId')
-  update(
-    @Param('lessonId') lessonId: string,
-    @Body() updateLessonDto: UpdateLessonDto,
-  ) {
-    return this.lessonService.update(lessonId, updateLessonDto);
-  }
-
-  @Delete('lesson/:lessonId')
-  remove(@Param('lessonId') lessonId: string) {
-    return this.lessonService.remove(lessonId);
   }
 }

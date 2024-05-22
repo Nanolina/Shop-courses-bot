@@ -3,10 +3,15 @@ import {
   IsNumber,
   IsOptional,
   IsString,
+  IsUUID,
   IsUrl,
 } from 'class-validator';
 
 export class CourseUpdatedDto {
+  @IsDefined()
+  @IsUUID()
+  courseId: string;
+
   @IsOptional()
   @IsString()
   name?: string;

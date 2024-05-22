@@ -11,7 +11,7 @@ export class ModuleService {
     private readonly logger: MyLogger,
   ) {}
 
-  async create(courseId: string, dto: CreateModuleDto) {
+  async create(dto: CreateModuleDto) {
     try {
       return await this.prisma.module.create({
         data: {
@@ -20,7 +20,10 @@ export class ModuleService {
           imageUrl: dto.imageUrl,
           course: {
             connect: {
-              id: courseId,
+              id: dto.courseId,
+              user: {
+                tgId: dto.userId,
+              },
             },
           },
         },
@@ -50,11 +53,16 @@ export class ModuleService {
     });
   }
 
-  async update(moduleId: string, dto: UpdateModuleDto) {
+  async update(dto: UpdateModuleDto) {
     try {
       return await this.prisma.module.update({
         where: {
-          id: moduleId,
+          id: dto.moduleId,
+          course: {
+            user: {
+              tgId: dto.userId,
+            },
+          },
         },
         data: {
           name: dto.name,
@@ -71,11 +79,16 @@ export class ModuleService {
     }
   }
 
-  async remove(moduleId: string) {
+  async remove(moduleId: string, userId: number) {
     try {
       return await this.prisma.module.delete({
         where: {
           id: moduleId,
+          course: {
+            user: {
+              tgId: userId,
+            },
+          },
         },
       });
     } catch (error) {

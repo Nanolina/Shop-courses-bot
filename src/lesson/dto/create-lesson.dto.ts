@@ -1,6 +1,17 @@
-import { IsDefined, IsOptional, IsString, IsUrl } from 'class-validator';
+import {
+  IsDefined,
+  IsNumber,
+  IsOptional,
+  IsString,
+  IsUUID,
+  IsUrl,
+} from 'class-validator';
 
 export class CreateLessonDto {
+  @IsDefined()
+  @IsUUID()
+  moduleId: string;
+
   @IsDefined()
   @IsString()
   name: string;
@@ -16,4 +27,8 @@ export class CreateLessonDto {
   @IsDefined()
   @IsUrl()
   videoUrl: string;
+
+  @IsDefined()
+  @IsNumber()
+  userId: number;
 }
