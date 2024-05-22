@@ -55,12 +55,17 @@ export class CourseService {
   }
 
   async findAllCreatedCoursesByUser(userId: string) {
-    return await this.prisma.course.findMany({
+    const courses = await this.prisma.course.findMany({
       where: {
-        userId: parseInt(userId),
+        userId: BigInt(userId),
       },
       ...include,
     });
+
+    return courses.map((course) => ({
+      ...course,
+      userId: Number(course.userId), // Converting BigInt to a number
+    }));
   }
 
   async findOne(id: string) {
