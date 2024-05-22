@@ -20,7 +20,7 @@ async function main() {
             currency: 'TON',
             imageUrl:
               'https://www.shutterstock.com/image-vector/blockchain-line-icon-logo-concept-600nw-754816570.jpg',
-            imagePublicId: 'blockchain-course-image',
+
             walletAddressSeller:
               '0:12ee206614c0d755460d0728d875c6ce46065c138b1d2ce5d1524b5f74715d61',
             modules: {
@@ -30,7 +30,6 @@ async function main() {
                   description: 'Learn the basics of blockchain technology.',
                   imageUrl:
                     'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR6MmvPhkG-_lZiUw-isUoDWkIrKN-Q5jb84Bpl60ZYqw&s',
-                  imagePublicId: 'module-image',
                   lessons: {
                     create: [
                       {
@@ -38,7 +37,7 @@ async function main() {
                         description: 'Learn the Tact language',
                         imageUrl:
                           'https://docs.tact-lang.org/_next/static/media/banner.0c18b672.jpeg',
-                        imagePublicId: 'lesson-image',
+                        videoUrl: 'https://www.youtube.com/watch?v=a3Jyy-z4Kmo',
                       },
                     ],
                   },

@@ -15,9 +15,14 @@ export class ModuleService {
     try {
       return await this.prisma.module.create({
         data: {
-          courseId,
           name: dto.name,
           description: dto.description,
+          imageUrl: dto.imageUrl,
+          course: {
+            connect: {
+              id: courseId,
+            },
+          },
         },
       });
     } catch (error) {
@@ -54,6 +59,7 @@ export class ModuleService {
         data: {
           name: dto.name,
           description: dto.description,
+          imageUrl: dto.imageUrl,
         },
       });
     } catch (error) {
