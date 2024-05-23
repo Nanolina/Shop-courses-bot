@@ -131,7 +131,7 @@ export class CourseService {
   async delete(dto: DeleteCourseDto) {
     try {
       // Course
-      await this.prisma.course.update({
+      const deletedCourse = await this.prisma.course.update({
         where: {
           id: dto.id,
           user: {
@@ -168,6 +168,8 @@ export class CourseService {
           },
         },
       });
+
+      return deletedCourse;
     } catch (error) {
       this.logger.error({ method: 'course-delete', error: error?.message });
       return null;
