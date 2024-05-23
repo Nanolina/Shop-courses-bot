@@ -15,6 +15,11 @@ export class CourseController {
     return this.courseService.findAllCreatedCoursesByUser(userId);
   }
 
+  @Get('category/:category')
+  findAllCoursesOneCategory(@Param('category') category: string) {
+    return this.courseService.findAllCoursesOneCategory(category);
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.courseService.findOne(id);
