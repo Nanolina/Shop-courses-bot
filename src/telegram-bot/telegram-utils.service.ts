@@ -38,7 +38,7 @@ export class TelegramUtilsService {
     switch (type) {
       case 'create':
         url = `${webAppUrl}/course/create`;
-        text = '📝 Create';
+        text = '🎓 Create New Course';
         replyMarkup = {
           keyboard: [[{ text, web_app: { url } }]],
           resize_keyboard: true,
@@ -47,7 +47,7 @@ export class TelegramUtilsService {
       case 'mycreatedcourses':
         if (!userId) break;
         url = `${webAppUrl}/course/user/${userId}`;
-        text = 'Press me to see your courses';
+        text = '📚 View My Courses';
         replyMarkup = {
           keyboard: [[{ text, web_app: { url } }]],
           resize_keyboard: true,
@@ -55,18 +55,9 @@ export class TelegramUtilsService {
         break;
       case 'start':
         url = webAppUrl;
-        text = '📚 View courses';
+        text = '🌟 Explore Courses';
         replyMarkup = {
           inline_keyboard: [[{ text, web_app: { url } }]],
-        };
-        break;
-      case 'module':
-      default:
-        url = `${webAppUrl}/module`;
-        text = '📝 Create modules';
-        replyMarkup = {
-          keyboard: [[{ text, web_app: { url } }]],
-          resize_keyboard: true,
         };
         break;
     }
