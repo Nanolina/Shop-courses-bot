@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { MyLogger } from '../logger/my-logger.service';
 import { PrismaService } from '../prisma/prisma.service';
-import { CourseCreatedDto, CourseUpdatedDto } from './dto';
+import { CreateCourseDto, DeleteCourseDto, UpdateCourseDto } from './dto';
 
 const include = {
   include: {
@@ -20,7 +20,7 @@ export class CourseService {
     private readonly logger: MyLogger,
   ) {}
 
-  async create(dto: CourseCreatedDto) {
+  async create(dto: CreateCourseDto) {
     try {
       return await this.prisma.course.create({
         data: {
@@ -45,7 +45,7 @@ export class CourseService {
         },
       });
     } catch (error) {
-      this.logger.error({ method: 'course-create', error });
+      this.logger.error({ method: 'course-create', error: error?.message });
       return null;
     }
   }
@@ -79,7 +79,7 @@ export class CourseService {
     });
   }
 
-  async update(dto: CourseUpdatedDto) {
+  async update(dto: UpdateCourseDto) {
     try {
       return await this.prisma.course.update({
         where: {
@@ -100,7 +100,23 @@ export class CourseService {
         },
       });
     } catch (error) {
-      this.logger.error({ method: 'course-update', error });
+      this.logger.error({ method: 'course-update', error: error?.message });
+      return null;
+    }
+  }
+
+  async delete(dto: DeleteCourseDto) {
+    try {
+      return await this.prisma.course.delete({
+        where: {
+          id: dto.courseId,
+          user: {
+            tgId: dto.userId,
+          },
+        },
+      });
+    } catch (error) {
+      this.logger.error({ method: 'course-delete', error: error?.message });
       return null;
     }
   }

@@ -129,6 +129,7 @@ export class TelegramListenersService {
                 const createdModule = await this.moduleService.create({
                   ...data,
                   userId,
+                  courseId: data.parentId,
                 });
                 if (createdModule) {
                   await bot.sendMessage(
@@ -148,6 +149,7 @@ export class TelegramListenersService {
                 const updatedModule = await this.moduleService.update({
                   ...data,
                   userId,
+                  courseId: data.parentId,
                 });
                 if (updatedModule) {
                   await bot.sendMessage(
@@ -174,6 +176,7 @@ export class TelegramListenersService {
                 const createdLesson = await this.lessonService.create({
                   ...data,
                   userId,
+                  moduleId: data.parentId,
                 });
                 if (createdLesson) {
                   await bot.sendMessage(
@@ -193,6 +196,7 @@ export class TelegramListenersService {
                 const updatedLesson = await this.lessonService.update({
                   ...data,
                   userId,
+                  moduleId: data.parentId,
                 });
                 if (updatedLesson) {
                   await bot.sendMessage(
