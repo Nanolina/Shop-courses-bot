@@ -54,6 +54,14 @@ export class CourseService {
     return await this.prisma.course.findMany(include);
   }
 
+  async findAllCoursesOneCategory(category: string) {
+    return await this.prisma.course.findMany({
+      where: {
+        category,
+      },
+    });
+  }
+
   async findAllCreatedCoursesByUser(userId: string) {
     const courses = await this.prisma.course.findMany({
       where: {
