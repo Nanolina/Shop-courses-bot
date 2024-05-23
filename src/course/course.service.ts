@@ -79,6 +79,21 @@ export class CourseService {
     });
   }
 
+  async findWithCount(id: string) {
+    return await this.prisma.course.findFirst({
+      where: {
+        id,
+      },
+      include: {
+        _count: {
+          select: {
+            modules: true,
+          },
+        },
+      },
+    });
+  }
+
   async update(dto: UpdateCourseDto) {
     try {
       return await this.prisma.course.update({
@@ -107,11 +122,41 @@ export class CourseService {
 
   async delete(dto: DeleteCourseDto) {
     try {
-      return await this.prisma.course.delete({
+      // Course
+      await this.prisma.course.update({
         where: {
-          id: dto.courseId,
+          id: dto.id,
           user: {
             tgId: dto.userId,
+          },
+        },
+        data: {
+          isActive: false,
+        },
+      });
+
+      // Modules
+      await this.prisma.module.deleteMany({
+        where: {
+          course: {
+            id: dto.id,
+            user: {
+              tgId: dto.userId,
+            },
+          },
+        },
+      });
+
+      // Lessons
+      await this.prisma.lesson.deleteMany({
+        where: {
+          module: {
+            course: {
+              id: dto.id,
+              user: {
+                tgId: dto.userId,
+              },
+            },
           },
         },
       });

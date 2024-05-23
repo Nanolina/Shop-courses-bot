@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import * as TelegramBot from 'node-telegram-bot-api';
-import { COURSE, CREATE, LESSON, MODULE, UPDATE } from '../consts';
+import { COURSE, CREATE, DELETE, LESSON, MODULE, UPDATE } from '../consts';
 import { CourseService } from '../course/course.service';
 import { LessonService } from '../lesson/lesson.service';
 import { ModuleService } from '../module/module.service';
@@ -117,6 +117,31 @@ export class TelegramListenersService {
                   );
                 }
                 break;
+              // Delete course
+              case DELETE:
+                const course = await this.courseService.findWithCount(data.id);
+                const modulesCount =
+                  course._count.modules > 0 ? course._count.modules : '';
+                const modulesPlural =
+                  course._count.modules > 1 ? 'modules' : 'module';
+                await bot.sendMessage(
+                  chatId,
+                  `Are you sure you want to delete the course ${course.name}? ${modulesCount ? `You have ${modulesCount} ${modulesPlural}. In this case, all modules and lessons belonging to this course will be deleted and cannot be restored` : ''}`,
+                  {
+                    reply_markup: {
+                      inline_keyboard: [
+                        [
+                          {
+                            text: 'YES',
+                            callback_data: `course delete ${data.id}`,
+                          },
+                        ],
+                        [{ text: 'NO', callback_data: 'nothing' }],
+                      ],
+                    },
+                  },
+                );
+                break;
               // If nothing
               default:
                 await bot.sendMessage(chatId, 'Okay');
@@ -223,14 +248,50 @@ export class TelegramListenersService {
     bot.on('callback_query', async (callbackQuery) => {
       const { message, data } = callbackQuery;
       const chatId = message.chat.id;
+      const userId = message.from.id;
       console.log('message', message);
-      const webAppUrl = this.utilsService.getWebUrl(message.userId);
+      const webAppUrl = this.utilsService.getWebUrl(userId);
       if (data === '/create') {
         await bot.sendMessage(
           chatId,
           '📝 Let’s start creating your new course! 🎨',
           this.utilsService.getOptions('create', webAppUrl),
         );
+      }
+
+      const arrData = data.split(' ');
+      const type = arrData[0];
+      const method = arrData[1];
+      const id = arrData[2];
+
+      switch (type) {
+        case COURSE:
+          switch (method) {
+            case DELETE:
+              const deletedCourse = await this.courseService.delete({
+                id,
+                userId,
+              });
+
+              if (deletedCourse) {
+                await bot.sendMessage(
+                  chatId,
+                  `🎉 Congrats! Your ${data.name} course with all modules and lessons has been successfully deleted 🌟`,
+                );
+              } else {
+                await bot.sendMessage(
+                  chatId,
+                  TRY_AGAIN_ERROR,
+                  this.utilsService.getRetryOptions(),
+                );
+              }
+              break;
+            default:
+              console.log('No entry 1');
+          }
+          break;
+        default:
+          console.log('No entry 2');
       }
     });
   }

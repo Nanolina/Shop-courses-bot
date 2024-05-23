@@ -3,7 +3,7 @@ import { IsDefined, IsNumber, IsUUID } from 'class-validator';
 export class DeleteCourseDto {
   @IsDefined()
   @IsUUID()
-  courseId: string;
+  id: string;
 
   @IsDefined()
   @IsNumber()
