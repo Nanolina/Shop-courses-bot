@@ -21,6 +21,7 @@ export class TelegramListenersService {
       const { chat, from, text, web_app_data } = msg;
       const chatId = chat.id;
       const userId = from.id;
+      console.log('msg', msg);
       const dataFromWeb = web_app_data?.data;
       const webAppUrl = this.utilsService.getWebUrl(userId);
 
@@ -136,7 +137,7 @@ export class TelegramListenersService {
                             callback_data: `course delete ${data.id}`,
                           },
                         ],
-                        [{ text: 'NO', callback_data: 'nothing' }],
+                        [{ text: 'NO', callback_data: '/mycreatedcourses' }],
                       ],
                     },
                   },
@@ -246,16 +247,23 @@ export class TelegramListenersService {
     });
 
     bot.on('callback_query', async (callbackQuery) => {
-      const { message, data } = callbackQuery;
+      const { message, data, from } = callbackQuery;
+      console.log('callbackQuery', callbackQuery);
       const chatId = message.chat.id;
-      const userId = message.from.id;
-      console.log('message', message);
+      const userId = from.id;
       const webAppUrl = this.utilsService.getWebUrl(userId);
       if (data === '/create') {
         await bot.sendMessage(
           chatId,
           '📝 Let’s start creating your new course! 🎨',
           this.utilsService.getOptions('create', webAppUrl),
+        );
+      }
+      if (data === '/mycreatedcourses') {
+        await bot.sendMessage(
+          chatId,
+          'Go back',
+          this.utilsService.getOptions('mycreatedcourses', webAppUrl, userId),
         );
       }
 
@@ -276,7 +284,7 @@ export class TelegramListenersService {
               if (deletedCourse) {
                 await bot.sendMessage(
                   chatId,
-                  `🎉 Congrats! Your ${data.name} course with all modules and lessons has been successfully deleted 🌟`,
+                  `🎉 Congrats! Your ${deletedCourse.name} course with all modules and lessons has been successfully deleted 🌟`,
                 );
               } else {
                 await bot.sendMessage(
