@@ -1,26 +1,16 @@
-import { Injectable } from '@nestjs/common';
-import { MyLogger } from '../logger/my-logger.service';
-import { PrismaService } from '../prisma/prisma.service';
-import { CreateCourseDto, DeleteCourseDto, UpdateCourseDto } from './dto';
-
-const include = {
-  include: {
-    modules: {
-      include: {
-        lessons: true,
-      },
-    },
-  },
-};
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { MyLogger } from '../../logger/my-logger.service';
+import { PrismaService } from '../../prisma/prisma.service';
+import { CreateCourseDto, UpdateCourseDto } from '../dto';
 
 @Injectable()
-export class CourseService {
+export class CourseSellerService {
   constructor(
     private prisma: PrismaService,
     private readonly logger: MyLogger,
   ) {}
 
-  async create(dto: CreateCourseDto) {
+  async create(userId: number, dto: CreateCourseDto) {
     try {
       return await this.prisma.course.create({
         data: {
@@ -35,10 +25,10 @@ export class CourseService {
           user: {
             connectOrCreate: {
               where: {
-                id: dto.userId,
+                id: userId,
               },
               create: {
-                id: dto.userId,
+                id: userId,
               },
             },
           },
@@ -46,65 +36,36 @@ export class CourseService {
       });
     } catch (error) {
       this.logger.error({ method: 'course-create', error: error?.message });
-      return null;
+      throw new InternalServerErrorException(
+        'Failed to create the course',
+        error?.message,
+      );
     }
   }
 
-  async findAll() {
-    return await this.prisma.course.findMany(include);
-  }
-
-  async findAllCoursesOneCategory(category: string) {
+  async findAllCreatedCourses(userId: number) {
     return await this.prisma.course.findMany({
       where: {
-        category,
+        userId,
       },
     });
   }
 
-  async findAllCreatedCoursesByUser(userId: number) {
-    return await this.prisma.course.findMany({
-      where: {
-        user: {
-          id: userId,
-        },
-      },
-      ...include,
-    });
-  }
-
-  async findOne(id: string) {
+  async findOneCreatedCourse(id: string, userId: number) {
     return await this.prisma.course.findFirst({
       where: {
         id,
-      },
-      ...include,
-    });
-  }
-
-  async findWithCount(id: string) {
-    return await this.prisma.course.findFirst({
-      where: {
-        id,
-      },
-      include: {
-        _count: {
-          select: {
-            modules: true,
-          },
-        },
+        userId,
       },
     });
   }
 
-  async update(dto: UpdateCourseDto) {
+  async update(id: string, userId: number, dto: UpdateCourseDto) {
     try {
       return await this.prisma.course.update({
         where: {
-          id: dto.courseId,
-          user: {
-            id: dto.userId,
-          },
+          id,
+          userId,
         },
         data: {
           name: dto.name,
@@ -119,19 +80,20 @@ export class CourseService {
       });
     } catch (error) {
       this.logger.error({ method: 'course-update', error: error?.message });
-      return null;
+      throw new InternalServerErrorException(
+        'Failed to update the course',
+        error?.message,
+      );
     }
   }
 
-  async delete(dto: DeleteCourseDto) {
+  async delete(id: string, userId: number) {
     try {
       // Course
       const deletedCourse = await this.prisma.course.update({
         where: {
-          id: dto.id,
-          user: {
-            id: dto.userId,
-          },
+          id,
+          userId,
         },
         data: {
           isActive: false,
@@ -142,10 +104,8 @@ export class CourseService {
       await this.prisma.module.deleteMany({
         where: {
           course: {
-            id: dto.id,
-            user: {
-              id: dto.userId,
-            },
+            id,
+            userId,
           },
         },
       });
@@ -155,10 +115,8 @@ export class CourseService {
         where: {
           module: {
             course: {
-              id: dto.id,
-              user: {
-                id: dto.userId,
-              },
+              id,
+              userId,
             },
           },
         },
@@ -167,7 +125,10 @@ export class CourseService {
       return deletedCourse;
     } catch (error) {
       this.logger.error({ method: 'course-delete', error: error?.message });
-      return null;
+      throw new InternalServerErrorException(
+        'Failed to delete the course',
+        error?.message,
+      );
     }
   }
 }

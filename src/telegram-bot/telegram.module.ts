@@ -3,12 +3,10 @@ import { ConfigModule } from '@nestjs/config';
 import { LessonService } from 'src/lesson/lesson.service';
 import { ModuleService } from 'src/module/module.service';
 import { CourseModule } from '../course/course.module';
-import { CourseService } from '../course/course.service';
 import { LoggerModule } from '../logger/logger.module';
 import { PrismaService } from '../prisma/prisma.service';
 import {
   CallbackQueryHandler,
-  CourseHandlers,
   LessonHandlers,
   ModuleHandlers,
   TextCommandHandler,
@@ -24,10 +22,8 @@ import { TelegramUtilsService } from './telegram-utils.service';
     TelegramListenersService,
     TelegramUtilsService,
     PrismaService,
-    CourseService,
     ModuleService,
     LessonService,
-    CourseHandlers,
     ModuleHandlers,
     LessonHandlers,
     TextCommandHandler,
