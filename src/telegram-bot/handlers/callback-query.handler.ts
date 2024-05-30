@@ -10,9 +10,7 @@ export class CallbackQueryHandler {
     callbackQuery: TelegramBot.CallbackQuery,
     bot: TelegramBot,
   ) {
-    const message = callbackQuery.message;
-    const data = callbackQuery.data;
-    const from = callbackQuery.from;
+    const { message, data, from } = callbackQuery;
     const chatId = message.chat.id;
     const userId = from.id;
     const webAppUrl = this.utilsService.getWebUrl(userId);
@@ -22,12 +20,6 @@ export class CallbackQueryHandler {
         chatId,
         `🖊️ Let's embark on the journey of creating your new course! Tap below to get started! 🚀`,
         this.utilsService.getOptions('create', webAppUrl),
-      );
-    } else if (data === '/mycreatedcourses') {
-      await bot.sendMessage(
-        chatId,
-        '👀 Looking to update your courses? Tap here to review and modify them! ✏️',
-        this.utilsService.getOptions('mycreatedcourses', webAppUrl, userId),
       );
     }
   }

@@ -9,7 +9,6 @@ export class TextCommandHandler {
   async handleTextCommand(
     text: string,
     chatId: number,
-    userId: number,
     bot: TelegramBot,
     webAppUrl: string,
   ) {
@@ -21,25 +20,26 @@ export class TextCommandHandler {
           this.utilsService.getOptions('create', webAppUrl),
         );
         break;
-      case '/mycreatedcourses':
+      case '/createdcourses':
         await bot.sendMessage(
           chatId,
           '🔧 Ready to tweak your existing courses? Just click here and make all the adjustments you need! ✍️',
-          this.utilsService.getOptions('mycreatedcourses', webAppUrl, userId),
+          this.utilsService.getOptions('createdcourses', webAppUrl),
+        );
+        break;
+      case '/purchasedcourses':
+        await bot.sendMessage(
+          chatId,
+          '📘 Here are the courses you’ve purchased! Click here to explore them. 🚀',
+          this.utilsService.getOptions('purchasedcourses', webAppUrl),
         );
         break;
       case '/start':
+      default:
         await bot.sendMessage(
           chatId,
           '🚀 Eager to explore new learning opportunities? Click here to start your journey through our diverse course offerings! 🎓',
           this.utilsService.getOptions('start', webAppUrl),
-        );
-        break;
-      case '/module':
-        await bot.sendMessage(
-          chatId,
-          '🧩 Thinking of expanding your course with new modules? Click here and let’s build more engaging content together! 🛠️',
-          this.utilsService.getOptions('module', webAppUrl),
         );
         break;
     }

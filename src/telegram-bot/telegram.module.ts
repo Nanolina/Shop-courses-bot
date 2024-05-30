@@ -1,8 +1,5 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { LessonService } from 'src/lesson/lesson.service';
-import { ModuleService } from 'src/module/module.service';
-import { CourseModule } from '../course/course.module';
 import { LoggerModule } from '../logger/logger.module';
 import { PrismaService } from '../prisma/prisma.service';
 import { CallbackQueryHandler, TextCommandHandler } from './handlers';
@@ -11,14 +8,12 @@ import { TelegramListenersService } from './telegram-listeners.service';
 import { TelegramUtilsService } from './telegram-utils.service';
 
 @Module({
-  imports: [ConfigModule, CourseModule, LoggerModule],
+  imports: [ConfigModule, LoggerModule],
   providers: [
     TelegramBotService,
     TelegramListenersService,
     TelegramUtilsService,
     PrismaService,
-    ModuleService,
-    LessonService,
     TextCommandHandler,
     CallbackQueryHandler,
   ],

@@ -7,7 +7,6 @@ import { TelegramUtilsService } from './telegram-utils.service';
 export class TelegramListenersService {
   constructor(
     private utilsService: TelegramUtilsService,
-
     private textCommandHandler: TextCommandHandler,
     private callbackQueryHandler: CallbackQueryHandler,
   ) {}
@@ -31,7 +30,6 @@ export class TelegramListenersService {
       await this.textCommandHandler.handleTextCommand(
         text,
         chatId,
-        userId,
         bot,
         webAppUrl,
       );
