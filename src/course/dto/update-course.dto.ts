@@ -1,17 +1,6 @@
-import {
-  IsDefined,
-  IsNumber,
-  IsOptional,
-  IsString,
-  IsUUID,
-  IsUrl,
-} from 'class-validator';
+import { IsNumber, IsOptional, IsString, IsUrl } from 'class-validator';
 
 export class UpdateCourseDto {
-  @IsDefined()
-  @IsUUID()
-  courseId: string;
-
   @IsOptional()
   @IsString()
   name?: string;
@@ -43,8 +32,4 @@ export class UpdateCourseDto {
   @IsOptional()
   @IsUrl()
   imageUrl?: string;
-
-  @IsDefined()
-  @IsNumber()
-  userId: number;
 }

@@ -38,8 +38,4 @@ export class CreateCourseDto {
   @IsOptional()
   @IsUrl()
   imageUrl?: string;
-
-  @IsDefined()
-  @IsNumber()
-  userId: number;
 }
