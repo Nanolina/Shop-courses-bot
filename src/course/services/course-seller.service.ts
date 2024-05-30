@@ -37,7 +37,7 @@ export class CourseSellerService {
     } catch (error) {
       this.logger.error({ method: 'course-create', error: error?.message });
       throw new InternalServerErrorException(
-        'Failed to create the course',
+        'Failed to create course',
         error?.message,
       );
     }
@@ -47,6 +47,7 @@ export class CourseSellerService {
     return await this.prisma.course.findMany({
       where: {
         userId,
+        isActive: true,
       },
     });
   }
@@ -56,6 +57,7 @@ export class CourseSellerService {
       where: {
         id,
         userId,
+        isActive: true,
       },
     });
   }
@@ -66,6 +68,7 @@ export class CourseSellerService {
         where: {
           id,
           userId,
+          isActive: true,
         },
         data: {
           name: dto.name,
@@ -81,7 +84,7 @@ export class CourseSellerService {
     } catch (error) {
       this.logger.error({ method: 'course-update', error: error?.message });
       throw new InternalServerErrorException(
-        'Failed to update the course',
+        'Failed to update course',
         error?.message,
       );
     }
@@ -90,7 +93,7 @@ export class CourseSellerService {
   async delete(id: string, userId: number) {
     try {
       // Course
-      const deletedCourse = await this.prisma.course.update({
+      await this.prisma.course.update({
         where: {
           id,
           userId,
@@ -122,11 +125,11 @@ export class CourseSellerService {
         },
       });
 
-      return deletedCourse;
+      return true;
     } catch (error) {
       this.logger.error({ method: 'course-delete', error: error?.message });
       throw new InternalServerErrorException(
-        'Failed to delete the course',
+        'Failed to delete course',
         error?.message,
       );
     }

@@ -1,11 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import * as TelegramBot from 'node-telegram-bot-api';
-import { CREATE, LESSON, MODULE, UPDATE } from '../consts';
+import { CREATE, LESSON, UPDATE } from '../consts';
 import { TRY_AGAIN_ERROR } from './consts';
 import {
   CallbackQueryHandler,
   LessonHandlers,
-  ModuleHandlers,
   TextCommandHandler,
 } from './handlers';
 import { TelegramUtilsService } from './telegram-utils.service';
@@ -14,24 +13,11 @@ import { TelegramUtilsService } from './telegram-utils.service';
 export class TelegramListenersService {
   constructor(
     private utilsService: TelegramUtilsService,
-    private moduleHandlers: ModuleHandlers,
+
     private lessonHandlers: LessonHandlers,
     private textCommandHandler: TextCommandHandler,
     private callbackQueryHandler: CallbackQueryHandler,
   ) {}
-
-  async handleModuleData(data, chatId, userId, bot) {
-    switch (data.method) {
-      case CREATE:
-        await this.moduleHandlers.handleCreateModule(chatId, userId, data, bot);
-        break;
-      case UPDATE:
-        await this.moduleHandlers.handleUpdateModule(chatId, userId, data, bot);
-        break;
-      default:
-        await bot.sendMessage(chatId, 'Okay');
-    }
-  }
 
   async handleLessonData(data, chatId, userId, bot) {
     switch (data.method) {
@@ -85,9 +71,6 @@ export class TelegramListenersService {
         }
 
         switch (data.type) {
-          case MODULE:
-            this.handleModuleData(data, chatId, userId, bot);
-            break;
           case LESSON:
             this.handleLessonData(data, chatId, userId, bot);
             break;

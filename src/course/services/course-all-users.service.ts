@@ -10,13 +10,18 @@ export class CourseAllUsersService {
   ) {}
 
   async findAll() {
-    return await this.prisma.course.findMany();
+    return await this.prisma.course.findMany({
+      where: {
+        isActive: true,
+      },
+    });
   }
 
   async findAllCoursesOneCategory(category: string) {
     return await this.prisma.course.findMany({
       where: {
         category,
+        isActive: true,
       },
     });
   }
@@ -25,6 +30,7 @@ export class CourseAllUsersService {
     return await this.prisma.course.findFirst({
       where: {
         id,
+        isActive: true,
       },
       include: {
         _count: {

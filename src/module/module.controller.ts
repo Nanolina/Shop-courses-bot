@@ -1,17 +1,61 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Param,
+  Patch,
+  Post,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
+import { Request } from 'express';
+import { AuthGuard } from '../auth/auth.guard';
+import { CreateModuleDto, UpdateModuleDto } from './dto';
 import { ModuleService } from './module.service';
 
-@Controller()
+@Controller('module')
 export class ModuleController {
   constructor(private readonly moduleService: ModuleService) {}
 
-  @Get('course/:courseId/module')
-  findAll(@Param('courseId') courseId: string) {
-    return this.moduleService.findAll(courseId);
+  @Get('course/:courseId')
+  @UseGuards(AuthGuard)
+  findAll(@Req() req: Request, @Param('courseId') courseId: string) {
+    return this.moduleService.findAll(courseId, req.user.id);
   }
 
-  @Get('module/:moduleId')
-  findOne(@Param('moduleId') moduleId: string) {
-    return this.moduleService.findOne(moduleId);
+  @Post('course/:courseId')
+  @HttpCode(HttpStatus.CREATED)
+  @UseGuards(AuthGuard)
+  create(
+    @Req() req: Request,
+    @Param('courseId') courseId: string,
+    @Body() createModuleDto: CreateModuleDto,
+  ) {
+    return this.moduleService.create(courseId, req.user.id, createModuleDto);
+  }
+
+  @Get(':id')
+  @UseGuards(AuthGuard)
+  findOne(@Req() req: Request, @Param('id') id: string) {
+    return this.moduleService.findOne(id, req.user.id);
+  }
+
+  @Patch(':id')
+  @UseGuards(AuthGuard)
+  update(
+    @Req() req: Request,
+    @Param('id') id: string,
+    @Body() updateModuleDto: UpdateModuleDto,
+  ) {
+    return this.moduleService.update(id, req.user.id, updateModuleDto);
+  }
+
+  @Delete(':id')
+  @UseGuards(AuthGuard)
+  delete(@Req() req: Request, @Param('id') id: string) {
+    return this.moduleService.delete(id, req.user.id);
   }
 }

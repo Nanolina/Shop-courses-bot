@@ -8,7 +8,6 @@ import { PrismaService } from '../prisma/prisma.service';
 import {
   CallbackQueryHandler,
   LessonHandlers,
-  ModuleHandlers,
   TextCommandHandler,
 } from './handlers';
 import { TelegramBotService } from './telegram-bot.service';
@@ -24,7 +23,6 @@ import { TelegramUtilsService } from './telegram-utils.service';
     PrismaService,
     ModuleService,
     LessonService,
-    ModuleHandlers,
     LessonHandlers,
     TextCommandHandler,
     CallbackQueryHandler,
