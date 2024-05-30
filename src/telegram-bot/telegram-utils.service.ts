@@ -40,17 +40,15 @@ export class TelegramUtilsService {
         url = `${webAppUrl}/course/create`;
         text = '🎓 Create New Course';
         replyMarkup = {
-          keyboard: [[{ text, web_app: { url } }]],
-          resize_keyboard: true,
+          inline_keyboard: [[{ text, web_app: { url } }]],
         };
         break;
       case 'mycreatedcourses':
         if (!userId) break;
-        url = `${webAppUrl}/course/user/${userId}`;
+        url = `${webAppUrl}/course/user`;
         text = '📚 View My Courses';
         replyMarkup = {
-          keyboard: [[{ text, web_app: { url } }]],
-          resize_keyboard: true,
+          inline_keyboard: [[{ text, web_app: { url } }]],
         };
         break;
       case 'start':

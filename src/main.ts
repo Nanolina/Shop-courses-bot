@@ -29,6 +29,12 @@ async function bootstrap() {
   // Validation
   app.useGlobalPipes(new ValidationPipe());
 
+  // For userId type
+  BigInt.prototype.toJSON = function () {
+    const int = Number.parseInt(this.toString());
+    return int ?? this.toString();
+  };
+
   // Listen
   const port = configService.get<number>('PORT') || 8000;
   await app.listen(port);
