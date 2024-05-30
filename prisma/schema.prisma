@@ -8,8 +8,7 @@ datasource db {
 }
 
 model User {
-  id        String           @id @default(uuid())
-  tgId      BigInt           @unique
+  id        BigInt           @id
   createdAt DateTime         @default(now())
   updatedAt DateTime         @updatedAt
   courses   Course[]
@@ -24,7 +23,7 @@ model Course {
   subcategory         String?
   price               Int
   currency            String
-  userId              String
+  userId              BigInt
   imageUrl            String?
   walletAddressSeller String
   isActive            Boolean          @default(true)
@@ -62,8 +61,8 @@ model Lesson {
 
 model CoursePurchase {
   id                    String   @id @default(uuid())
-  customerId            String
-  sellerId              String
+  customerId            BigInt
+  sellerId              BigInt
   courseId              String
   walletAddressSeller   String
   walletAddressCustomer String

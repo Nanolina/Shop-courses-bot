@@ -21,7 +21,7 @@ export class ModuleService {
             connect: {
               id: dto.courseId,
               user: {
-                tgId: dto.userId,
+                id: dto.userId,
               },
             },
           },
@@ -56,7 +56,7 @@ export class ModuleService {
           id: dto.moduleId,
           course: {
             user: {
-              tgId: dto.userId,
+              id: dto.userId,
             },
           },
         },
@@ -79,7 +79,7 @@ export class ModuleService {
           id: dto.moduleId,
           course: {
             user: {
-              tgId: dto.userId,
+              id: dto.userId,
             },
           },
         },

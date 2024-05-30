@@ -8,8 +8,7 @@ async function main() {
   // Creating a User Alina
   const userAlina = await prisma.user.create({
     data: {
-      id: 'ca5df41b-f2b0-4442-9c0b-943e2732fa02',
-      tgId: 1708576552,
+      id: 1708576552,
       courses: {
         create: [
           {
@@ -61,8 +60,7 @@ async function main() {
   // Creating a User Sneganna
   const userSneganna = await prisma.user.create({
     data: {
-      id: 'b63defae-f9e9-4e0f-b4f1-1a789c6e2617',
-      tgId: 5075565141,
+      id: 5075565141,
       courses: {
         create: [
           {

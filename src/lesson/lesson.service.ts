@@ -25,7 +25,7 @@ export class LessonService {
               id: dto.moduleId,
               course: {
                 user: {
-                  tgId: dto.userId,
+                  id: dto.userId,
                 },
               },
             },
@@ -62,7 +62,7 @@ export class LessonService {
           module: {
             course: {
               user: {
-                tgId: dto.userId,
+                id: dto.userId,
               },
             },
           },
@@ -88,7 +88,7 @@ export class LessonService {
           module: {
             course: {
               user: {
-                tgId: dto.userId,
+                id: dto.userId,
               },
             },
           },

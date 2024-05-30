@@ -1,4 +1,6 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import { Controller, Get, Param, Req, UseGuards } from '@nestjs/common';
+import { Request } from 'express';
+import { AuthGuard } from '../auth/auth.guard';
 import { CourseService } from './course.service';
 
 @Controller('course')
@@ -10,9 +12,10 @@ export class CourseController {
     return this.courseService.findAll();
   }
 
-  @Get('user/:userId')
-  findAllCreatedCoursesByUser(@Param('userId') userId: string) {
-    return this.courseService.findAllCreatedCoursesByUser(userId);
+  @Get('user')
+  @UseGuards(AuthGuard)
+  findAllCreatedCoursesByUser(@Req() req: Request) {
+    return this.courseService.findAllCreatedCoursesByUser(req.user.id);
   }
 
   @Get('category/:category')
