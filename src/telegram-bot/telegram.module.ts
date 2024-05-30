@@ -5,11 +5,7 @@ import { ModuleService } from 'src/module/module.service';
 import { CourseModule } from '../course/course.module';
 import { LoggerModule } from '../logger/logger.module';
 import { PrismaService } from '../prisma/prisma.service';
-import {
-  CallbackQueryHandler,
-  LessonHandlers,
-  TextCommandHandler,
-} from './handlers';
+import { CallbackQueryHandler, TextCommandHandler } from './handlers';
 import { TelegramBotService } from './telegram-bot.service';
 import { TelegramListenersService } from './telegram-listeners.service';
 import { TelegramUtilsService } from './telegram-utils.service';
@@ -23,7 +19,6 @@ import { TelegramUtilsService } from './telegram-utils.service';
     PrismaService,
     ModuleService,
     LessonService,
-    LessonHandlers,
     TextCommandHandler,
     CallbackQueryHandler,
   ],
