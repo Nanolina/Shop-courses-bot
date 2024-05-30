@@ -1,7 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { MyLogger } from '../logger/my-logger.service';
 import { PrismaService } from '../prisma/prisma.service';
-import { CreateModuleDto, DeleteModuleDto, UpdateModuleDto } from './dto';
+import { CreateModuleDto, UpdateModuleDto } from './dto';
 
 @Injectable()
 export class ModuleService {
@@ -10,7 +14,7 @@ export class ModuleService {
     private readonly logger: MyLogger,
   ) {}
 
-  async create(dto: CreateModuleDto) {
+  async create(courseId: string, userId: number, dto: CreateModuleDto) {
     try {
       return await this.prisma.module.create({
         data: {
@@ -19,45 +23,100 @@ export class ModuleService {
           imageUrl: dto.imageUrl,
           course: {
             connect: {
-              id: dto.courseId,
-              user: {
-                id: dto.userId,
-              },
+              id: courseId,
+              userId,
             },
           },
         },
       });
     } catch (error) {
       this.logger.error({ method: 'module-create', error: error?.message });
-      return null;
+      throw new InternalServerErrorException(
+        'Failed to create module',
+        error?.message,
+      );
     }
   }
 
-  async findAll(courseId: string) {
+  async findAll(courseId: string, userId: number) {
     return await this.prisma.module.findMany({
       where: {
-        courseId,
+        OR: [
+          // seller
+          {
+            course: {
+              id: courseId,
+              userId,
+            },
+          },
+
+          // customer
+          {
+            course: {
+              purchases: {
+                some: {
+                  courseId,
+                  customerId: userId,
+                },
+              },
+            },
+          },
+        ],
       },
     });
   }
 
-  async findOne(moduleId: string) {
+  async findOne(id: string, userId: number) {
+    const course = await this.prisma.course.findFirst({
+      where: {
+        modules: {
+          some: {
+            id,
+          },
+        },
+        isActive: true,
+      },
+    });
+
+    if (!course) {
+      throw new NotFoundException('Course not found');
+    }
+
     return await this.prisma.module.findFirst({
       where: {
-        id: moduleId,
+        id,
+        OR: [
+          // seller
+          {
+            course: {
+              id: course.id,
+              userId,
+            },
+          },
+
+          // customer
+          {
+            course: {
+              purchases: {
+                some: {
+                  courseId: course.id,
+                  customerId: userId,
+                },
+              },
+            },
+          },
+        ],
       },
     });
   }
 
-  async update(dto: UpdateModuleDto) {
+  async update(id: string, userId: number, dto: UpdateModuleDto) {
     try {
       return await this.prisma.module.update({
         where: {
-          id: dto.moduleId,
+          id,
           course: {
-            user: {
-              id: dto.userId,
-            },
+            userId,
           },
         },
         data: {
@@ -68,25 +127,29 @@ export class ModuleService {
       });
     } catch (error) {
       this.logger.error({ method: 'module-update', error: error?.message });
-      return null;
+      throw new InternalServerErrorException(
+        'Failed to update module',
+        error?.message,
+      );
     }
   }
 
-  async delete(dto: DeleteModuleDto) {
+  async delete(id: string, userId: number) {
     try {
       return await this.prisma.module.delete({
         where: {
-          id: dto.moduleId,
+          id,
           course: {
-            user: {
-              id: dto.userId,
-            },
+            userId,
           },
         },
       });
     } catch (error) {
       this.logger.error({ method: 'module-delete', error: error?.message });
-      return null;
+      throw new InternalServerErrorException(
+        'Failed to delete module',
+        error?.message,
+      );
     }
   }
 }

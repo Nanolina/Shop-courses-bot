@@ -29,8 +29,7 @@ export class TelegramUtilsService {
     }
   }
 
-  // sendData in the web app can work only for Keyboard button
-  getOptions(type: string, webAppUrl: string, userId?: number) {
+  getOptions(type: string, webAppUrl: string) {
     let url;
     let text;
     let replyMarkup;
@@ -43,15 +42,22 @@ export class TelegramUtilsService {
           inline_keyboard: [[{ text, web_app: { url } }]],
         };
         break;
-      case 'mycreatedcourses':
-        if (!userId) break;
-        url = `${webAppUrl}/course/user`;
-        text = '📚 View My Courses';
+      case 'createdcourses':
+        url = `${webAppUrl}/course/created`;
+        text = '📚 View My Created Courses';
+        replyMarkup = {
+          inline_keyboard: [[{ text, web_app: { url } }]],
+        };
+        break;
+      case 'purchasedcourses':
+        url = `${webAppUrl}/course/purchased`;
+        text = '📘 View My Purchased Courses';
         replyMarkup = {
           inline_keyboard: [[{ text, web_app: { url } }]],
         };
         break;
       case 'start':
+      default:
         url = webAppUrl;
         text = '🌟 Explore Courses';
         replyMarkup = {
@@ -61,20 +67,5 @@ export class TelegramUtilsService {
     }
 
     return { reply_markup: replyMarkup };
-  }
-
-  // Providing options for retrying the action or asking for help
-  getRetryOptions() {
-    const retryText = '🔄 Try again';
-    const helpText = '❓ Need help';
-
-    return {
-      reply_markup: {
-        inline_keyboard: [
-          [{ text: retryText, callback_data: 'retry' }],
-          [{ text: helpText, callback_data: 'help' }],
-        ],
-      },
-    };
   }
 }

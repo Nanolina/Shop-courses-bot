@@ -1,4 +1,8 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { MyLogger } from '../../logger/my-logger.service';
 import { PrismaService } from '../../prisma/prisma.service';
 import { PurchaseCourseDto } from '../dto';
@@ -31,8 +35,13 @@ export class CourseCustomerService {
     const course = await this.prisma.course.findFirst({
       where: {
         id,
+        isActive: true,
       },
     });
+
+    if (!course) {
+      throw new NotFoundException('Course not found');
+    }
 
     try {
       return await this.prisma.coursePurchase.create({
@@ -53,6 +62,7 @@ export class CourseCustomerService {
           course: {
             connect: {
               id,
+              isActive: true,
             },
           },
         },
@@ -60,7 +70,7 @@ export class CourseCustomerService {
     } catch (error) {
       this.logger.error({ method: 'course-purchase', error: error?.message });
       throw new InternalServerErrorException(
-        'Failed to purchase the course',
+        'Failed to purchase course',
         error?.message,
       );
     }

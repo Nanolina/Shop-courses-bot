@@ -1,7 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { MyLogger } from '../logger/my-logger.service';
 import { PrismaService } from '../prisma/prisma.service';
-import { DeleteLessonDto } from './dto';
 import { CreateLessonDto } from './dto/create-lesson.dto';
 import { UpdateLessonDto } from './dto/update-lesson.dto';
 
@@ -12,7 +15,7 @@ export class LessonService {
     private readonly logger: MyLogger,
   ) {}
 
-  async create(dto: CreateLessonDto) {
+  async create(moduleId: string, userId: number, dto: CreateLessonDto) {
     try {
       return await this.prisma.lesson.create({
         data: {
@@ -22,11 +25,10 @@ export class LessonService {
           videoUrl: dto.videoUrl,
           module: {
             connect: {
-              id: dto.moduleId,
+              id: moduleId,
               course: {
-                user: {
-                  id: dto.userId,
-                },
+                userId,
+                isActive: true,
               },
             },
           },
@@ -34,36 +36,121 @@ export class LessonService {
       });
     } catch (error) {
       this.logger.error({ method: 'lesson-create', error: error?.message });
-      return null;
+      throw new InternalServerErrorException(
+        'Failed to create lesson',
+        error?.message,
+      );
     }
   }
 
-  async findAll(moduleId: string) {
+  async findAll(moduleId: string, userId: number) {
+    const course = await this.prisma.course.findFirst({
+      where: {
+        isActive: true,
+        modules: {
+          some: {
+            id: moduleId,
+          },
+        },
+      },
+    });
+
+    if (!course) {
+      throw new NotFoundException('Course not found');
+    }
+
     return await this.prisma.lesson.findMany({
       where: {
         moduleId,
+        OR: [
+          // seller
+          {
+            module: {
+              course: {
+                userId,
+                isActive: true,
+              },
+            },
+          },
+
+          // customer
+          {
+            module: {
+              course: {
+                purchases: {
+                  some: {
+                    courseId: course.id,
+                    customerId: userId,
+                  },
+                },
+              },
+            },
+          },
+        ],
       },
     });
   }
 
-  async findOne(lessonId: string) {
+  async findOne(id: string, userId: number) {
+    const course = await this.prisma.course.findFirst({
+      where: {
+        isActive: true,
+        modules: {
+          some: {
+            lessons: {
+              some: {
+                id,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (!course) {
+      throw new NotFoundException('Course not found');
+    }
+
     return await this.prisma.lesson.findFirst({
       where: {
-        id: lessonId,
+        id,
+        OR: [
+          // seller
+          {
+            module: {
+              course: {
+                userId,
+                isActive: true,
+              },
+            },
+          },
+
+          // customer
+          {
+            module: {
+              course: {
+                purchases: {
+                  some: {
+                    courseId: course.id,
+                    customerId: userId,
+                  },
+                },
+              },
+            },
+          },
+        ],
       },
     });
   }
 
-  async update(dto: UpdateLessonDto) {
+  async update(id: string, userId: number, dto: UpdateLessonDto) {
     try {
       return await this.prisma.lesson.update({
         where: {
-          id: dto.lessonId,
+          id,
           module: {
             course: {
-              user: {
-                id: dto.userId,
-              },
+              userId,
             },
           },
         },
@@ -76,27 +163,31 @@ export class LessonService {
       });
     } catch (error) {
       this.logger.error({ method: 'lesson-update', error: error?.message });
-      return null;
+      throw new InternalServerErrorException(
+        'Failed to update lesson',
+        error?.message,
+      );
     }
   }
 
-  async delete(dto: DeleteLessonDto) {
+  async delete(id: string, userId: number) {
     try {
       return await this.prisma.lesson.delete({
         where: {
-          id: dto.lessonId,
+          id,
           module: {
             course: {
-              user: {
-                id: dto.userId,
-              },
+              userId,
             },
           },
         },
       });
     } catch (error) {
       this.logger.error({ method: 'lesson-delete', error: error?.message });
-      return null;
+      throw new InternalServerErrorException(
+        'Failed to delete lesson',
+        error?.message,
+      );
     }
   }
 }
