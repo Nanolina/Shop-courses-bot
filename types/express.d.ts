@@ -4,11 +4,15 @@ import { Request } from 'express';
 declare global {
   namespace Express {
     interface User {
-      id: string;
+      id: number;
     }
 
     interface Request {
       user: User;
     }
+  }
+
+  interface BigInt {
+    toJSON(): any;
   }
 }

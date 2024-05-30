@@ -62,20 +62,15 @@ export class CourseService {
     });
   }
 
-  async findAllCreatedCoursesByUser(userId: string) {
-    const courses = await this.prisma.course.findMany({
+  async findAllCreatedCoursesByUser(userId: number) {
+    return await this.prisma.course.findMany({
       where: {
         user: {
-          id: Number(userId),
+          id: userId,
         },
       },
       ...include,
     });
-
-    return courses.map((course) => ({
-      ...course,
-      userId: Number(course.userId), // Converting BigInt to a number
-    }));
   }
 
   async findOne(id: string) {
