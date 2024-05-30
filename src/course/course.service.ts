@@ -35,10 +35,10 @@ export class CourseService {
           user: {
             connectOrCreate: {
               where: {
-                tgId: dto.userId,
+                id: dto.userId,
               },
               create: {
-                tgId: dto.userId,
+                id: dto.userId,
               },
             },
           },
@@ -66,7 +66,7 @@ export class CourseService {
     const courses = await this.prisma.course.findMany({
       where: {
         user: {
-          tgId: Number(userId),
+          id: Number(userId),
         },
       },
       ...include,
@@ -108,7 +108,7 @@ export class CourseService {
         where: {
           id: dto.courseId,
           user: {
-            tgId: dto.userId,
+            id: dto.userId,
           },
         },
         data: {
@@ -135,7 +135,7 @@ export class CourseService {
         where: {
           id: dto.id,
           user: {
-            tgId: dto.userId,
+            id: dto.userId,
           },
         },
         data: {
@@ -149,7 +149,7 @@ export class CourseService {
           course: {
             id: dto.id,
             user: {
-              tgId: dto.userId,
+              id: dto.userId,
             },
           },
         },
@@ -162,7 +162,7 @@ export class CourseService {
             course: {
               id: dto.id,
               user: {
-                tgId: dto.userId,
+                id: dto.userId,
               },
             },
           },

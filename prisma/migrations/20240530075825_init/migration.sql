@@ -1,7 +1,6 @@
 -- CreateTable
 CREATE TABLE "User" (
-    "id" TEXT NOT NULL,
-    "tgId" BIGINT NOT NULL,
+    "id" BIGINT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -17,7 +16,7 @@ CREATE TABLE "Course" (
     "subcategory" TEXT,
     "price" INTEGER NOT NULL,
     "currency" TEXT NOT NULL,
-    "userId" TEXT NOT NULL,
+    "userId" BIGINT NOT NULL,
     "imageUrl" TEXT,
     "walletAddressSeller" TEXT NOT NULL,
     "isActive" BOOLEAN NOT NULL DEFAULT true,
@@ -58,8 +57,8 @@ CREATE TABLE "Lesson" (
 -- CreateTable
 CREATE TABLE "CoursePurchase" (
     "id" TEXT NOT NULL,
-    "customerId" TEXT NOT NULL,
-    "sellerId" TEXT NOT NULL,
+    "customerId" BIGINT NOT NULL,
+    "sellerId" BIGINT NOT NULL,
     "courseId" TEXT NOT NULL,
     "walletAddressSeller" TEXT NOT NULL,
     "walletAddressCustomer" TEXT NOT NULL,
@@ -69,9 +68,6 @@ CREATE TABLE "CoursePurchase" (
 
     CONSTRAINT "CoursePurchase_pkey" PRIMARY KEY ("id")
 );
-
--- CreateIndex
-CREATE UNIQUE INDEX "User_tgId_key" ON "User"("tgId");
 
 -- AddForeignKey
 ALTER TABLE "Course" ADD CONSTRAINT "Course_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
