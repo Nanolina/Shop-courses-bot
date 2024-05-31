@@ -18,6 +18,7 @@ CREATE TABLE "Course" (
     "currency" TEXT NOT NULL,
     "userId" BIGINT NOT NULL,
     "imageUrl" TEXT,
+    "imagePublicId" TEXT,
     "walletAddressSeller" TEXT NOT NULL,
     "isActive" BOOLEAN NOT NULL DEFAULT true,
     "isDeployed" BOOLEAN NOT NULL DEFAULT false,
@@ -34,6 +35,7 @@ CREATE TABLE "Module" (
     "description" TEXT,
     "courseId" TEXT NOT NULL,
     "imageUrl" TEXT,
+    "imagePublicId" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -47,7 +49,9 @@ CREATE TABLE "Lesson" (
     "description" TEXT,
     "moduleId" TEXT NOT NULL,
     "imageUrl" TEXT,
+    "imagePublicId" TEXT,
     "videoUrl" TEXT NOT NULL,
+    "videoPublicId" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
