@@ -1,3 +1,4 @@
+import { Type } from 'class-transformer';
 import {
   IsDefined,
   IsNumber,
@@ -24,6 +25,7 @@ export class CreateCourseDto {
   subcategory?: string;
 
   @IsDefined()
+  @Type(() => Number)
   @IsNumber()
   price: number;
 

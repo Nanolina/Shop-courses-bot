@@ -9,10 +9,14 @@ import {
   Patch,
   Post,
   Req,
+  UploadedFile,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { Request } from 'express';
 import { AuthGuard } from '../auth/auth.guard';
+import { imageUploadOptions } from '../utils';
 import { CreateCourseDto, PurchaseCourseDto, UpdateCourseDto } from './dto';
 import {
   CourseAllUsersService,
@@ -38,8 +42,13 @@ export class CourseController {
   @Post()
   @HttpCode(HttpStatus.CREATED)
   @UseGuards(AuthGuard)
-  create(@Req() req: Request, @Body() createCourseDto: CreateCourseDto) {
-    return this.courseSellerService.create(req.user.id, createCourseDto);
+  @UseInterceptors(FileInterceptor('image', imageUploadOptions))
+  create(
+    @Req() req: Request,
+    @Body() createCourseDto: CreateCourseDto,
+    @UploadedFile() image: Express.Multer.File,
+  ) {
+    return this.courseSellerService.create(req.user.id, createCourseDto, image);
   }
 
   // seller
@@ -100,12 +109,19 @@ export class CourseController {
   // seller
   @Patch(':id')
   @UseGuards(AuthGuard)
+  @UseInterceptors(FileInterceptor('image', imageUploadOptions))
   update(
     @Req() req: Request,
     @Param('id') id: string,
     @Body() updateCourseDto: UpdateCourseDto,
+    @UploadedFile() image: Express.Multer.File,
   ) {
-    return this.courseSellerService.update(id, req.user.id, updateCourseDto);
+    return this.courseSellerService.update(
+      id,
+      req.user.id,
+      updateCourseDto,
+      image,
+    );
   }
 
   // seller

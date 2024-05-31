@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { CourseModule } from './course/course.module';
 import { LessonModule } from './lesson/lesson.module';
 import { LoggerModule } from './logger/logger.module';
@@ -9,6 +10,7 @@ import { TelegramModule } from './telegram-bot/telegram.module';
 
 @Module({
   imports: [
+    CloudinaryModule,
     CourseModule,
     ModuleModule,
     LoggerModule,

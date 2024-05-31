@@ -1,4 +1,11 @@
-import { IsNumber, IsOptional, IsString, IsUrl } from 'class-validator';
+import { Type } from 'class-transformer';
+import {
+  IsBoolean,
+  IsNumber,
+  IsOptional,
+  IsString,
+  IsUrl,
+} from 'class-validator';
 
 export class UpdateCourseDto {
   @IsOptional()
@@ -18,6 +25,7 @@ export class UpdateCourseDto {
   subcategory?: string;
 
   @IsOptional()
+  @Type(() => Number)
   @IsNumber()
   price?: number;
 
@@ -32,4 +40,9 @@ export class UpdateCourseDto {
   @IsOptional()
   @IsUrl()
   imageUrl?: string;
+
+  @IsOptional()
+  @Type(() => Boolean)
+  @IsBoolean()
+  isRemoveImage?: boolean;
 }

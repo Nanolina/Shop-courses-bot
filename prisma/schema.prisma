@@ -25,6 +25,7 @@ model Course {
   currency            String
   userId              BigInt
   imageUrl            String?
+  imagePublicId       String?
   walletAddressSeller String
   isActive            Boolean          @default(true)
   isDeployed          Boolean          @default(false)
@@ -36,27 +37,30 @@ model Course {
 }
 
 model Module {
-  id          String   @id @default(uuid())
-  name        String
-  description String?
-  courseId    String
-  imageUrl    String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  lessons     Lesson[]
-  course      Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  id            String   @id @default(uuid())
+  name          String
+  description   String?
+  courseId      String
+  imageUrl      String?
+  imagePublicId String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  lessons       Lesson[]
+  course        Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
 }
 
 model Lesson {
-  id          String   @id @default(uuid())
-  name        String
-  description String?
-  moduleId    String
-  imageUrl    String?
-  videoUrl    String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  module      Module   @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  id            String   @id @default(uuid())
+  name          String
+  description   String?
+  moduleId      String
+  imageUrl      String?
+  imagePublicId String?
+  videoUrl      String
+  videoPublicId String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  module        Module   @relation(fields: [moduleId], references: [id], onDelete: Cascade)
 }
 
 model CoursePurchase {
