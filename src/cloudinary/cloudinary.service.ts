@@ -1,18 +1,19 @@
 import { Injectable } from '@nestjs/common';
 import { UploadApiErrorResponse, UploadApiResponse, v2 } from 'cloudinary';
 import * as streamifier from 'streamifier';
+import { EntityType } from 'types';
 
 @Injectable()
 export class CloudinaryService {
   uploadFile(
     file: Express.Multer.File,
-    folderName: string,
+    folder: EntityType,
   ): Promise<UploadApiErrorResponse | UploadApiResponse> {
     return new Promise<UploadApiErrorResponse | UploadApiResponse>(
       (resolve, reject) => {
         const upload = v2.uploader.upload_stream(
           {
-            folder: folderName,
+            folder,
           },
           (error, result) => {
             if (error) return reject(error);

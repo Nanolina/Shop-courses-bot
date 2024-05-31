@@ -9,10 +9,14 @@ import {
   Patch,
   Post,
   Req,
+  UploadedFile,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { Request } from 'express';
 import { AuthGuard } from '../auth/auth.guard';
+import { imageUploadOptions } from '../utils';
 import { CreateModuleDto, UpdateModuleDto } from './dto';
 import { ModuleService } from './module.service';
 
@@ -29,12 +33,19 @@ export class ModuleController {
   @Post('course/:courseId')
   @HttpCode(HttpStatus.CREATED)
   @UseGuards(AuthGuard)
+  @UseInterceptors(FileInterceptor('image', imageUploadOptions))
   create(
     @Req() req: Request,
     @Param('courseId') courseId: string,
     @Body() createModuleDto: CreateModuleDto,
+    @UploadedFile() image: Express.Multer.File,
   ) {
-    return this.moduleService.create(courseId, req.user.id, createModuleDto);
+    return this.moduleService.create(
+      courseId,
+      req.user.id,
+      createModuleDto,
+      image,
+    );
   }
 
   @Get(':id')
@@ -45,12 +56,14 @@ export class ModuleController {
 
   @Patch(':id')
   @UseGuards(AuthGuard)
+  @UseInterceptors(FileInterceptor('image', imageUploadOptions))
   update(
     @Req() req: Request,
     @Param('id') id: string,
     @Body() updateModuleDto: UpdateModuleDto,
+    @UploadedFile() image: Express.Multer.File,
   ) {
-    return this.moduleService.update(id, req.user.id, updateModuleDto);
+    return this.moduleService.update(id, req.user.id, updateModuleDto, image);
   }
 
   @Delete(':id')
