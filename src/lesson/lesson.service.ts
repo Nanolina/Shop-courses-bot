@@ -3,6 +3,7 @@ import {
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
+import { ImageService } from '../image/image.service';
 import { MyLogger } from '../logger/my-logger.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateLessonDto } from './dto/create-lesson.dto';
@@ -12,16 +13,36 @@ import { UpdateLessonDto } from './dto/update-lesson.dto';
 export class LessonService {
   constructor(
     private prisma: PrismaService,
+    private imageService: ImageService,
     private readonly logger: MyLogger,
   ) {}
 
-  async create(moduleId: string, userId: number, dto: CreateLessonDto) {
+  async create(
+    moduleId: string,
+    userId: number,
+    dto: CreateLessonDto,
+    image: Express.Multer.File,
+  ) {
     try {
+      let imageInCloudinary;
+
+      // If the user sends both a link to an image and a file, we take only the link
+      if (image && !dto.imageUrl) {
+        try {
+          imageInCloudinary = await this.imageService.upload(image, 'lesson');
+        } catch (error) {
+          this.logger.error({ method: 'lesson-create-cloudinary', error });
+        }
+      }
+
       return await this.prisma.lesson.create({
         data: {
           name: dto.name,
           description: dto.description,
-          imageUrl: dto.imageUrl,
+          imageUrl: dto.imageUrl || imageInCloudinary?.url,
+          ...(imageInCloudinary && {
+            imagePublicId: imageInCloudinary?.public_id,
+          }),
           videoUrl: dto.videoUrl,
           module: {
             connect: {
@@ -143,8 +164,32 @@ export class LessonService {
     });
   }
 
-  async update(id: string, userId: number, dto: UpdateLessonDto) {
+  async update(
+    id: string,
+    userId: number,
+    dto: UpdateLessonDto,
+    file: Express.Multer.File,
+  ) {
     try {
+      const lesson = await this.prisma.lesson.findFirst({
+        where: {
+          id,
+          module: {
+            course: {
+              userId,
+              isActive: true,
+            },
+          },
+        },
+      });
+
+      const { imageUrl, imagePublicId } = await this.imageService.getImageUrl(
+        'lesson',
+        lesson,
+        dto,
+        file,
+      );
+
       return await this.prisma.lesson.update({
         where: {
           id,
@@ -155,9 +200,10 @@ export class LessonService {
           },
         },
         data: {
+          imageUrl,
+          imagePublicId,
           name: dto.name,
           description: dto.description,
-          imageUrl: dto.imageUrl,
           videoUrl: dto.videoUrl,
         },
       });
