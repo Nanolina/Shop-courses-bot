@@ -218,6 +218,18 @@ export class LessonService {
 
   async delete(id: string, userId: number) {
     try {
+      const lesson = await this.prisma.lesson.findFirst({
+        where: {
+          id,
+          module: {
+            course: {
+              userId,
+            },
+          },
+        },
+      });
+      await this.imageService.deleteImageFromCloudinary(lesson);
+
       return await this.prisma.lesson.delete({
         where: {
           id,

@@ -189,6 +189,7 @@ export class ModuleService {
         },
       });
       await this.imageService.deleteImageFromCloudinary(module);
+
       return await this.prisma.module.delete({
         where: {
           id,
