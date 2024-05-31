@@ -3,9 +3,10 @@ import {
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
-import { ImageService } from '../image/image.service';
 import { MyLogger } from '../logger/my-logger.service';
+import { ImageService } from '../media/image.service';
 import { PrismaService } from '../prisma/prisma.service';
+import { VideoService } from './../media/video.service';
 import { CreateLessonDto } from './dto/create-lesson.dto';
 import { UpdateLessonDto } from './dto/update-lesson.dto';
 
@@ -14,6 +15,7 @@ export class LessonService {
   constructor(
     private prisma: PrismaService,
     private imageService: ImageService,
+    private videoService: VideoService,
     private readonly logger: MyLogger,
   ) {}
 
@@ -22,8 +24,10 @@ export class LessonService {
     userId: number,
     dto: CreateLessonDto,
     image: Express.Multer.File,
+    video: Express.Multer.File,
   ) {
     try {
+      // image
       let imageInCloudinary;
 
       // If the user sends both a link to an image and a file, we take only the link
@@ -35,6 +39,21 @@ export class LessonService {
         }
       }
 
+      // video
+      let videoInCloudinary;
+
+      // If the user sends both a link to a video and a file, we take only the link
+      if (video && !dto.videoUrl) {
+        try {
+          videoInCloudinary = await this.videoService.upload(video);
+        } catch (error) {
+          this.logger.error({
+            method: 'lesson-create-cloudinary-video',
+            error,
+          });
+        }
+      }
+
       return await this.prisma.lesson.create({
         data: {
           name: dto.name,
@@ -43,7 +62,10 @@ export class LessonService {
           ...(imageInCloudinary && {
             imagePublicId: imageInCloudinary?.public_id,
           }),
-          videoUrl: dto.videoUrl,
+          videoUrl: dto.videoUrl || videoInCloudinary?.url,
+          ...(videoInCloudinary && {
+            videoPublicId: videoInCloudinary?.public_id,
+          }),
           module: {
             connect: {
               id: moduleId,
@@ -218,6 +240,18 @@ export class LessonService {
 
   async delete(id: string, userId: number) {
     try {
+      const lesson = await this.prisma.lesson.findFirst({
+        where: {
+          id,
+          module: {
+            course: {
+              userId,
+            },
+          },
+        },
+      });
+      await this.imageService.deleteImageFromCloudinary(lesson);
+
       return await this.prisma.lesson.delete({
         where: {
           id,

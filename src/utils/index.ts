@@ -1,1 +1,1 @@
-export { imageUploadOptions } from './file-upload.utils';
+export { imageUploadOptions, videoUploadOptions } from './file-upload.utils';

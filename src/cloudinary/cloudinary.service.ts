@@ -36,4 +36,28 @@ export class CloudinaryService {
       });
     });
   }
+
+  uploadVideoFile(
+    file: Express.Multer.File,
+  ): Promise<UploadApiErrorResponse | UploadApiResponse> {
+    return new Promise<UploadApiErrorResponse | UploadApiResponse>(
+      (resolve, reject) => {
+        const uploadStream = v2.uploader.upload_stream(
+          {
+            resource_type: 'video',
+            folder: 'lesson',
+          },
+          (error, result) => {
+            if (error) {
+              reject(error);
+            } else {
+              resolve(result);
+            }
+          },
+        );
+
+        streamifier.createReadStream(file.buffer).pipe(uploadStream);
+      },
+    );
+  }
 }

@@ -16,7 +16,7 @@ import {
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Request } from 'express';
 import { AuthGuard } from '../auth/auth.guard';
-import { imageUploadOptions } from '../utils';
+import { imageUploadOptions, videoUploadOptions } from '../utils';
 import { CreateLessonDto, UpdateLessonDto } from './dto';
 import { LessonService } from './lesson.service';
 
@@ -34,17 +34,22 @@ export class LessonController {
   @HttpCode(HttpStatus.CREATED)
   @UseGuards(AuthGuard)
   @UseInterceptors(FileInterceptor('image', imageUploadOptions))
+  @UseInterceptors(FileInterceptor('video', videoUploadOptions))
   create(
     @Req() req: Request,
     @Param('moduleId') moduleId: string,
     @Body() createLessonDto: CreateLessonDto,
     @UploadedFile() image: Express.Multer.File,
+    @UploadedFile() video: Express.Multer.File,
   ) {
+    console.log('image', image);
+    console.log('video', video);
     return this.lessonService.create(
       moduleId,
       req.user.id,
       createLessonDto,
       image,
+      video,
     );
   }
 
