@@ -13,7 +13,7 @@ export class CreateLessonDto {
   @IsUrl()
   imageUrl?: string;
 
-  @IsDefined()
+  @IsOptional()
   @IsUrl()
-  videoUrl: string;
+  videoUrl?: string;
 }

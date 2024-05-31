@@ -3,8 +3,8 @@ import {
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
-import { ImageService } from '../image/image.service';
 import { MyLogger } from '../logger/my-logger.service';
+import { ImageService } from '../media/image.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateModuleDto, UpdateModuleDto } from './dto';
 

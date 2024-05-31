@@ -56,7 +56,7 @@ export class ImageService {
         imageInCloudinary = await this.upload(file, type, typeFromDB);
       } catch (error) {
         this.logger.error({
-          method: `getImage-${type}-${typeFromDB.id}`,
+          method: `getImageUrl-${type}-${typeFromDB.id}`,
           error,
         });
       }
