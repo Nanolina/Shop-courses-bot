@@ -27,7 +27,7 @@ export class UpdateCourseDto {
   @IsOptional()
   @Type(() => Number)
   @IsNumber()
-  price?: number;
+  price?: string;
 
   @IsOptional()
   @IsString()
@@ -44,5 +44,5 @@ export class UpdateCourseDto {
   @IsOptional()
   @Type(() => Boolean)
   @IsBoolean()
-  isRemoveImage?: boolean;
+  isRemoveImage?: string;
 }

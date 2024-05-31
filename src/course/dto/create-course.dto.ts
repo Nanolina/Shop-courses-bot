@@ -27,7 +27,7 @@ export class CreateCourseDto {
   @IsDefined()
   @Type(() => Number)
   @IsNumber()
-  price: number;
+  price: string;
 
   @IsDefined()
   @IsString()

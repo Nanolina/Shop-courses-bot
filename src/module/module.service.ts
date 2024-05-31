@@ -3,6 +3,7 @@ import {
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
+import { ImageService } from '../image/image.service';
 import { MyLogger } from '../logger/my-logger.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateModuleDto, UpdateModuleDto } from './dto';
@@ -11,16 +12,36 @@ import { CreateModuleDto, UpdateModuleDto } from './dto';
 export class ModuleService {
   constructor(
     private prisma: PrismaService,
+    private imageService: ImageService,
     private readonly logger: MyLogger,
   ) {}
 
-  async create(courseId: string, userId: number, dto: CreateModuleDto) {
+  async create(
+    courseId: string,
+    userId: number,
+    dto: CreateModuleDto,
+    image: Express.Multer.File,
+  ) {
     try {
+      let imageInCloudinary;
+
+      // If the user sends both a link to an image and a file, we take only the link
+      if (image && !dto.imageUrl) {
+        try {
+          imageInCloudinary = await this.imageService.upload(image, 'module');
+        } catch (error) {
+          this.logger.error({ method: 'module-create-cloudinary', error });
+        }
+      }
+
       return await this.prisma.module.create({
         data: {
           name: dto.name,
           description: dto.description,
-          imageUrl: dto.imageUrl,
+          imageUrl: dto.imageUrl || imageInCloudinary?.url,
+          ...(imageInCloudinary && {
+            imagePublicId: imageInCloudinary?.public_id,
+          }),
           course: {
             connect: {
               id: courseId,
@@ -110,8 +131,30 @@ export class ModuleService {
     });
   }
 
-  async update(id: string, userId: number, dto: UpdateModuleDto) {
+  async update(
+    id: string,
+    userId: number,
+    dto: UpdateModuleDto,
+    file: Express.Multer.File,
+  ) {
     try {
+      const module = await this.prisma.module.findFirst({
+        where: {
+          id,
+          course: {
+            userId,
+            isActive: true,
+          },
+        },
+      });
+
+      const { imageUrl, imagePublicId } = await this.imageService.getImageUrl(
+        'module',
+        module,
+        dto,
+        file,
+      );
+
       return await this.prisma.module.update({
         where: {
           id,
@@ -120,9 +163,10 @@ export class ModuleService {
           },
         },
         data: {
+          imageUrl,
+          imagePublicId,
           name: dto.name,
           description: dto.description,
-          imageUrl: dto.imageUrl,
         },
       });
     } catch (error) {
@@ -136,6 +180,15 @@ export class ModuleService {
 
   async delete(id: string, userId: number) {
     try {
+      const module = await this.prisma.module.findFirst({
+        where: {
+          id,
+          course: {
+            userId,
+          },
+        },
+      });
+      await this.imageService.deleteImageFromCloudinary(module);
       return await this.prisma.module.delete({
         where: {
           id,

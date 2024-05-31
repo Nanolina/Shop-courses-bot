@@ -15,16 +15,16 @@ export class CourseSellerService {
   async create(
     userId: number,
     dto: CreateCourseDto,
-    image: Express.Multer.File,
+    file: Express.Multer.File,
   ) {
     console.log('typeof dto.price', typeof dto.price);
     try {
       let imageInCloudinary;
 
       // If the user sends both a link to an image and a file, we take only the link
-      if (image && !dto.imageUrl) {
+      if (file && !dto.imageUrl) {
         try {
-          imageInCloudinary = await this.imageService.upload(image);
+          imageInCloudinary = await this.imageService.upload(file, 'course');
         } catch (error) {
           this.logger.error({ method: 'course-create-cloudinary', error });
         }
@@ -36,7 +36,7 @@ export class CourseSellerService {
           description: dto.description,
           category: dto.category,
           subcategory: dto.subcategory,
-          price: dto.price,
+          price: parseFloat(dto.price),
           currency: dto.currency,
           walletAddressSeller: dto.walletAddressSeller,
           imageUrl: dto.imageUrl || imageInCloudinary?.url,
@@ -87,7 +87,7 @@ export class CourseSellerService {
     id: string,
     userId: number,
     dto: UpdateCourseDto,
-    image: Express.Multer.File,
+    file: Express.Multer.File,
   ) {
     console.log('typeof dto.isRemoveImage', typeof dto.isRemoveImage);
     try {
@@ -99,11 +99,11 @@ export class CourseSellerService {
         },
       });
 
-      const { imageUrl, imagePublicId } = await this.getImage(
+      const { imageUrl, imagePublicId } = await this.imageService.getImageUrl(
+        'course',
         course,
         dto,
-        userId,
-        image,
+        file,
       );
 
       return await this.prisma.course.update({
@@ -119,7 +119,7 @@ export class CourseSellerService {
           description: dto.description,
           category: dto.category,
           subcategory: dto.subcategory,
-          price: dto.price,
+          price: parseFloat(dto.price),
           currency: dto.currency,
           walletAddressSeller: dto.walletAddressSeller,
         },
@@ -176,47 +176,5 @@ export class CourseSellerService {
         error?.message,
       );
     }
-  }
-
-  private async getImage(course, dto, userId, image) {
-    let imageInCloudinary;
-
-    // If the user sends both a link to an image and a file, we take only the link
-    if (image && !dto.imageUrl) {
-      try {
-        imageInCloudinary = await this.imageService.upload(
-          image,
-          course.id,
-          userId,
-        );
-      } catch (error) {
-        this.logger.error({ method: 'course-update-cloudinary', error });
-      }
-    }
-
-    let imageUrl;
-    let imagePublicId;
-    // Delete the image completely
-    if (dto.isRemoveImage) {
-      imageUrl = null;
-      imagePublicId = null;
-      // Change to an image from Cloudinary
-    } else if (imageInCloudinary?.url && imageInCloudinary?.public_id) {
-      imageUrl = imageInCloudinary?.url;
-      imagePublicId = imageInCloudinary?.public_id;
-      // Change to the image from the incoming link from the user
-    } else if (dto.imageUrl) {
-      imageUrl = dto.imageUrl;
-      imagePublicId = null;
-      // Leave it as it was
-    } else {
-      imageUrl = course.imageUrl;
-      imagePublicId = course.imagePublicId;
-    }
-
-    return {
-      imageUrl,
-      imagePublicId,
-    };
   }
 }
