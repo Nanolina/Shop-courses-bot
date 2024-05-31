@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { CloudinaryModule } from '../cloudinary/cloudinary.module';
+import { CloudinaryService } from '../cloudinary/cloudinary.service';
 import { ImageService } from '../image/image.service';
 import { LoggerModule } from '../logger/logger.module';
 import { PrismaService } from '../prisma/prisma.service';
@@ -11,7 +11,7 @@ import {
 } from './services';
 
 @Module({
-  imports: [LoggerModule, CloudinaryModule],
+  imports: [LoggerModule],
   controllers: [CourseController],
   providers: [
     CourseAllUsersService,
@@ -19,6 +19,7 @@ import {
     CourseSellerService,
     PrismaService,
     ImageService,
+    CloudinaryService,
   ],
 })
 export class CourseModule {}
