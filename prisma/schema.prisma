@@ -56,7 +56,7 @@ model Lesson {
   moduleId      String
   imageUrl      String?
   imagePublicId String?
-  videoUrl      String
+  videoUrl      String?
   videoPublicId String?
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt

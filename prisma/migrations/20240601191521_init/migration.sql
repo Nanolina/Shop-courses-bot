@@ -50,7 +50,7 @@ CREATE TABLE "Lesson" (
     "moduleId" TEXT NOT NULL,
     "imageUrl" TEXT,
     "imagePublicId" TEXT,
-    "videoUrl" TEXT NOT NULL,
+    "videoUrl" TEXT,
     "videoPublicId" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,

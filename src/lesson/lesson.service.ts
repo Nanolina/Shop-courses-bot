@@ -3,10 +3,10 @@ import {
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
+import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 import { MyLogger } from '../logger/my-logger.service';
 import { ImageService } from '../media/image.service';
 import { PrismaService } from '../prisma/prisma.service';
-import { VideoService } from './../media/video.service';
 import { CreateLessonDto } from './dto/create-lesson.dto';
 import { UpdateLessonDto } from './dto/update-lesson.dto';
 
@@ -15,7 +15,7 @@ export class LessonService {
   constructor(
     private prisma: PrismaService,
     private imageService: ImageService,
-    private videoService: VideoService,
+    private cloudinaryService: CloudinaryService,
     private readonly logger: MyLogger,
   ) {}
 
@@ -24,7 +24,6 @@ export class LessonService {
     userId: number,
     dto: CreateLessonDto,
     image: Express.Multer.File,
-    video: Express.Multer.File,
   ) {
     try {
       // image
@@ -39,21 +38,6 @@ export class LessonService {
         }
       }
 
-      // video
-      let videoInCloudinary;
-
-      // If the user sends both a link to a video and a file, we take only the link
-      if (video && !dto.videoUrl) {
-        try {
-          videoInCloudinary = await this.videoService.upload(video);
-        } catch (error) {
-          this.logger.error({
-            method: 'lesson-create-cloudinary-video',
-            error,
-          });
-        }
-      }
-
       return await this.prisma.lesson.create({
         data: {
           name: dto.name,
@@ -62,10 +46,7 @@ export class LessonService {
           ...(imageInCloudinary && {
             imagePublicId: imageInCloudinary?.public_id,
           }),
-          videoUrl: dto.videoUrl || videoInCloudinary?.url,
-          ...(videoInCloudinary && {
-            videoPublicId: videoInCloudinary?.public_id,
-          }),
+          videoUrl: dto.videoUrl,
           module: {
             connect: {
               id: moduleId,
@@ -268,6 +249,54 @@ export class LessonService {
         'Failed to delete lesson',
         error?.message,
       );
+    }
+  }
+
+  async updateLessonVideo(
+    lessonId: string,
+    videoUrl: string,
+    videoPublicId: string,
+    userId: number,
+  ) {
+    return await this.prisma.lesson.update({
+      where: {
+        id: lessonId,
+        module: {
+          course: {
+            userId,
+          },
+        },
+      },
+      data: {
+        videoUrl,
+        videoPublicId,
+      },
+    });
+  }
+
+  async uploadVideoAndUpdateLesson(
+    video: Express.Multer.File,
+    lessonId: string,
+    userId: number,
+  ) {
+    try {
+      const videoUploadResult = await this.cloudinaryService.uploadVideoFile(
+        video,
+        lessonId,
+        userId,
+      );
+      // Check that the download has completed
+      if (videoUploadResult.status === 'finished') {
+        const { url, public_id } = videoUploadResult;
+        await this.updateLessonVideo(lessonId, url, public_id, userId);
+      } else {
+        this.logger.log({
+          method: 'uploadVideoAndUpdateLesson',
+          log: 'Video is still processing',
+        });
+      }
+    } catch (error) {
+      this.logger.error({ method: 'uploadVideoAndUpdateLesson-upload', error });
     }
   }
 }

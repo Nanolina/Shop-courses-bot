@@ -5,7 +5,7 @@ import { EntityType } from 'types';
 
 @Injectable()
 export class CloudinaryService {
-  uploadFile(
+  uploadImageFile(
     file: Express.Multer.File,
     folder: EntityType,
   ): Promise<UploadApiErrorResponse | UploadApiResponse> {
@@ -39,6 +39,8 @@ export class CloudinaryService {
 
   uploadVideoFile(
     file: Express.Multer.File,
+    lessonId: string,
+    userId: number,
   ): Promise<UploadApiErrorResponse | UploadApiResponse> {
     return new Promise<UploadApiErrorResponse | UploadApiResponse>(
       (resolve, reject) => {
@@ -46,6 +48,7 @@ export class CloudinaryService {
           {
             resource_type: 'video',
             folder: 'lesson',
+            context: { lessonId, userId },
           },
           (error, result) => {
             if (error) {
