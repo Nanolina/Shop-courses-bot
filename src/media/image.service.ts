@@ -39,7 +39,7 @@ export class ImageService {
       await this.deleteImageFromCloudinary(typeFromDB);
     }
 
-    return await this.cloudinaryService.uploadFile(file, type);
+    return await this.cloudinaryService.uploadImageFile(file, type);
   }
 
   async getImageUrl(

@@ -35,7 +35,7 @@ export class LessonController {
   @HttpCode(HttpStatus.CREATED)
   @UseGuards(AuthGuard)
   @UseInterceptors(multimediaInterceptor())
-  create(
+  async create(
     @Req() req: Request,
     @Param('moduleId') moduleId: string,
     @Body() createLessonDto: CreateLessonDto,
@@ -43,13 +43,25 @@ export class LessonController {
   ) {
     const image = files.find((file) => file.mimetype.startsWith('image/'));
     const video = files.find((file) => file.mimetype.startsWith('video/'));
-    return this.lessonService.create(
+
+    // Creating a lesson without video URL and public ID
+    const lesson = await this.lessonService.create(
       moduleId,
       req.user.id,
       createLessonDto,
       image,
-      video,
     );
+
+    // Asynchronous loading of video
+    if (video && !createLessonDto.videoUrl) {
+      this.lessonService.uploadVideoAndUpdateLesson(
+        video,
+        lesson.id,
+        req.user.id,
+      );
+    }
+
+    return lesson;
   }
 
   @Get(':id')
