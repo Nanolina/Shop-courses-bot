@@ -55,8 +55,6 @@ export class VideoService {
     let videoUrl;
     let videoPublicId;
     // Delete the video completely
-    console.log('dto.isRemoveVideo', dto.isRemoveVideo);
-    console.log('Boolean(dto.isRemoveVideo)', Boolean(dto.isRemoveVideo));
     if (Boolean(dto.isRemoveVideo)) {
       videoUrl = null;
       videoPublicId = null;

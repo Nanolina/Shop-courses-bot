@@ -17,7 +17,6 @@ export class CourseSellerService {
     dto: CreateCourseDto,
     file: Express.Multer.File,
   ) {
-    console.log('typeof dto.price', typeof dto.price);
     try {
       let imageInCloudinary;
 
@@ -89,7 +88,6 @@ export class CourseSellerService {
     dto: UpdateCourseDto,
     file: Express.Multer.File,
   ) {
-    console.log('typeof dto.isRemoveImage', typeof dto.isRemoveImage);
     try {
       const course = await this.prisma.course.findFirst({
         where: {

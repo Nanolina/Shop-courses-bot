@@ -1,4 +1,5 @@
 import { BadRequestException } from '@nestjs/common';
+import { FilesInterceptor } from '@nestjs/platform-express';
 
 const imageFileFilter = (req, file, callback) => {
   if (!file.mimetype.match(/\/(jpg|jpeg|png)$/)) {
@@ -16,18 +17,20 @@ export const imageUploadOptions = {
   limits: { fileSize: 512000 }, // 500KB
 };
 
-const videoFileFilter = (req, file, callback) => {
-  if (!file.mimetype.match(/video\/(mp4|avi)$/)) {
-    callback(
-      new BadRequestException('Supported video formats are mp4 and avi'),
-      false,
-    );
-    return;
-  }
-  callback(null, true);
+const filesUploadOptions = {
+  fileFilter: (req, file, callback) => {
+    if (file.mimetype.startsWith('image/') && file.size > 512000) {
+      // 500 KB limit for images
+      callback(new BadRequestException('Image file is too large'), false);
+    } else if (file.mimetype.startsWith('video/') && file.size > 500000000) {
+      // 500 MB limit for videos
+      callback(new BadRequestException('Video file is too large'), false);
+    } else {
+      callback(null, true);
+    }
+  },
 };
 
-export const videoUploadOptions = {
-  fileFilter: videoFileFilter,
-  limits: { fileSize: 500000000 }, // 500MB
-};
+export function multimediaInterceptor() {
+  return FilesInterceptor('files', 2, filesUploadOptions);
+}

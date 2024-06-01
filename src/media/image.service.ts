@@ -65,8 +65,6 @@ export class ImageService {
     let imageUrl;
     let imagePublicId;
     // Delete the image completely
-    console.log('dto.isRemoveImage', dto.isRemoveImage);
-    console.log('Boolean(dto.isRemoveImage)', Boolean(dto.isRemoveImage));
     if (Boolean(dto.isRemoveImage)) {
       imageUrl = null;
       imagePublicId = null;
