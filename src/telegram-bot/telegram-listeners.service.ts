@@ -16,7 +16,6 @@ export class TelegramListenersService {
       const { chat, from, text } = msg;
       const chatId = chat.id;
       const userId = from.id;
-      console.log('msg', msg);
       const webAppUrl = this.utilsService.getWebUrl(userId);
 
       if (!userId) {
