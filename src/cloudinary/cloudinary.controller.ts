@@ -2,26 +2,27 @@ import { Body, Controller, HttpStatus, Post, Res } from '@nestjs/common';
 import { Response } from 'express';
 import { LessonService } from '../lesson/lesson.service';
 import { MyLogger } from '../logger/my-logger.service';
+import { SocketGateway } from '../socket/socket.gateway';
 
 @Controller('api/cloudinary')
 export class CloudinaryController {
   constructor(
     private readonly lessonService: LessonService,
+    private socketGateway: SocketGateway,
     private readonly logger: MyLogger,
   ) {}
 
   @Post('webhook')
   async handleWebhook(@Body() data: any, @Res() res: Response) {
+    const userId = Number(data.context.custom.userId);
+    const lessonId = data.context.custom.lessonId;
+    const url = data.url;
+    const publicId = data.public_id;
     try {
-      const lessonId = data.context.custom.lessonId;
-      const userId = Number(data.context.custom.userId);
-      const url = data.url;
-      const publicId = data.public_id;
-
       // Remove the video from the cloudinary for replacement
       await this.lessonService.deleteVideoFromCloudinary(lessonId, userId);
 
-      await this.lessonService.updateLessonVideo(
+      const lesson = await this.lessonService.updateLessonVideo(
         lessonId,
         url,
         publicId,
@@ -33,9 +34,21 @@ export class CloudinaryController {
         log: 'Lesson is updated with new videoUrl',
       });
 
+      this.socketGateway.notifyClient(
+        'success',
+        userId,
+        `Your video has been uploaded successfully for lesson ${lesson.name}`,
+      );
+
       res.status(HttpStatus.OK).send('Webhook processed successfully');
     } catch (error) {
       this.logger.error({ method: 'cloudinary-handleWebhook', error });
+      this.socketGateway.notifyClient(
+        'error',
+        userId,
+        'Unfortunately, it was not possible to upload your video for lesson',
+      );
+
       res
         .status(HttpStatus.INTERNAL_SERVER_ERROR)
         .send('Failed to process webhook');
