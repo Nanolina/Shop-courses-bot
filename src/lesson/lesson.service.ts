@@ -5,7 +5,7 @@ import {
   NotImplementedException,
 } from '@nestjs/common';
 import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
-import { SELLER } from '../consts';
+import { CUSTOMER, SELLER } from '../consts';
 import { MyLogger } from '../logger/my-logger.service';
 import { ImageService } from '../media/image.service';
 import { PrismaService } from '../prisma/prisma.service';
@@ -107,7 +107,7 @@ export class LessonService {
 
     if (customerLessons.length) {
       return {
-        role: 'CUSTOMER',
+        role: CUSTOMER,
         lessons: customerLessons,
       };
     }
@@ -156,7 +156,7 @@ export class LessonService {
 
     if (customerLesson) {
       return {
-        role: 'CUSTOMER',
+        role: CUSTOMER,
         lesson: customerLesson,
       };
     }
