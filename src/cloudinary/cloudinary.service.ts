@@ -26,11 +26,11 @@ export class CloudinaryService {
     );
   }
 
-  deleteFile(
+  deleteImageFile(
     publicId: string,
   ): Promise<UploadApiErrorResponse | UploadApiResponse> {
     return new Promise((resolve, reject) => {
-      v2.uploader.destroy(publicId, (error, result) => {
+      v2.uploader.destroy(publicId, { invalidate: true }, (error, result) => {
         if (error) return reject(error);
         resolve(result);
       });
@@ -62,5 +62,20 @@ export class CloudinaryService {
         streamifier.createReadStream(file.buffer).pipe(uploadStream);
       },
     );
+  }
+
+  deleteVideoFile(
+    publicId: string,
+  ): Promise<UploadApiErrorResponse | UploadApiResponse> {
+    return new Promise((resolve, reject) => {
+      v2.uploader.destroy(
+        publicId,
+        { invalidate: true, resource_type: 'video' },
+        (error, result) => {
+          if (error) return reject(error);
+          resolve(result);
+        },
+      );
+    });
   }
 }
