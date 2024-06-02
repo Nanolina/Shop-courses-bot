@@ -14,8 +14,8 @@ async function main() {
           {
             name: 'Introduction to Blockchain',
             description: 'A comprehensive guide to blockchain technology.',
-            category: 'Technology',
-            subcategory: 'Blockchain',
+            category: 'technology-and-innovation',
+            subcategory: 'blockchain-development',
             price: 12,
             currency: 'TON',
             imageUrl:
@@ -67,8 +67,8 @@ async function main() {
             name: 'React',
             description:
               'React Полный курс от А до Я. Рассмотрим основные концепции и разработаем функционал, который встречается в каждом приложении.',
-            category: 'Technology',
-            subcategory: 'Full-stack development',
+            category: 'technology-and-innovation',
+            subcategory: 'artificial-intelligence',
             price: 12,
             currency: 'TON',
             imageUrl:

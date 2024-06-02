@@ -3,17 +3,6 @@ import { CUSTOMER, SELLER, USER } from '../../consts';
 import { MyLogger } from '../../logger/my-logger.service';
 import { PrismaService } from '../../prisma/prisma.service';
 
-const include = {
-  include: {
-    _count: {
-      select: {
-        modules: true,
-        purchases: true,
-      },
-    },
-  },
-};
-
 @Injectable()
 export class CourseAllUsersService {
   constructor(
@@ -49,7 +38,6 @@ export class CourseAllUsersService {
           },
         },
       },
-      ...include,
     });
 
     if (customerCourse) {
@@ -65,7 +53,6 @@ export class CourseAllUsersService {
         userId,
         isActive: true,
       },
-      ...include,
     });
 
     if (sellerCourse) {
@@ -81,7 +68,6 @@ export class CourseAllUsersService {
         id,
         isActive: true,
       },
-      ...include,
     });
 
     if (!userCourse) {
