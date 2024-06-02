@@ -2,7 +2,6 @@ import {
   ForbiddenException,
   Injectable,
   InternalServerErrorException,
-  NotFoundException,
   NotImplementedException,
 } from '@nestjs/common';
 import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
@@ -119,14 +118,34 @@ export class LessonService {
   }
 
   async findOne(id: string, userId: number) {
-    const course = await this.prisma.course.findFirst({
+    // Check if the user is a seller of lessons
+    const sellerLesson = await this.prisma.lesson.findFirst({
       where: {
-        isActive: true,
-        modules: {
-          some: {
-            lessons: {
+        id,
+        module: {
+          course: {
+            userId,
+          },
+        },
+      },
+    });
+
+    if (sellerLesson) {
+      return {
+        role: 'SELLER',
+        lesson: sellerLesson,
+      };
+    }
+
+    // Check if the user is a customer
+    const customerLesson = await this.prisma.lesson.findFirst({
+      where: {
+        id,
+        module: {
+          course: {
+            purchases: {
               some: {
-                id,
+                customerId: userId,
               },
             },
           },
@@ -134,40 +153,17 @@ export class LessonService {
       },
     });
 
-    if (!course) {
-      throw new NotFoundException('Course not found');
+    if (customerLesson) {
+      return {
+        role: 'CUSTOMER',
+        lesson: customerLesson,
+      };
     }
 
-    return await this.prisma.lesson.findFirst({
-      where: {
-        id,
-        OR: [
-          // seller
-          {
-            module: {
-              course: {
-                userId,
-                isActive: true,
-              },
-            },
-          },
-
-          // customer
-          {
-            module: {
-              course: {
-                purchases: {
-                  some: {
-                    courseId: course.id,
-                    customerId: userId,
-                  },
-                },
-              },
-            },
-          },
-        ],
-      },
-    });
+    // If the user is neither a buyer nor a seller, generate an exception
+    throw new ForbiddenException(
+      "You don't have access to this lesson or lesson not found",
+    );
   }
 
   async update(
