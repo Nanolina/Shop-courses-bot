@@ -1,4 +1,4 @@
-import { IsDefined, IsOptional, IsString, IsUrl } from 'class-validator';
+import { IsDefined, IsOptional, IsString } from 'class-validator';
 
 export class CreateLessonDto {
   @IsDefined()
@@ -10,10 +10,10 @@ export class CreateLessonDto {
   description?: string;
 
   @IsOptional()
-  @IsUrl()
+  @IsString()
   imageUrl?: string;
 
   @IsOptional()
-  @IsUrl()
+  @IsString()
   videoUrl?: string;
 }

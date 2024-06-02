@@ -84,8 +84,12 @@ export class LessonController {
     @Body() updateLessonDto: UpdateLessonDto,
     @UploadedFiles() files: Express.Multer.File[],
   ) {
-    const image = files.find((file) => file.mimetype.startsWith('image/'));
-    const video = files.find((file) => file.mimetype.startsWith('video/'));
+    let image;
+    let video;
+    if (files && files.length) {
+      image = files.find((file) => file.mimetype.startsWith('image/'));
+      video = files.find((file) => file.mimetype.startsWith('video/'));
+    }
 
     // Creating a lesson without video URL and public ID
     const lesson = await this.lessonService.update(

@@ -4,7 +4,6 @@ import {
   IsOptional,
   IsString,
   IsUUID,
-  IsUrl,
 } from 'class-validator';
 
 export class UpdateModuleDto {
@@ -21,7 +20,7 @@ export class UpdateModuleDto {
   description?: string;
 
   @IsOptional()
-  @IsUrl()
+  @IsString()
   imageUrl?: string;
 
   @IsDefined()
