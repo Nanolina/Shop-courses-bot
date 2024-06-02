@@ -8,3 +8,4 @@ export const UPDATE = 'update';
 export const DELETE = 'delete';
 export const SELLER = 'seller';
 export const CUSTOMER = 'customer';
+export const USER = 'user';

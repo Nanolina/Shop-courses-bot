@@ -102,8 +102,9 @@ export class CourseController {
 
   // all users
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.courseAllUsersService.findOne(id);
+  @UseGuards(AuthGuard)
+  findOne(@Req() req: Request, @Param('id') id: string) {
+    return this.courseAllUsersService.findOne(id, req.user.id);
   }
 
   // seller
