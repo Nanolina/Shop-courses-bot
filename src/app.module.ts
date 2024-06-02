@@ -6,6 +6,7 @@ import { LessonModule } from './lesson/lesson.module';
 import { LoggerModule } from './logger/logger.module';
 import { ModuleModule } from './module/module.module';
 import { PrismaService } from './prisma/prisma.service';
+import { SocketModule } from './socket/socket.module';
 import { TelegramModule } from './telegram-bot/telegram.module';
 
 @Module({
@@ -19,6 +20,7 @@ import { TelegramModule } from './telegram-bot/telegram.module';
       isGlobal: true,
     }),
     LessonModule,
+    SocketModule,
   ],
   providers: [PrismaService],
 })
