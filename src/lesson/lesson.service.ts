@@ -341,7 +341,11 @@ export class LessonService {
 
     if (lesson && lesson.videoUrl && lesson.videoPublicId) {
       try {
-        await this.cloudinaryService.deleteFile(lesson.videoPublicId);
+        this.logger.log({
+          method: 'deleteVideoFromCloudinary',
+          log: 'Start deleting a video file from Cloudinary',
+        });
+        await this.cloudinaryService.deleteVideoFile(lesson.videoPublicId);
       } catch (error) {
         this.logger.error({ method: 'deleteVideoFromCloudinary', error });
         throw new NotImplementedException(

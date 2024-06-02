@@ -27,9 +27,15 @@ export class CloudinaryController {
         publicId,
         userId,
       );
+
+      this.logger.log({
+        method: 'cloudinary-handleWebhook',
+        log: 'Lesson is updated with new videoUrl',
+      });
+
       res.status(HttpStatus.OK).send('Webhook processed successfully');
     } catch (error) {
-      this.logger.error({ method: 'handleWebhook', error });
+      this.logger.error({ method: 'cloudinary-handleWebhook', error });
       res
         .status(HttpStatus.INTERNAL_SERVER_ERROR)
         .send('Failed to process webhook');

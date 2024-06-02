@@ -18,7 +18,7 @@ export class ImageService {
   async deleteImageFromCloudinary(typeFromDB: Course | Module | Lesson) {
     if (typeFromDB.imageUrl && typeFromDB.imagePublicId) {
       try {
-        await this.cloudinaryService.deleteFile(typeFromDB.imagePublicId);
+        await this.cloudinaryService.deleteImageFile(typeFromDB.imagePublicId);
       } catch (error) {
         this.logger.error({ method: 'deleteImageFromCloudinary', error });
         throw new NotImplementedException(
