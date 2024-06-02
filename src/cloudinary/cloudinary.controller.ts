@@ -15,10 +15,11 @@ export class CloudinaryController {
     try {
       const lessonId = data.context.custom.lessonId;
       const userId = Number(data.context.custom.userId);
-      console.log('typeof userId', typeof userId);
-      console.log('userId', userId);
       const url = data.url;
       const publicId = data.public_id;
+
+      // Remove the video from the cloudinary for replacement
+      await this.lessonService.deleteVideoFromCloudinary(lessonId, userId);
 
       await this.lessonService.updateLessonVideo(
         lessonId,

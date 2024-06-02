@@ -1,4 +1,5 @@
 import {
+  ForbiddenException,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
@@ -148,6 +149,12 @@ export class ModuleService {
         },
       });
 
+      if (!module) {
+        throw new ForbiddenException(
+          "You don't have access to this module or the course has been deleted",
+        );
+      }
+
       const { imageUrl, imagePublicId } = await this.imageService.getImageUrl(
         'module',
         module,
@@ -160,6 +167,7 @@ export class ModuleService {
           id,
           course: {
             userId,
+            isActive: true,
           },
         },
         data: {
@@ -185,9 +193,17 @@ export class ModuleService {
           id,
           course: {
             userId,
+            isActive: true,
           },
         },
       });
+
+      if (!module) {
+        throw new ForbiddenException(
+          "You don't have access to this module or the course has been deleted",
+        );
+      }
+
       await this.imageService.deleteImageFromCloudinary(module);
 
       return await this.prisma.module.delete({
@@ -195,6 +211,7 @@ export class ModuleService {
           id,
           course: {
             userId,
+            isActive: true,
           },
         },
       });

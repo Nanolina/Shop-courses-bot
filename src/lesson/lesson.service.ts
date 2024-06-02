@@ -1,7 +1,9 @@
 import {
+  ForbiddenException,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
+  NotImplementedException,
 } from '@nestjs/common';
 import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 import { MyLogger } from '../logger/my-logger.service';
@@ -186,6 +188,12 @@ export class LessonService {
         },
       });
 
+      if (!lesson) {
+        throw new ForbiddenException(
+          "You don't have access to this lesson or the course has been deleted",
+        );
+      }
+
       const { imageUrl, imagePublicId } = await this.imageService.getImageUrl(
         'lesson',
         lesson,
@@ -199,6 +207,7 @@ export class LessonService {
           module: {
             course: {
               userId,
+              isActive: true,
             },
           },
         },
@@ -227,11 +236,20 @@ export class LessonService {
           module: {
             course: {
               userId,
+              isActive: true,
             },
           },
         },
       });
+
+      if (!lesson) {
+        throw new ForbiddenException(
+          "You don't have access to this lesson or the course has been deleted",
+        );
+      }
+
       await this.imageService.deleteImageFromCloudinary(lesson);
+      await this.deleteVideoFromCloudinary(id, userId);
 
       return await this.prisma.lesson.delete({
         where: {
@@ -239,6 +257,7 @@ export class LessonService {
           module: {
             course: {
               userId,
+              isActive: true,
             },
           },
         },
@@ -264,6 +283,7 @@ export class LessonService {
         module: {
           course: {
             userId,
+            isActive: true,
           },
         },
       },
@@ -285,9 +305,15 @@ export class LessonService {
         lessonId,
         userId,
       );
+
       // Check that the download has completed
       if (videoUploadResult.status === 'finished') {
         const { url, public_id } = videoUploadResult;
+
+        // Remove the video from the cloudinary for replacement
+        await this.deleteVideoFromCloudinary(lessonId, userId);
+
+        // Update DB to new url and public_id
         await this.updateLessonVideo(lessonId, url, public_id, userId);
       } else {
         this.logger.log({
@@ -297,6 +323,31 @@ export class LessonService {
       }
     } catch (error) {
       this.logger.error({ method: 'uploadVideoAndUpdateLesson-upload', error });
+    }
+  }
+
+  async deleteVideoFromCloudinary(lessonId: string, userId: number) {
+    const lesson = await this.prisma.lesson.findFirst({
+      where: {
+        id: lessonId,
+        module: {
+          course: {
+            userId,
+            isActive: true,
+          },
+        },
+      },
+    });
+
+    if (lesson && lesson.videoUrl && lesson.videoPublicId) {
+      try {
+        await this.cloudinaryService.deleteFile(lesson.videoPublicId);
+      } catch (error) {
+        this.logger.error({ method: 'deleteVideoFromCloudinary', error });
+        throw new NotImplementedException(
+          'Failed to delete a video from Cloudinary',
+        );
+      }
     }
   }
 }
