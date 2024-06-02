@@ -4,6 +4,7 @@ import {
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
+import { CUSTOMER, SELLER } from '../consts';
 import { MyLogger } from '../logger/my-logger.service';
 import { ImageService } from '../media/image.service';
 import { PrismaService } from '../prisma/prisma.service';
@@ -73,7 +74,7 @@ export class ModuleService {
 
     if (sellerModules.length) {
       return {
-        role: 'SELLER',
+        role: SELLER,
         modules: sellerModules,
       };
     }
@@ -94,7 +95,7 @@ export class ModuleService {
 
     if (customerModules.length) {
       return {
-        role: 'CUSTOMER',
+        role: CUSTOMER,
         lessons: customerModules,
       };
     }
