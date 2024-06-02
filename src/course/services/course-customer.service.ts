@@ -15,18 +15,26 @@ export class CourseCustomerService {
   ) {}
 
   async findAllPurchasedCourses(userId: number) {
-    return await this.prisma.coursePurchase.findMany({
+    return await this.prisma.course.findMany({
       where: {
-        customerId: userId,
+        purchases: {
+          some: {
+            customerId: userId,
+          },
+        },
       },
     });
   }
 
   async findOnePurchasedCourse(id: string, userId: number) {
-    return await this.prisma.coursePurchase.findMany({
+    return await this.prisma.course.findFirst({
       where: {
-        courseId: id,
-        customerId: userId,
+        purchases: {
+          some: {
+            courseId: id,
+            customerId: userId,
+          },
+        },
       },
     });
   }
@@ -44,7 +52,7 @@ export class CourseCustomerService {
     }
 
     try {
-      return await this.prisma.coursePurchase.create({
+      await this.prisma.coursePurchase.create({
         data: {
           sellerId: course.userId,
           walletAddressSeller: course.walletAddressSeller,
@@ -67,6 +75,8 @@ export class CourseCustomerService {
           },
         },
       });
+
+      return true;
     } catch (error) {
       this.logger.error({ method: 'course-purchase', error: error?.message });
       throw new InternalServerErrorException(
