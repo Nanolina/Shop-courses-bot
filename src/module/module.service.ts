@@ -61,31 +61,48 @@ export class ModuleService {
   }
 
   async findAll(courseId: string, userId: number) {
-    return await this.prisma.module.findMany({
+    // Check if the user is a seller of modules
+    const sellerModules = await this.prisma.module.findMany({
       where: {
-        OR: [
-          // seller
-          {
-            course: {
-              id: courseId,
-              userId,
-            },
-          },
-
-          // customer
-          {
-            course: {
-              purchases: {
-                some: {
-                  courseId,
-                  customerId: userId,
-                },
-              },
-            },
-          },
-        ],
+        course: {
+          id: courseId,
+          userId,
+        },
       },
     });
+
+    if (sellerModules.length) {
+      return {
+        role: 'SELLER',
+        modules: sellerModules,
+      };
+    }
+
+    // Check if the user is a customer
+    const customerModules = await this.prisma.module.findMany({
+      where: {
+        course: {
+          purchases: {
+            some: {
+              courseId,
+              customerId: userId,
+            },
+          },
+        },
+      },
+    });
+
+    if (customerModules.length) {
+      return {
+        role: 'CUSTOMER',
+        lessons: customerModules,
+      };
+    }
+
+    // If the user is neither a buyer nor a seller, generate an exception
+    throw new ForbiddenException(
+      "You don't have access to modules for this course",
+    );
   }
 
   async findOne(id: string, userId: number) {
