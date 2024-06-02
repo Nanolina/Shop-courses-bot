@@ -2,7 +2,6 @@ import {
   ForbiddenException,
   Injectable,
   InternalServerErrorException,
-  NotFoundException,
   NotImplementedException,
 } from '@nestjs/common';
 import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
@@ -70,62 +69,83 @@ export class LessonService {
   }
 
   async findAll(moduleId: string, userId: number) {
-    const course = await this.prisma.course.findFirst({
+    // Check if the user is a seller of lessons
+    const sellerLessons = await this.prisma.lesson.findMany({
       where: {
-        isActive: true,
-        modules: {
-          some: {
-            id: moduleId,
+        module: {
+          id: moduleId,
+          course: {
+            userId,
           },
         },
       },
     });
 
-    if (!course) {
-      throw new NotFoundException('Course not found');
+    if (sellerLessons.length) {
+      return {
+        role: 'SELLER',
+        lessons: sellerLessons,
+      };
     }
 
-    return await this.prisma.lesson.findMany({
+    // Check if the user is a customer
+    const customerLessons = await this.prisma.lesson.findMany({
       where: {
-        moduleId,
-        OR: [
-          // seller
-          {
-            module: {
-              course: {
-                userId,
-                isActive: true,
+        module: {
+          id: moduleId,
+          course: {
+            purchases: {
+              some: {
+                customerId: userId,
               },
             },
           },
-
-          // customer
-          {
-            module: {
-              course: {
-                purchases: {
-                  some: {
-                    courseId: course.id,
-                    customerId: userId,
-                  },
-                },
-              },
-            },
-          },
-        ],
+        },
       },
     });
+
+    if (customerLessons.length) {
+      return {
+        role: 'CUSTOMER',
+        lessons: customerLessons,
+      };
+    }
+
+    // If the user is neither a buyer nor a seller, generate an exception
+    throw new ForbiddenException(
+      "You don't have access to lessons for this module",
+    );
   }
 
   async findOne(id: string, userId: number) {
-    const course = await this.prisma.course.findFirst({
+    // Check if the user is a seller of lessons
+    const sellerLesson = await this.prisma.lesson.findFirst({
       where: {
-        isActive: true,
-        modules: {
-          some: {
-            lessons: {
+        id,
+        module: {
+          course: {
+            userId,
+          },
+        },
+      },
+    });
+
+    if (sellerLesson) {
+      return {
+        role: 'SELLER',
+        lesson: sellerLesson,
+      };
+    }
+
+    // Check if the user is a customer
+    const customerLesson = await this.prisma.lesson.findFirst({
+      where: {
+        id,
+        module: {
+          course: {
+            purchases: {
               some: {
-                id,
+                customerId: userId,
               },
             },
           },
@@ -133,40 +153,17 @@ export class LessonService {
       },
     });
 
-    if (!course) {
-      throw new NotFoundException('Course not found');
+    if (customerLesson) {
+      return {
+        role: 'CUSTOMER',
+        lesson: customerLesson,
+      };
     }
 
-    return await this.prisma.lesson.findFirst({
-      where: {
-        id,
-        OR: [
-          // seller
-          {
-            module: {
-              course: {
-                userId,
-                isActive: true,
-              },
-            },
-          },
-
-          // customer
-          {
-            module: {
-              course: {
-                purchases: {
-                  some: {
-                    courseId: course.id,
-                    customerId: userId,
-                  },
-                },
-              },
-            },
-          },
-        ],
-      },
-    });
+    // If the user is neither a buyer nor a seller, generate an exception
+    throw new ForbiddenException(
+      "You don't have access to this lesson or lesson not found",
+    );
   }
 
   async update(
