@@ -1,11 +1,5 @@
 import { Type } from 'class-transformer';
-import {
-  IsDefined,
-  IsNumber,
-  IsOptional,
-  IsString,
-  IsUrl,
-} from 'class-validator';
+import { IsDefined, IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class CreateCourseDto {
   @IsDefined()
@@ -38,6 +32,6 @@ export class CreateCourseDto {
   walletAddressSeller: string;
 
   @IsOptional()
-  @IsUrl()
+  @IsString()
   imageUrl?: string;
 }

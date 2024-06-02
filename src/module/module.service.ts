@@ -96,7 +96,7 @@ export class ModuleService {
     if (customerModules.length) {
       return {
         role: CUSTOMER,
-        lessons: customerModules,
+        modules: customerModules,
       };
     }
 
