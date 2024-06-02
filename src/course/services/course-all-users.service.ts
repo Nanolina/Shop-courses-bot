@@ -1,6 +1,18 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { CUSTOMER, SELLER, USER } from '../../consts';
 import { MyLogger } from '../../logger/my-logger.service';
 import { PrismaService } from '../../prisma/prisma.service';
+
+const include = {
+  include: {
+    _count: {
+      select: {
+        modules: true,
+        purchases: true,
+      },
+    },
+  },
+};
 
 @Injectable()
 export class CourseAllUsersService {
@@ -26,20 +38,59 @@ export class CourseAllUsersService {
     });
   }
 
-  async findOne(id: string) {
-    return await this.prisma.course.findFirst({
+  async findOne(id: string, userId: number) {
+    const customerCourse = await this.prisma.course.findFirst({
+      where: {
+        id,
+        purchases: {
+          some: {
+            customerId: userId,
+            courseId: id,
+          },
+        },
+      },
+      ...include,
+    });
+
+    if (customerCourse) {
+      return {
+        role: CUSTOMER,
+        course: customerCourse,
+      };
+    }
+
+    const sellerCourse = await this.prisma.course.findFirst({
+      where: {
+        id,
+        userId,
+        isActive: true,
+      },
+      ...include,
+    });
+
+    if (sellerCourse) {
+      return {
+        role: SELLER,
+        course: sellerCourse,
+      };
+    }
+
+    // not buyer, not seller
+    const userCourse = await this.prisma.course.findFirst({
       where: {
         id,
         isActive: true,
       },
-      include: {
-        _count: {
-          select: {
-            modules: true,
-            purchases: true,
-          },
-        },
-      },
+      ...include,
     });
+
+    if (!userCourse) {
+      throw new NotFoundException('Course not found');
+    }
+
+    return {
+      role: USER,
+      course: userCourse,
+    };
   }
 }
