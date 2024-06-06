@@ -14,6 +14,10 @@ export class CloudinaryController {
 
   @Post('webhook')
   async handleWebhook(@Body() data: any, @Res() res: Response) {
+    if (!data.context || !data.context.custom) {
+      return;
+    }
+
     const userId = Number(data.context.custom.userId);
     const lessonId = data.context.custom.lessonId;
     const url = data.url;

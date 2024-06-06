@@ -16,7 +16,6 @@ import {
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Request } from 'express';
 import { AuthGuard } from '../auth/auth.guard';
-import { imageUploadOptions } from '../utils';
 import { CreateModuleDto, UpdateModuleDto } from './dto';
 import { ModuleService } from './module.service';
 
@@ -25,6 +24,7 @@ export class ModuleController {
   constructor(private readonly moduleService: ModuleService) {}
 
   @Get('course/:courseId')
+  @HttpCode(HttpStatus.OK)
   @UseGuards(AuthGuard)
   findAll(@Req() req: Request, @Param('courseId') courseId: string) {
     return this.moduleService.findAll(courseId, req.user.id);
@@ -33,7 +33,7 @@ export class ModuleController {
   @Post('course/:courseId')
   @HttpCode(HttpStatus.CREATED)
   @UseGuards(AuthGuard)
-  @UseInterceptors(FileInterceptor('image', imageUploadOptions))
+  @UseInterceptors(FileInterceptor('image'))
   create(
     @Req() req: Request,
     @Param('courseId') courseId: string,
@@ -49,14 +49,16 @@ export class ModuleController {
   }
 
   @Get(':id')
+  @HttpCode(HttpStatus.OK)
   @UseGuards(AuthGuard)
   findOne(@Req() req: Request, @Param('id') id: string) {
     return this.moduleService.findOne(id, req.user.id);
   }
 
   @Patch(':id')
+  @HttpCode(HttpStatus.OK)
   @UseGuards(AuthGuard)
-  @UseInterceptors(FileInterceptor('image', imageUploadOptions))
+  @UseInterceptors(FileInterceptor('image'))
   update(
     @Req() req: Request,
     @Param('id') id: string,
@@ -67,8 +69,9 @@ export class ModuleController {
   }
 
   @Delete(':id')
+  @HttpCode(HttpStatus.NO_CONTENT)
   @UseGuards(AuthGuard)
-  delete(@Req() req: Request, @Param('id') id: string) {
-    return this.moduleService.delete(id, req.user.id);
+  async delete(@Req() req: Request, @Param('id') id: string) {
+    await this.moduleService.delete(id, req.user.id);
   }
 }

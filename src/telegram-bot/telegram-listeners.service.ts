@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import * as TelegramBot from 'node-telegram-bot-api';
-import { CallbackQueryHandler, TextCommandHandler } from './handlers';
+import { TextCommandHandler } from './handlers';
 import { TelegramUtilsService } from './telegram-utils.service';
 
 @Injectable()
@@ -8,7 +8,6 @@ export class TelegramListenersService {
   constructor(
     private utilsService: TelegramUtilsService,
     private textCommandHandler: TextCommandHandler,
-    private callbackQueryHandler: CallbackQueryHandler,
   ) {}
 
   setupListeners(bot: TelegramBot) {
@@ -32,10 +31,6 @@ export class TelegramListenersService {
         bot,
         webAppUrl,
       );
-    });
-
-    bot.on('callback_query', async (callbackQuery) => {
-      await this.callbackQueryHandler.handleCallbackQuery(callbackQuery, bot);
     });
   }
 }

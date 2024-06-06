@@ -16,7 +16,6 @@ import {
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Request } from 'express';
 import { AuthGuard } from '../auth/auth.guard';
-import { imageUploadOptions } from '../utils';
 import { CreateCourseDto, PurchaseCourseDto, UpdateCourseDto } from './dto';
 import {
   CourseAllUsersService,
@@ -34,6 +33,7 @@ export class CourseController {
 
   // all users
   @Get()
+  @HttpCode(HttpStatus.OK)
   findAll() {
     return this.courseAllUsersService.findAll();
   }
@@ -42,7 +42,7 @@ export class CourseController {
   @Post()
   @HttpCode(HttpStatus.CREATED)
   @UseGuards(AuthGuard)
-  @UseInterceptors(FileInterceptor('image', imageUploadOptions))
+  @UseInterceptors(FileInterceptor('image'))
   create(
     @Req() req: Request,
     @Body() createCourseDto: CreateCourseDto,
@@ -53,6 +53,7 @@ export class CourseController {
 
   // seller
   @Get('created')
+  @HttpCode(HttpStatus.OK)
   @UseGuards(AuthGuard)
   findAllCreatedCourses(@Req() req: Request) {
     return this.courseSellerService.findAllCreatedCourses(req.user.id);
@@ -60,6 +61,7 @@ export class CourseController {
 
   // seller
   @Get('created/:id')
+  @HttpCode(HttpStatus.OK)
   @UseGuards(AuthGuard)
   findOneCreatedCourse(@Req() req: Request, @Param('id') id: string) {
     return this.courseSellerService.findOneCreatedCourse(id, req.user.id);
@@ -67,6 +69,7 @@ export class CourseController {
 
   // customer
   @Get('purchased')
+  @HttpCode(HttpStatus.OK)
   @UseGuards(AuthGuard)
   findAllPurchasedCourses(@Req() req: Request) {
     return this.courseCustomerService.findAllPurchasedCourses(req.user.id);
@@ -74,6 +77,7 @@ export class CourseController {
 
   // customer
   @Get('purchased/:id')
+  @HttpCode(HttpStatus.OK)
   @UseGuards(AuthGuard)
   findOnePurchasedCourse(@Req() req: Request, @Param('id') id: string) {
     return this.courseCustomerService.findOnePurchasedCourse(id, req.user.id);
@@ -81,6 +85,7 @@ export class CourseController {
 
   // customer
   @Post(':id/purchase')
+  @HttpCode(HttpStatus.OK)
   @UseGuards(AuthGuard)
   purchase(
     @Req() req: Request,
@@ -96,12 +101,14 @@ export class CourseController {
 
   // all users
   @Get('category/:category')
+  @HttpCode(HttpStatus.OK)
   findAllCoursesOneCategory(@Param('category') category: string) {
     return this.courseAllUsersService.findAllCoursesOneCategory(category);
   }
 
   // all users
   @Get(':id')
+  @HttpCode(HttpStatus.OK)
   @UseGuards(AuthGuard)
   findOne(@Req() req: Request, @Param('id') id: string) {
     return this.courseAllUsersService.findOne(id, req.user.id);
@@ -109,8 +116,9 @@ export class CourseController {
 
   // seller
   @Patch(':id')
+  @HttpCode(HttpStatus.OK)
   @UseGuards(AuthGuard)
-  @UseInterceptors(FileInterceptor('image', imageUploadOptions))
+  @UseInterceptors(FileInterceptor('image'))
   update(
     @Req() req: Request,
     @Param('id') id: string,
@@ -127,8 +135,9 @@ export class CourseController {
 
   // seller
   @Delete(':id')
+  @HttpCode(HttpStatus.NO_CONTENT)
   @UseGuards(AuthGuard)
-  delete(@Req() req: Request, @Param('id') id: string) {
-    return this.courseSellerService.delete(id, req.user.id);
+  async delete(@Req() req: Request, @Param('id') id: string) {
+    await this.courseSellerService.delete(id, req.user.id);
   }
 }

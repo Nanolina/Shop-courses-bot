@@ -14,9 +14,9 @@ import {
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
+import { FilesInterceptor } from '@nestjs/platform-express';
 import { Request } from 'express';
 import { AuthGuard } from '../auth/auth.guard';
-import { multimediaInterceptor } from '../utils';
 import { CreateLessonDto, UpdateLessonDto } from './dto';
 import { LessonService } from './lesson.service';
 
@@ -25,6 +25,7 @@ export class LessonController {
   constructor(private readonly lessonService: LessonService) {}
 
   @Get('module/:moduleId')
+  @HttpCode(HttpStatus.OK)
   @UseGuards(AuthGuard)
   findAll(@Req() req: Request, @Param('moduleId') moduleId: string) {
     return this.lessonService.findAll(moduleId, req.user.id);
@@ -33,7 +34,7 @@ export class LessonController {
   @Post('module/:moduleId')
   @HttpCode(HttpStatus.CREATED)
   @UseGuards(AuthGuard)
-  @UseInterceptors(multimediaInterceptor())
+  @UseInterceptors(FilesInterceptor('files', 2))
   async create(
     @Req() req: Request,
     @Param('moduleId') moduleId: string,
@@ -70,14 +71,16 @@ export class LessonController {
   }
 
   @Get(':id')
+  @HttpCode(HttpStatus.OK)
   @UseGuards(AuthGuard)
   findOne(@Req() req: Request, @Param('id') id: string) {
     return this.lessonService.findOne(id, req.user.id);
   }
 
   @Patch(':id')
+  @HttpCode(HttpStatus.OK)
   @UseGuards(AuthGuard)
-  @UseInterceptors(multimediaInterceptor())
+  @UseInterceptors(FilesInterceptor('files', 2))
   async update(
     @Req() req: Request,
     @Param('id') id: string,
@@ -108,8 +111,9 @@ export class LessonController {
   }
 
   @Delete(':id')
+  @HttpCode(HttpStatus.NO_CONTENT)
   @UseGuards(AuthGuard)
-  delete(@Req() req: Request, @Param('id') id: string) {
-    return this.lessonService.delete(id, req.user.id);
+  async delete(@Req() req: Request, @Param('id') id: string) {
+    await this.lessonService.delete(id, req.user.id);
   }
 }

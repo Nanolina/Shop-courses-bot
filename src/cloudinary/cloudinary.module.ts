@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
+import { ImageService } from '../image/image.service';
 import { LessonService } from '../lesson/lesson.service';
 import { LoggerModule } from '../logger/logger.module';
-import { ImageService } from '../media/image.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { SocketGateway } from '../socket/socket.gateway';
 import { CloudinaryController } from './cloudinary.controller';
