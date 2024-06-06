@@ -5,8 +5,8 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { CUSTOMER, SELLER } from '../consts';
+import { ImageService } from '../image/image.service';
 import { MyLogger } from '../logger/my-logger.service';
-import { ImageService } from '../media/image.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateModuleDto, UpdateModuleDto } from './dto';
 
@@ -102,7 +102,7 @@ export class ModuleService {
 
     // If the user is neither a buyer nor a seller, generate an exception
     throw new ForbiddenException(
-      "You don't have access to modules for this course",
+      "Modules not found or you don't have access to modules for this course",
     );
   }
 
@@ -224,7 +224,7 @@ export class ModuleService {
 
       await this.imageService.deleteImageFromCloudinary(module);
 
-      return await this.prisma.module.delete({
+      await this.prisma.module.delete({
         where: {
           id,
           course: {

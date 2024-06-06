@@ -1,6 +1,6 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { ImageService } from '../../image/image.service';
 import { MyLogger } from '../../logger/my-logger.service';
-import { ImageService } from '../../media/image.service';
 import { PrismaService } from '../../prisma/prisma.service';
 import { CreateCourseDto, UpdateCourseDto } from '../dto';
 
@@ -165,8 +165,6 @@ export class CourseSellerService {
           },
         },
       });
-
-      return true;
     } catch (error) {
       this.logger.error({ method: 'course-delete', error: error?.message });
       throw new InternalServerErrorException(

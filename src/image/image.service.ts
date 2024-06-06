@@ -66,6 +66,7 @@ export class ImageService {
     let imagePublicId;
     // Delete the image completely
     if (Boolean(dto.isRemoveImage)) {
+      await this.deleteImageFromCloudinary(typeFromDB);
       imageUrl = null;
       imagePublicId = null;
       // Change to an image from Cloudinary
@@ -74,6 +75,7 @@ export class ImageService {
       imagePublicId = imageInCloudinary?.public_id;
       // Change to the image from the incoming link from the user
     } else if (dto.imageUrl) {
+      await this.deleteImageFromCloudinary(typeFromDB);
       imageUrl = dto.imageUrl;
       imagePublicId = null;
       // Leave it as it was

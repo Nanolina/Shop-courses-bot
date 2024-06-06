@@ -6,8 +6,8 @@ import {
 } from '@nestjs/common';
 import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 import { CUSTOMER, SELLER } from '../consts';
+import { ImageService } from '../image/image.service';
 import { MyLogger } from '../logger/my-logger.service';
-import { ImageService } from '../media/image.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateLessonDto } from './dto/create-lesson.dto';
 import { UpdateLessonDto } from './dto/update-lesson.dto';
@@ -249,7 +249,7 @@ export class LessonService {
       await this.imageService.deleteImageFromCloudinary(lesson);
       await this.deleteVideoFromCloudinary(id, userId);
 
-      return await this.prisma.lesson.delete({
+      await this.prisma.lesson.delete({
         where: {
           id,
           module: {

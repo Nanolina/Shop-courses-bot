@@ -30,10 +30,14 @@ export class CloudinaryService {
     publicId: string,
   ): Promise<UploadApiErrorResponse | UploadApiResponse> {
     return new Promise((resolve, reject) => {
-      v2.uploader.destroy(publicId, { invalidate: true }, (error, result) => {
-        if (error) return reject(error);
-        resolve(result);
-      });
+      v2.uploader.destroy(
+        publicId,
+        { invalidate: true, resource_type: 'image' },
+        (error, result) => {
+          if (error) return reject(error);
+          resolve(result);
+        },
+      );
     });
   }
 

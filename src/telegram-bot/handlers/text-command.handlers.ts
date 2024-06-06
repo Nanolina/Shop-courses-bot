@@ -30,7 +30,7 @@ export class TextCommandHandler {
       case '/purchasedcourses':
         await bot.sendMessage(
           chatId,
-          '📘 Here are the courses you’ve purchased! Click here to explore them. 🚀',
+          '📘 Here are the courses you’ve purchased! Click here to explore them 🚀',
           this.utilsService.getOptions('purchasedcourses', webAppUrl),
         );
         break;

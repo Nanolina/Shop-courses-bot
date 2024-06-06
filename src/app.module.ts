@@ -16,11 +16,11 @@ import { TelegramModule } from './telegram-bot/telegram.module';
     ModuleModule,
     LoggerModule,
     TelegramModule,
+    LessonModule,
+    SocketModule,
     ConfigModule.forRoot({
       isGlobal: true,
     }),
-    LessonModule,
-    SocketModule,
   ],
   providers: [PrismaService],
 })
