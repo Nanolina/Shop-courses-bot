@@ -40,6 +40,13 @@ export class AuthGuard implements CanActivate {
       // Attach user to request for further use in controllers
       request.user = user;
     } catch (error) {
+      const errorMessage = error?.message;
+      if (errorMessage === 'Init data expired') {
+        throw new UnauthorizedException(
+          'Init data expired, please re-authenticate',
+        );
+      }
+
       this.logger.error({
         method: 'canActivate',
         error: error?.message || error,
