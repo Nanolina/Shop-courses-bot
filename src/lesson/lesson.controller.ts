@@ -89,6 +89,7 @@ export class LessonController {
   ) {
     let image;
     let video;
+    const userId = req.user.id;
     if (files && files.length) {
       image = files.find((file) => file.mimetype.startsWith('image/'));
       video = files.find((file) => file.mimetype.startsWith('video/'));
@@ -97,14 +98,30 @@ export class LessonController {
     // Creating a lesson without video URL and public ID
     const lesson = await this.lessonService.update(
       id,
-      req.user.id,
+      userId,
       updateLessonDto,
       image,
     );
 
-    // Asynchronous loading of video
-    if (video && !updateLessonDto.videoUrl) {
-      this.lessonService.uploadVideoAndUpdateLesson(video, id, req.user.id);
+    // Delete the video from everywhere
+    if (updateLessonDto.isRemoveVideo) {
+      await this.lessonService.deleteVideoFromCloudinary(id, userId);
+      await this.lessonService.updateLessonVideo(id, null, null, userId);
+    }
+
+    // Asynchronous upload new video file to Cloudinary
+    else if (video && !updateLessonDto.videoUrl) {
+      this.lessonService.uploadVideoAndUpdateLesson(video, id, userId);
+
+      // Add new video link, delete old one
+    } else if (!video && updateLessonDto.videoUrl) {
+      await this.lessonService.deleteVideoFromCloudinary(id, userId);
+      await this.lessonService.updateLessonVideo(
+        id,
+        updateLessonDto.videoUrl,
+        null,
+        userId,
+      );
     }
 
     return lesson;

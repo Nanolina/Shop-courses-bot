@@ -1,4 +1,5 @@
-import { IsOptional, IsString } from 'class-validator';
+import { Type } from 'class-transformer';
+import { IsBoolean, IsOptional, IsString } from 'class-validator';
 
 export class UpdateLessonDto {
   @IsOptional()
@@ -9,11 +10,23 @@ export class UpdateLessonDto {
   @IsString()
   description?: string;
 
+  // Image
   @IsOptional()
   @IsString()
   imageUrl?: string;
 
   @IsOptional()
+  @Type(() => Boolean)
+  @IsBoolean()
+  isRemoveImage?: string;
+
+  // Video
+  @IsOptional()
   @IsString()
   videoUrl?: string;
+
+  @IsOptional()
+  @Type(() => Boolean)
+  @IsBoolean()
+  isRemoveVideo?: string;
 }
