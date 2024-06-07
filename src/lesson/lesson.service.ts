@@ -2,6 +2,7 @@ import {
   ForbiddenException,
   Injectable,
   InternalServerErrorException,
+  NotFoundException,
   NotImplementedException,
 } from '@nestjs/common';
 import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
@@ -141,52 +142,47 @@ export class LessonService {
   }
 
   async findOne(id: string, userId: number) {
+    const lessonInDB = await this.prisma.lesson.findFirst({
+      where: {
+        id,
+      },
+    });
+
+    if (!lessonInDB) {
+      throw new NotFoundException('Lesson not found');
+    }
+
     // Check if the user is a seller of lessons
-    const sellerLesson = await this.prisma.lesson.findFirst({
+    const lesson = await this.prisma.lesson.findFirst({
       where: {
         id,
         module: {
           course: {
-            userId,
-          },
-        },
-      },
-    });
-
-    if (sellerLesson) {
-      return {
-        role: SELLER,
-        lesson: sellerLesson,
-      };
-    }
-
-    // Check if the user is a customer
-    const customerLesson = await this.prisma.lesson.findFirst({
-      where: {
-        id,
-        module: {
-          course: {
-            purchases: {
-              some: {
-                customerId: userId,
+            OR: [
+              // Seller
+              {
+                userId,
+                isActive: true,
               },
-            },
+              // Customer
+              {
+                purchases: {
+                  some: {
+                    customerId: userId,
+                  },
+                },
+              },
+            ],
           },
         },
       },
     });
 
-    if (customerLesson) {
-      return {
-        role: CUSTOMER,
-        lesson: customerLesson,
-      };
+    if (!lesson) {
+      throw new ForbiddenException("You don't have access to this lesson");
     }
 
-    // If the user is neither a buyer nor a seller, generate an exception
-    throw new ForbiddenException(
-      "You don't have access to this lesson or lesson not found",
-    );
+    return lesson;
   }
 
   async update(

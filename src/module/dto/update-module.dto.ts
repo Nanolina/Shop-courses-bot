@@ -1,16 +1,7 @@
-import {
-  IsDefined,
-  IsNumber,
-  IsOptional,
-  IsString,
-  IsUUID,
-} from 'class-validator';
+import { Type } from 'class-transformer';
+import { IsBoolean, IsOptional, IsString } from 'class-validator';
 
 export class UpdateModuleDto {
-  @IsDefined()
-  @IsUUID()
-  moduleId: string;
-
   @IsOptional()
   @IsString()
   name?: string;
@@ -23,7 +14,8 @@ export class UpdateModuleDto {
   @IsString()
   imageUrl?: string;
 
-  @IsDefined()
-  @IsNumber()
-  userId: number;
+  @IsOptional()
+  @Type(() => Boolean)
+  @IsBoolean()
+  isRemoveImage?: string;
 }
