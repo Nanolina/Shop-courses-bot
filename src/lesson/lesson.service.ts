@@ -82,7 +82,16 @@ export class LessonService {
       },
     });
 
-    if (sellerLessons.length) {
+    const isSeller = await this.prisma.module.findFirst({
+      where: {
+        id: moduleId,
+        course: {
+          userId,
+        },
+      },
+    });
+
+    if (isSeller) {
       return {
         role: SELLER,
         lessons: sellerLessons,
@@ -105,7 +114,20 @@ export class LessonService {
       },
     });
 
-    if (customerLessons.length) {
+    const isCustomer = await this.prisma.module.findFirst({
+      where: {
+        id: moduleId,
+        course: {
+          purchases: {
+            some: {
+              customerId: userId,
+            },
+          },
+        },
+      },
+    });
+
+    if (isCustomer) {
       return {
         role: CUSTOMER,
         lessons: customerLessons,

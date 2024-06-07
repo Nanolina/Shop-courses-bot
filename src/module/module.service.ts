@@ -72,7 +72,14 @@ export class ModuleService {
       },
     });
 
-    if (sellerModules.length) {
+    const isSeller = await this.prisma.course.findFirst({
+      where: {
+        id: courseId,
+        userId,
+      },
+    });
+
+    if (isSeller) {
       return {
         role: SELLER,
         modules: sellerModules,
@@ -93,7 +100,18 @@ export class ModuleService {
       },
     });
 
-    if (customerModules.length) {
+    const isCustomer = await this.prisma.course.findFirst({
+      where: {
+        purchases: {
+          some: {
+            courseId,
+            customerId: userId,
+          },
+        },
+      },
+    });
+
+    if (isCustomer) {
       return {
         role: CUSTOMER,
         modules: customerModules,
@@ -102,7 +120,7 @@ export class ModuleService {
 
     // If the user is neither a buyer nor a seller, generate an exception
     throw new ForbiddenException(
-      "Modules not found or you don't have access to modules for this course",
+      "You don't have access to modules for this course",
     );
   }
 
