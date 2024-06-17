@@ -27,10 +27,6 @@ export class CreateCourseDto {
   @IsString()
   currency: string;
 
-  @IsDefined()
-  @IsString()
-  walletAddressSeller: string;
-
   @IsOptional()
   @IsString()
   imageUrl?: string;
