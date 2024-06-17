@@ -16,7 +16,7 @@ import {
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Request } from 'express';
 import { AuthGuard } from '../auth/auth.guard';
-import { CreateCourseDto, PurchaseCourseDto, UpdateCourseDto } from './dto';
+import { CreateCourseDto, UpdateCourseDto } from './dto';
 import {
   CourseAllUsersService,
   CourseCustomerService,
@@ -87,16 +87,8 @@ export class CourseController {
   @Post(':id/purchase')
   @HttpCode(HttpStatus.OK)
   @UseGuards(AuthGuard)
-  purchase(
-    @Req() req: Request,
-    @Param('id') id: string,
-    @Body() purchaseCourseDto: PurchaseCourseDto,
-  ) {
-    return this.courseCustomerService.purchase(
-      id,
-      req.user.id,
-      purchaseCourseDto,
-    );
+  purchase(@Req() req: Request, @Param('id') id: string) {
+    return this.courseCustomerService.purchase(id, req.user.id);
   }
 
   // all users

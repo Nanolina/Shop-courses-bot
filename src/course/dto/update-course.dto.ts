@@ -29,10 +29,6 @@ export class UpdateCourseDto {
 
   @IsOptional()
   @IsString()
-  walletAddressSeller?: string;
-
-  @IsOptional()
-  @IsString()
   imageUrl?: string;
 
   @IsOptional()

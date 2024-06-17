@@ -5,7 +5,6 @@ import {
 } from '@nestjs/common';
 import { MyLogger } from '../../logger/my-logger.service';
 import { PrismaService } from '../../prisma/prisma.service';
-import { PurchaseCourseDto } from '../dto';
 
 @Injectable()
 export class CourseCustomerService {
@@ -39,7 +38,7 @@ export class CourseCustomerService {
     });
   }
 
-  async purchase(id: string, userId: number, dto: PurchaseCourseDto) {
+  async purchase(id: string, userId: number) {
     const course = await this.prisma.course.findFirst({
       where: {
         id,
@@ -55,8 +54,6 @@ export class CourseCustomerService {
       await this.prisma.coursePurchase.create({
         data: {
           sellerId: course.userId,
-          walletAddressSeller: course.walletAddressSeller,
-          walletAddressCustomer: dto.walletAddressCustomer,
           customer: {
             connectOrCreate: {
               where: {

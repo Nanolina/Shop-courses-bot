@@ -37,7 +37,6 @@ export class CourseSellerService {
           subcategory: dto.subcategory,
           price: parseFloat(dto.price),
           currency: dto.currency,
-          walletAddressSeller: dto.walletAddressSeller,
           imageUrl: dto.imageUrl || imageInCloudinary?.url,
           ...(imageInCloudinary && {
             imagePublicId: imageInCloudinary?.public_id,
@@ -119,7 +118,6 @@ export class CourseSellerService {
           subcategory: dto.subcategory,
           price: parseFloat(dto.price),
           currency: dto.currency,
-          walletAddressSeller: dto.walletAddressSeller,
         },
       });
     } catch (error) {

@@ -11,10 +11,10 @@ export class TelegramUtilsService {
     const AlinaId = this.configService.get<string>('ALINA_ID');
     const webAppUrlAlina = this.configService.get<string>('WEB_APP_URL_ALINA');
 
-    // Sneganna developer
-    const SnegannaId = this.configService.get<string>('SNEGANNA_ID');
-    const webAppUrlSneganna = this.configService.get<string>(
-      'WEB_APP_URL_SNEGANNA',
+    // Snezhanna developer
+    const SnezhannaId = this.configService.get<string>('SNEZHANNA_ID');
+    const webAppUrlSnezhanna = this.configService.get<string>(
+      'WEB_APP_URL_SNEZHANNA',
     );
 
     // All users
@@ -22,8 +22,8 @@ export class TelegramUtilsService {
 
     if (userId === Number(AlinaId)) {
       return webAppUrlAlina;
-    } else if (userId === Number(SnegannaId)) {
-      return webAppUrlSneganna;
+    } else if (userId === Number(SnezhannaId)) {
+      return webAppUrlSnezhanna;
     } else {
       return webAppUrl;
     }

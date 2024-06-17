@@ -16,24 +16,23 @@ model User {
 }
 
 model Course {
-  id                  String           @id @default(uuid())
-  name                String
-  description         String?
-  category            String
-  subcategory         String?
-  price               Int
-  currency            String
-  userId              BigInt
-  imageUrl            String?
-  imagePublicId       String?
-  walletAddressSeller String
-  isActive            Boolean          @default(true)
-  isDeployed          Boolean          @default(false)
-  createdAt           DateTime         @default(now())
-  updatedAt           DateTime         @updatedAt
-  user                User             @relation(fields: [userId], references: [id])
-  purchases           CoursePurchase[]
-  modules             Module[]
+  id            String           @id @default(uuid())
+  name          String
+  description   String?
+  category      String
+  subcategory   String?
+  price         Int
+  currency      String
+  userId        BigInt
+  imageUrl      String?
+  imagePublicId String?
+  isActive      Boolean          @default(true)
+  isDeployed    Boolean          @default(false)
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+  user          User             @relation(fields: [userId], references: [id])
+  purchases     CoursePurchase[]
+  modules       Module[]
 }
 
 model Module {
@@ -64,15 +63,13 @@ model Lesson {
 }
 
 model CoursePurchase {
-  id                    String   @id @default(uuid())
-  customerId            BigInt
-  sellerId              BigInt
-  courseId              String
-  walletAddressSeller   String
-  walletAddressCustomer String
-  purchaseDate          DateTime @default(now())
-  createdAt             DateTime @default(now())
-  updatedAt             DateTime @updatedAt
-  course                Course   @relation(fields: [courseId], references: [id])
-  customer              User     @relation(fields: [customerId], references: [id])
+  id           String   @id @default(uuid())
+  customerId   BigInt
+  sellerId     BigInt
+  courseId     String
+  purchaseDate DateTime @default(now())
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  course       Course   @relation(fields: [courseId], references: [id])
+  customer     User     @relation(fields: [customerId], references: [id])
 }
