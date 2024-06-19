@@ -16,21 +16,21 @@ export class TextCommandHandler {
       case '/create':
         await bot.sendMessage(
           chatId,
-          '🌱 Are you ready to bring your course ideas to life? Tap here and let’s get started creating something amazing together! 📝',
+          "🌱 Ready to bring your course ideas to life? Click the button below and let's create something helpful together! 📝",
           this.utilsService.getOptions('create', webAppUrl),
         );
         break;
       case '/createdcourses':
         await bot.sendMessage(
           chatId,
-          '🔧 Ready to tweak your existing courses? Just click here and make all the adjustments you need! ✍️',
+          '🔧 Ready to make changes to your created courses? Just click below and make any necessary adjustments! ✍️',
           this.utilsService.getOptions('createdcourses', webAppUrl),
         );
         break;
       case '/purchasedcourses':
         await bot.sendMessage(
           chatId,
-          '📘 Here are the courses you’ve purchased! Click here to explore them 🚀',
+          '📘 Click the button below and start learning your courses today! 🚀',
           this.utilsService.getOptions('purchasedcourses', webAppUrl),
         );
         break;
@@ -38,7 +38,7 @@ export class TextCommandHandler {
       default:
         await bot.sendMessage(
           chatId,
-          '🚀 Eager to explore new learning opportunities? Click here to start your journey through our diverse course offerings! 🎓',
+          '🚀 Hungry for new learning opportunities? Click here to start your journey through our diverse course offerings! 🎓',
           this.utilsService.getOptions('start', webAppUrl),
         );
         break;
