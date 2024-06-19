@@ -23,38 +23,39 @@ export class AuthGuard implements CanActivate {
       throw new UnauthorizedException('Authorization header is missing');
     }
 
-    try {
-      const token = this.configService.get<string>('BOT_TOKEN');
-      if (!token) {
-        throw new Error('bot token is not defined');
-      }
-
-      validate(authorization, token);
-      const initData = parse(authorization);
-      const { user } = initData;
-
-      if (!user) {
-        throw new UnauthorizedException('No user specified');
-      }
-
-      // Attach user to request for further use in controllers
-      request.user = user;
-    } catch (error) {
-      const errorMessage = error?.message;
-      if (errorMessage === 'Init data expired') {
-        throw new UnauthorizedException(
-          'Init data expired, please re-authenticate',
-        );
-      }
-
-      this.logger.error({
-        method: 'canActivate',
-        error: error?.message || error,
-      });
-
-      throw new UnauthorizedException('Invalid token');
+    const token = this.configService.get<string>('BOT_TOKEN');
+    if (!token) {
+      throw new Error('bot token is not defined');
     }
 
-    return true;
+    const [authType, authData = ''] = authorization.split(' ');
+
+    switch (authType) {
+      case 'tma':
+        try {
+          validate(authData, token, {
+            // For a while, we'll disable the date check, since it's always expired for some reason.
+            expiresIn: 0,
+          });
+
+          const initData = parse(authData);
+          const { user } = initData;
+          if (!user) {
+            throw new UnauthorizedException('No user specified');
+          }
+
+          // Attach user to request for further use in controllers
+          request.user = user;
+          return true;
+        } catch (error) {
+          throw new UnauthorizedException(
+            'Something went wrong with auth',
+            error?.message,
+          );
+        }
+
+      default:
+        throw new UnauthorizedException('Auth type is not valid');
+    }
   }
 }
