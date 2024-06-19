@@ -44,14 +44,14 @@ export class TelegramUtilsService {
         break;
       case 'createdcourses':
         url = `${webAppUrl}/course/created`;
-        text = '📚 View My Created Courses';
+        text = '📚 My Created Courses';
         replyMarkup = {
           inline_keyboard: [[{ text, web_app: { url } }]],
         };
         break;
       case 'purchasedcourses':
         url = `${webAppUrl}/course/purchased`;
-        text = '📘 View My Purchased Courses';
+        text = '📘 My Purchased Courses';
         replyMarkup = {
           inline_keyboard: [[{ text, web_app: { url } }]],
         };
@@ -59,7 +59,7 @@ export class TelegramUtilsService {
       case 'start':
       default:
         url = webAppUrl;
-        text = '🌟 Explore Courses';
+        text = '🌟 Choose a course';
         replyMarkup = {
           inline_keyboard: [[{ text, web_app: { url } }]],
         };
