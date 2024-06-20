@@ -11,35 +11,61 @@ export class TextCommandHandler {
     chatId: number,
     bot: TelegramBot,
     webAppUrl: string,
+    language: string,
   ) {
+    let message;
     switch (text) {
       case '/create':
+        message = this.utilsService.getTranslatedMessage(
+          language,
+          'create',
+          '🌱',
+          '📝',
+        );
         await bot.sendMessage(
           chatId,
-          "🌱 Ready to bring your course ideas to life? Click the button below and let's create something helpful together! 📝",
-          this.utilsService.getOptions('create', webAppUrl),
+          message,
+          this.utilsService.getOptions('create', webAppUrl, language),
         );
         break;
       case '/createdcourses':
+        message = this.utilsService.getTranslatedMessage(
+          language,
+          'created_courses',
+          '🔧',
+          '✍️',
+        );
         await bot.sendMessage(
           chatId,
-          '🔧 Ready to make changes to your created courses? Just click below and make any necessary adjustments! ✍️',
-          this.utilsService.getOptions('createdcourses', webAppUrl),
+          message,
+          this.utilsService.getOptions('createdcourses', webAppUrl, language),
         );
         break;
       case '/purchasedcourses':
+        message = this.utilsService.getTranslatedMessage(
+          language,
+          'purchased_courses',
+          '📘',
+          '🚀',
+        );
         await bot.sendMessage(
           chatId,
-          '📘 Click the button below and start learning your courses today! 🚀',
-          this.utilsService.getOptions('purchasedcourses', webAppUrl),
+          message,
+          this.utilsService.getOptions('purchasedcourses', webAppUrl, language),
         );
         break;
       case '/start':
       default:
+        message = this.utilsService.getTranslatedMessage(
+          language,
+          'start',
+          '🚀',
+          '🎓',
+        );
         await bot.sendMessage(
           chatId,
-          '🚀 Hungry for new learning opportunities? Click here to start your journey through our diverse course offerings! 🎓',
-          this.utilsService.getOptions('start', webAppUrl),
+          message,
+          this.utilsService.getOptions('start', webAppUrl, language),
         );
         break;
     }

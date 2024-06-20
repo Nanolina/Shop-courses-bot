@@ -1,9 +1,20 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { getTranslatedText } from '../translation';
 
 @Injectable()
 export class TelegramUtilsService {
   constructor(private configService: ConfigService) {}
+
+  getTranslatedMessage(
+    language: string,
+    text: string,
+    iconStart: string,
+    iconEnd?: string,
+  ) {
+    const message = getTranslatedText(text, language);
+    return `${iconStart} ${message}${iconEnd ? `! ${iconEnd}` : ''}`;
+  }
 
   getWebUrl(userId: number) {
     console.log('userId', userId);
@@ -29,7 +40,7 @@ export class TelegramUtilsService {
     }
   }
 
-  getOptions(type: string, webAppUrl: string) {
+  getOptions(type: string, webAppUrl: string, language: string) {
     let url;
     let text;
     let replyMarkup;
@@ -37,21 +48,25 @@ export class TelegramUtilsService {
     switch (type) {
       case 'create':
         url = `${webAppUrl}/course/create`;
-        text = '🎓 Create New Course';
+        text = this.getTranslatedMessage(language, 'create_course', '🎓');
         replyMarkup = {
           inline_keyboard: [[{ text, web_app: { url } }]],
         };
         break;
       case 'createdcourses':
         url = `${webAppUrl}/course/created`;
-        text = '📚 My Created Courses';
+        text = this.getTranslatedMessage(language, 'my_created_courses', '💻');
         replyMarkup = {
           inline_keyboard: [[{ text, web_app: { url } }]],
         };
         break;
       case 'purchasedcourses':
         url = `${webAppUrl}/course/purchased`;
-        text = '📘 My Purchased Courses';
+        text = this.getTranslatedMessage(
+          language,
+          'my_purchased_courses',
+          '📚',
+        );
         replyMarkup = {
           inline_keyboard: [[{ text, web_app: { url } }]],
         };
@@ -59,7 +74,7 @@ export class TelegramUtilsService {
       case 'start':
       default:
         url = webAppUrl;
-        text = '🌟 Choose a course';
+        text = this.getTranslatedMessage(language, 'choose_course', '🌟');
         replyMarkup = {
           inline_keyboard: [[{ text, web_app: { url } }]],
         };
