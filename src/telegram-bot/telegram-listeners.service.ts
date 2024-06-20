@@ -15,13 +15,14 @@ export class TelegramListenersService {
       const { chat, from, text } = msg;
       const chatId = chat.id;
       const userId = from.id;
+      const languageCode = from.language_code;
       const webAppUrl = this.utilsService.getWebUrl(userId);
 
       if (!userId) {
         await bot.sendMessage(
           chatId,
           '❌ Oops! You are unauthorized 😢',
-          this.utilsService.getOptions('start', webAppUrl),
+          this.utilsService.getOptions('start', webAppUrl, 'en'), // Default to English
         );
       }
 
@@ -30,6 +31,7 @@ export class TelegramListenersService {
         chatId,
         bot,
         webAppUrl,
+        languageCode,
       );
     });
   }
