@@ -1,4 +1,4 @@
-export const coursedDataSnezhannaDev = [
+export const coursedDataSnezhannaProd = [
   {
     name: 'Videography',
     description:
@@ -124,7 +124,7 @@ export const coursedDataSnezhannaDev = [
   },
 ];
 
-export const coursedDataSnezhannaProd = [
+export const coursedDataSnezhannaDev = [
   {
     name: 'Videography',
     description:
