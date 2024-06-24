@@ -8,6 +8,7 @@ import { ModuleModule } from './module/module.module';
 import { PrismaService } from './prisma/prisma.service';
 import { SocketModule } from './socket/socket.module';
 import { TelegramModule } from './telegram-bot/telegram.module';
+import { PointsModule } from './points/points.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { TelegramModule } from './telegram-bot/telegram.module';
     ConfigModule.forRoot({
       isGlobal: true,
     }),
+    PointsModule,
   ],
   providers: [PrismaService],
 })
