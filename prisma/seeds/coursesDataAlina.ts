@@ -1,4 +1,4 @@
-export const coursesDataAlinaDev = [
+export const coursesDataAlinaProd = [
   {
     name: 'Meditation',
     description:
@@ -211,7 +211,7 @@ export const coursesDataAlinaDev = [
   },
 ];
 
-export const coursesDataAlinaProd = [
+export const coursesDataAlinaDev = [
   {
     name: 'Meditation',
     description:
