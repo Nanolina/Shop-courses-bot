@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, Post, Req, UseGuards } from '@nestjs/common';
 import { Request } from 'express';
 import { AuthGuard } from '../auth/auth.guard';
 import { PointsService } from './points.service';
@@ -9,6 +9,7 @@ export class PointsController {
 
   @Post('add')
   @UseGuards(AuthGuard)
+  @HttpCode(HttpStatus.NO_CONTENT)
   async add(
     @Req() req: Request,
     @Body() body: { points: number },
@@ -16,7 +17,8 @@ export class PointsController {
     await this.pointsService.add(req.user.id, body.points);
   }
 
-  @Get(':userId')
+  @Get()
+  @HttpCode(HttpStatus.OK)
   @UseGuards(AuthGuard)
   async get(@Req() req: Request): Promise<number> {
     return this.pointsService.get(req.user.id);
