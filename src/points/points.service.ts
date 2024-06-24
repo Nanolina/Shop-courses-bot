@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { MyLogger } from '../logger/my-logger.service';
 import { PrismaService } from '../prisma/prisma.service';
 
@@ -10,10 +10,18 @@ export class PointsService {
   ) {}
 
   async add(userId: number, points: number): Promise<void> {
-    await this.prisma.user.update({
-      where: { id: userId },
-      data: { points: { increment: points } },
-    });
+    try {
+      await this.prisma.user.update({
+        where: { id: userId },
+        data: { points: { increment: points } },
+      });
+    } catch (error) {
+      this.logger.error({ method: 'points-add', error: error?.message });
+      throw new InternalServerErrorException(
+        'Failed to add points',
+        error?.message,
+      );
+    }
   }
 
   async get(userId: number): Promise<number> {
