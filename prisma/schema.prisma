@@ -11,6 +11,7 @@ model User {
   id        BigInt           @id
   createdAt DateTime         @default(now())
   updatedAt DateTime         @updatedAt
+  points    Int              @default(0)
   courses   Course[]
   purchases CoursePurchase[]
 }
