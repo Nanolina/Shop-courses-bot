@@ -3,6 +3,7 @@ CREATE TABLE "User" (
     "id" BIGINT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
+    "points" INTEGER NOT NULL DEFAULT 0,
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("id")
 );
@@ -63,7 +64,6 @@ CREATE TABLE "CoursePurchase" (
     "customerId" BIGINT NOT NULL,
     "sellerId" BIGINT NOT NULL,
     "courseId" TEXT NOT NULL,
-    "purchaseDate" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 

@@ -68,7 +68,6 @@ model CoursePurchase {
   customerId   BigInt
   sellerId     BigInt
   courseId     String
-  purchaseDate DateTime @default(now())
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
   course       Course   @relation(fields: [courseId], references: [id])

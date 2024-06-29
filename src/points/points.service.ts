@@ -9,14 +9,43 @@ export class PointsService {
     private readonly logger: MyLogger,
   ) {}
 
-  async add(userId: number, points: number): Promise<void> {
+  async addPointsForCreatingCourse(
+    courseId: string,
+    userId: number,
+  ): Promise<void> {
     try {
       await this.prisma.user.update({
-        where: { id: userId },
-        data: { points: { increment: points } },
+        where: {
+          id: userId,
+          courses: {
+            some: {
+              id: courseId,
+              userId,
+              isDeployed: false,
+            },
+          },
+        },
+        data: {
+          points: {
+            increment: 20,
+          },
+        },
+      });
+
+      await this.prisma.course.update({
+        where: {
+          id: courseId,
+          userId,
+        },
+        data: {
+          isDeployed: true,
+        },
       });
     } catch (error) {
-      this.logger.error({ method: 'points-add', error: error?.message });
+      this.logger.error({
+        method: 'points-addPointsForCreatingCourse',
+        error: error?.message,
+      });
       throw new InternalServerErrorException(
         'Failed to add points',
         error?.message,

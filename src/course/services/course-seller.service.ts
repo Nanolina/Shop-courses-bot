@@ -71,16 +71,6 @@ export class CourseSellerService {
     });
   }
 
-  async findOneCreatedCourse(id: string, userId: number) {
-    return await this.prisma.course.findFirst({
-      where: {
-        id,
-        userId,
-        isActive: true,
-      },
-    });
-  }
-
   async update(
     id: string,
     userId: number,

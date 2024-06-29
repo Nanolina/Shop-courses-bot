@@ -25,19 +25,6 @@ export class CourseCustomerService {
     });
   }
 
-  async findOnePurchasedCourse(id: string, userId: number) {
-    return await this.prisma.course.findFirst({
-      where: {
-        purchases: {
-          some: {
-            courseId: id,
-            customerId: userId,
-          },
-        },
-      },
-    });
-  }
-
   async purchase(id: string, userId: number) {
     const course = await this.prisma.course.findFirst({
       where: {
