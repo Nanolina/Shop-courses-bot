@@ -9,7 +9,16 @@ export class PointsService {
     private readonly logger: MyLogger,
   ) {}
 
-  async addPointsForCreatingCourse(
+  async get(userId: number): Promise<number> {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: { points: true },
+    });
+
+    return user.points;
+  }
+
+  async addPointsForCourseCreation(
     courseId: string,
     userId: number,
   ): Promise<void> {
@@ -43,22 +52,37 @@ export class PointsService {
       });
     } catch (error) {
       this.logger.error({
-        method: 'points-addPointsForCreatingCourse',
+        method: 'points-addPointsForCourseCreation',
         error: error?.message,
       });
       throw new InternalServerErrorException(
-        'Failed to add points',
+        'Failed to add course creation points',
         error?.message,
       );
     }
   }
 
-  async get(userId: number): Promise<number> {
-    const user = await this.prisma.user.findUnique({
-      where: { id: userId },
-      select: { points: true },
-    });
-
-    return user.points;
+  async addPointsForCoursePurchase(userId: number): Promise<void> {
+    try {
+      await this.prisma.user.update({
+        where: {
+          id: userId,
+        },
+        data: {
+          points: {
+            increment: 20,
+          },
+        },
+      });
+    } catch (error) {
+      this.logger.error({
+        method: 'points-addPointsForCoursePurchase',
+        error: error?.message,
+      });
+      throw new InternalServerErrorException(
+        'Failed to add course purchase points',
+        error?.message,
+      );
+    }
   }
 }

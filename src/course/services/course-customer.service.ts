@@ -25,11 +25,12 @@ export class CourseCustomerService {
     });
   }
 
-  async purchase(id: string, userId: number) {
+  async purchase(id: string, userId: number): Promise<boolean> {
     const course = await this.prisma.course.findFirst({
       where: {
         id,
         isActive: true,
+        isDeployed: true,
       },
     });
 
@@ -55,6 +56,7 @@ export class CourseCustomerService {
             connect: {
               id,
               isActive: true,
+              isDeployed: true,
             },
           },
         },
