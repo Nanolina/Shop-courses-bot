@@ -5,6 +5,7 @@ import {
   Get,
   HttpCode,
   HttpStatus,
+  InternalServerErrorException,
   Param,
   Patch,
   Post,
@@ -73,8 +74,17 @@ export class CourseController {
   @Post(':id/purchase')
   @HttpCode(HttpStatus.OK)
   @UseGuards(AuthGuard)
-  purchase(@Req() req: Request, @Param('id') id: string) {
-    return this.courseCustomerService.purchase(id, req.user.id);
+  async purchase(@Req() req: Request, @Param('id') id: string) {
+    const isPurchased = await this.courseCustomerService.purchase(
+      id,
+      req.user.id,
+    );
+    if (isPurchased) {
+      await this.pointsService.addPointsForCoursePurchase(req.user.id);
+      return { message: 'The purchase was successful' };
+    } else {
+      throw new InternalServerErrorException(`Failed to purchase course ${id}`);
+    }
   }
 
   // seller
@@ -82,7 +92,7 @@ export class CourseController {
   @HttpCode(HttpStatus.OK)
   @UseGuards(AuthGuard)
   addPointsForCreatingCourse(@Req() req: Request, @Param('id') id: string) {
-    return this.pointsService.addPointsForCreatingCourse(id, req.user.id);
+    return this.pointsService.addPointsForCourseCreation(id, req.user.id);
   }
 
   // all users
