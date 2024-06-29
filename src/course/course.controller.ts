@@ -16,6 +16,7 @@ import {
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Request } from 'express';
 import { AuthGuard } from '../auth/auth.guard';
+import { PointsService } from './../points/points.service';
 import { CreateCourseDto, UpdateCourseDto } from './dto';
 import {
   CourseAllUsersService,
@@ -29,6 +30,7 @@ export class CourseController {
     private readonly courseAllUsersService: CourseAllUsersService,
     private readonly courseCustomerService: CourseCustomerService,
     private readonly courseSellerService: CourseSellerService,
+    private readonly pointsService: PointsService,
   ) {}
 
   // all users
@@ -59,14 +61,6 @@ export class CourseController {
     return this.courseSellerService.findAllCreatedCourses(req.user.id);
   }
 
-  // seller
-  @Get('created/:id')
-  @HttpCode(HttpStatus.OK)
-  @UseGuards(AuthGuard)
-  findOneCreatedCourse(@Req() req: Request, @Param('id') id: string) {
-    return this.courseSellerService.findOneCreatedCourse(id, req.user.id);
-  }
-
   // customer
   @Get('purchased')
   @HttpCode(HttpStatus.OK)
@@ -76,19 +70,19 @@ export class CourseController {
   }
 
   // customer
-  @Get('purchased/:id')
-  @HttpCode(HttpStatus.OK)
-  @UseGuards(AuthGuard)
-  findOnePurchasedCourse(@Req() req: Request, @Param('id') id: string) {
-    return this.courseCustomerService.findOnePurchasedCourse(id, req.user.id);
-  }
-
-  // customer
   @Post(':id/purchase')
   @HttpCode(HttpStatus.OK)
   @UseGuards(AuthGuard)
   purchase(@Req() req: Request, @Param('id') id: string) {
     return this.courseCustomerService.purchase(id, req.user.id);
+  }
+
+  // seller
+  @Post(':id/points/add/creation')
+  @HttpCode(HttpStatus.OK)
+  @UseGuards(AuthGuard)
+  addPointsForCreatingCourse(@Req() req: Request, @Param('id') id: string) {
+    return this.pointsService.addPointsForCreatingCourse(id, req.user.id);
   }
 
   // all users
