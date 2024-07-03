@@ -15,7 +15,7 @@ export class PointsService {
       select: { points: true },
     });
 
-    return user.points;
+    return user?.points || 0;
   }
 
   async addPointsForCourseCreation(
