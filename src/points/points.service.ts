@@ -30,7 +30,6 @@ export class PointsService {
             some: {
               id: courseId,
               userId,
-              isDeployed: false,
             },
           },
         },
