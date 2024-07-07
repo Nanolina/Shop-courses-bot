@@ -28,120 +28,89 @@ export class TonMonitorService {
     language: LanguageType,
   ) {
     let attempts = 0;
+    const initialBalanceNumber = parseFloat(initialBalance);
     const interval = setInterval(async () => {
-      attempts++;
-      console.log('attempts', attempts);
+      if (++attempts > maxAttempts) {
+        this.sendStatus(userId, type, language, StatusEnum.Error);
+        return clearInterval(interval);
+      }
+
       try {
-        const newBalance =
-          await this.tonService.getAccountBalance(contractAddress);
-        const newBalanceNumber = parseFloat(fromNano(newBalance));
-        const initialBalanceNumber = parseFloat(initialBalance);
-
-        console.log('newBalanceNumber', newBalanceNumber);
-        console.log('initialBalanceNumber', initialBalanceNumber);
-        if (
-          newBalanceNumber > initialBalanceNumber ||
-          attempts >= maxAttempts
-        ) {
+        const newBalanceNumber = parseFloat(
+          fromNano(await this.tonService.getAccountBalance(contractAddress)),
+        );
+        if (newBalanceNumber > initialBalanceNumber) {
+          await this.handleBalanceIncrease(
+            userId,
+            courseId,
+            type,
+            language,
+            newBalanceNumber,
+          );
           clearInterval(interval);
-          if (newBalanceNumber > initialBalanceNumber) {
-            if (type === DeployEnum.Create) {
-              const points =
-                await this.pointsService.addPointsForCourseCreation(
-                  courseId,
-                  userId,
-                );
-              this.socketGateway.notifyClientContractUpdated({
-                userId,
-                points,
-                status: StatusEnum.Success,
-                type: DeployEnum.Create,
-                balance: newBalanceNumber,
-                message: this.utilsService.getTranslatedMessage(
-                  language,
-                  'course_activated_success',
-                  '',
-                  '🏆',
-                ),
-              });
-
-              // type === 'Purchase'
-            } else {
-              try {
-                await this.courseCustomerService.purchase(courseId, userId);
-
-                const points =
-                  await this.pointsService.addPointsForCoursePurchase(userId);
-                this.socketGateway.notifyClientContractUpdated({
-                  userId,
-                  points,
-                  status: StatusEnum.Success,
-                  type: DeployEnum.Purchase,
-                  balance: newBalanceNumber,
-                  message: this.utilsService.getTranslatedMessage(
-                    language,
-                    'course_purchased_success',
-                    '',
-                    '🏆',
-                  ),
-                });
-              } catch (error) {
-                console.error('error', error);
-                this.socketGateway.notifyClientContractUpdated({
-                  userId,
-                  status: StatusEnum.Error,
-                  type: DeployEnum.Purchase,
-                  message: this.utilsService.getTranslatedMessage(
-                    language,
-                    'course_purchased_error',
-                    '',
-                    '🔄',
-                  ),
-                });
-              }
-            }
-          } else {
-            if (type === DeployEnum.Create) {
-              this.socketGateway.notifyClientContractUpdated({
-                userId,
-                status: StatusEnum.Error,
-                type: DeployEnum.Create,
-                message: this.utilsService.getTranslatedMessage(
-                  language,
-                  'course_activated_error',
-                  '',
-                  '🔄',
-                ),
-              });
-            } else {
-              this.socketGateway.notifyClientContractUpdated({
-                userId,
-                status: StatusEnum.Error,
-                type: DeployEnum.Purchase,
-                message: this.utilsService.getTranslatedMessage(
-                  language,
-                  'course_purchased_error',
-                  '',
-                  '🔄',
-                ),
-              });
-            }
-          }
         }
       } catch (error) {
-        console.error('error', error);
-        this.socketGateway.notifyClientContractUpdated({
-          userId,
-          status: StatusEnum.Error,
-          message: this.utilsService.getTranslatedMessage(
-            language,
-            'something_went_wrong',
-            '',
-            '🔄',
-          ),
-        });
-        clearInterval(interval); // Stop the interval for any error
+        console.error('Error during balance check:', error);
+        this.sendStatus(userId, type, language, StatusEnum.Error);
+        clearInterval(interval);
       }
     }, 20000); // Check every 20 seconds
+  }
+
+  private async handleBalanceIncrease(
+    userId: number,
+    courseId: string,
+    type: DeployType,
+    language: LanguageType,
+    balance: number,
+  ) {
+    try {
+      let points;
+      if (type === DeployEnum.Purchase) {
+        await this.courseCustomerService.purchase(courseId, userId);
+        points = await this.pointsService.addPointsForCoursePurchase(userId);
+      } else {
+        points = await this.pointsService.addPointsForCourseCreation(
+          courseId,
+          userId,
+        );
+      }
+
+      this.socketGateway.notifyClientContractUpdated({
+        userId,
+        points,
+        balance,
+        status: StatusEnum.Success,
+        type,
+        message: this.utilsService.getTranslatedMessage(
+          language,
+          `${type.toLowerCase()}_success`,
+          '',
+          '🏆',
+        ),
+      });
+    } catch (error) {
+      console.error('Error during course action:', error);
+      this.sendStatus(userId, type, language, StatusEnum.Error);
+    }
+  }
+
+  private sendStatus(
+    userId: number,
+    type: DeployType,
+    language: LanguageType,
+    status: StatusEnum,
+  ) {
+    this.socketGateway.notifyClientContractUpdated({
+      userId,
+      status,
+      type,
+      message: this.utilsService.getTranslatedMessage(
+        language,
+        `${type.toLowerCase()}_${status === StatusEnum.Success ? StatusEnum.Success : StatusEnum.Error}`,
+        '',
+        '🔄',
+      ),
+    });
   }
 }
