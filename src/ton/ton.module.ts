@@ -15,7 +15,7 @@ import { TonService } from './ton.service';
     LoggerModule,
     RedisModule.forRoot({
       type: 'single',
-      url: 'redis://localhost:6379',
+      url: process.env.REDIS_URL,
     }),
   ],
   controllers: [TonController],
