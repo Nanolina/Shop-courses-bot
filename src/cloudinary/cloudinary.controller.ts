@@ -41,7 +41,6 @@ export class CloudinaryController {
       this.socketGateway.notifyClient(
         'success',
         userId,
-        url,
         `Your video has been uploaded successfully for lesson ${lesson.name}`,
       );
 
@@ -51,7 +50,7 @@ export class CloudinaryController {
       this.socketGateway.notifyClient(
         'error',
         userId,
-        url,
+
         'Unfortunately, it was not possible to upload your video for lesson',
       );
 
