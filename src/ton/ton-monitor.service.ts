@@ -66,7 +66,6 @@ export class TonMonitorService {
               );
             }
           } else {
-            console.log('Nothing changed');
             if (type === 'create') {
               this.socketGateway.notifyClient(
                 'error',
@@ -105,7 +104,6 @@ export class TonMonitorService {
         );
         clearInterval(interval); // Stop the interval for any error
       }
-      console.log('Attempts', attempts);
     }, 20000); // Check every 20 seconds
   }
 }

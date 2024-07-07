@@ -1,5 +1,5 @@
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
-import { Address, TonClient, fromNano } from 'ton';
+import { Address, TonClient } from 'ton';
 
 @Injectable()
 export class TonService implements OnModuleInit {
@@ -23,12 +23,8 @@ export class TonService implements OnModuleInit {
 
   async getAccountBalance(addressString: string): Promise<string> {
     try {
-      console.log('addressString', addressString);
       const address = Address.parse(addressString);
-      console.log('address', address);
       const account = await this.client.getContractState(address);
-      console.log('account', account);
-      console.log('account.balance.toString()', fromNano(account.balance));
       return account.balance.toString();
     } catch (error) {
       this.logger.error('Failed to fetch account balance', error);
