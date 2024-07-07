@@ -21,14 +21,17 @@ export class TonService implements OnModuleInit {
     }
   }
 
-  async getAccountBalance(addressString: string): Promise<string> {
+  async getAccountBalance(addressString: string): Promise<bigint> {
     try {
       const address = Address.parse(addressString);
       const account = await this.client.getContractState(address);
-      return account.balance.toString();
+      return account.balance;
     } catch (error) {
-      this.logger.error('Failed to fetch account balance', error);
-      throw error;
+      this.logger.error({
+        method: 'ton-getAccountBalance',
+        error: error?.message,
+      });
+      return 0n;
     }
   }
 }
