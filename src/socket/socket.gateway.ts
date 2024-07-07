@@ -1,5 +1,9 @@
 import { WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { Server } from 'socket.io';
+import {
+  INotifyClientContractUpdatedParams,
+  INotifyClientVideoUploadedParams,
+} from './socket.types';
 
 @WebSocketGateway({
   cors: {
@@ -9,7 +13,11 @@ import { Server } from 'socket.io';
 export class SocketGateway {
   @WebSocketServer() server: Server;
 
-  notifyClient(status: string, userId: number, message: string) {
-    this.server.emit('notification', { status, userId, message });
+  notifyClientVideoUploaded(params: INotifyClientVideoUploadedParams) {
+    this.server.emit('video-uploaded', params);
+  }
+
+  notifyClientContractUpdated(params: INotifyClientContractUpdatedParams) {
+    this.server.emit('contract-updated', params);
   }
 }

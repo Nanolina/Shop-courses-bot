@@ -1,11 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { fromNano } from 'ton';
+import { DeployEnum, DeployType, LanguageType, StatusEnum } from 'types';
+import { CourseCustomerService } from '../course/services';
 import { PointsService } from '../points/points.service';
 import { SocketGateway } from '../socket/socket.gateway';
 import { TelegramUtilsService } from '../telegram-bot/telegram-utils.service';
 import { TonService } from './ton.service';
 
 const maxAttempts = 15; // 15 attempts every 20 seconds for 5 min
+
 @Injectable()
 export class TonMonitorService {
   constructor(
@@ -13,6 +16,7 @@ export class TonMonitorService {
     private socketGateway: SocketGateway,
     private pointsService: PointsService,
     private utilsService: TelegramUtilsService,
+    private readonly courseCustomerService: CourseCustomerService,
   ) {}
 
   async monitorContract(
@@ -20,90 +24,93 @@ export class TonMonitorService {
     contractAddress: string,
     initialBalance: string,
     courseId: string,
-    type: 'create' | 'purchase',
-    language: 'en' | 'ru',
+    type: DeployType,
+    language: LanguageType,
   ) {
     let attempts = 0;
+    const initialBalanceNumber = parseFloat(initialBalance);
     const interval = setInterval(async () => {
-      attempts++;
-      try {
-        const newBalance =
-          await this.tonService.getAccountBalance(contractAddress);
-        const newBalanceInTon = fromNano(newBalance);
+      if (++attempts > maxAttempts) {
+        this.sendStatus(userId, type, language, StatusEnum.Error);
+        return clearInterval(interval);
+      }
 
-        if (
-          parseFloat(newBalanceInTon) > parseFloat(initialBalance) ||
-          attempts >= maxAttempts
-        ) {
+      try {
+        const newBalanceNumber = parseFloat(
+          fromNano(await this.tonService.getAccountBalance(contractAddress)),
+        );
+        if (newBalanceNumber > initialBalanceNumber) {
+          await this.handleBalanceIncrease(
+            userId,
+            courseId,
+            type,
+            language,
+            newBalanceNumber,
+          );
           clearInterval(interval);
-          if (parseFloat(newBalanceInTon) > parseFloat(initialBalance)) {
-            if (type === 'create') {
-              await this.pointsService.addPointsForCourseCreation(
-                courseId,
-                userId,
-              );
-              this.socketGateway.notifyClient(
-                'success',
-                userId,
-                this.utilsService.getTranslatedMessage(
-                  language,
-                  'course_activated_success',
-                  '🎊 ✅',
-                  '🎉 🏆',
-                ),
-              );
-            } else if (type === 'purchase') {
-              await this.pointsService.addPointsForCoursePurchase(userId);
-              this.socketGateway.notifyClient(
-                'success',
-                userId,
-                this.utilsService.getTranslatedMessage(
-                  language,
-                  'course_purchased_success',
-                  '🎊 ✅',
-                  '🎉 🏆',
-                ),
-              );
-            }
-          } else {
-            if (type === 'create') {
-              this.socketGateway.notifyClient(
-                'error',
-                userId,
-                this.utilsService.getTranslatedMessage(
-                  language,
-                  'course_activated_error',
-                  '😔 ❌',
-                  '🔄',
-                ),
-              );
-            } else if (type === 'purchase') {
-              this.socketGateway.notifyClient(
-                'error',
-                userId,
-                this.utilsService.getTranslatedMessage(
-                  language,
-                  'course_purchased_error',
-                  '😔 ❌',
-                  '🔄',
-                ),
-              );
-            }
-          }
         }
       } catch (error) {
-        this.socketGateway.notifyClient(
-          'error',
-          userId,
-          this.utilsService.getTranslatedMessage(
-            language,
-            'something_went_wrong',
-            '😔 ❌',
-            '🔄',
-          ),
-        );
-        clearInterval(interval); // Stop the interval for any error
+        console.error('Error during balance check:', error);
+        this.sendStatus(userId, type, language, StatusEnum.Error);
+        clearInterval(interval);
       }
     }, 20000); // Check every 20 seconds
+  }
+
+  private async handleBalanceIncrease(
+    userId: number,
+    courseId: string,
+    type: DeployType,
+    language: LanguageType,
+    balance: number,
+  ) {
+    try {
+      let points;
+      if (type === DeployEnum.Purchase) {
+        await this.courseCustomerService.purchase(courseId, userId);
+        points = await this.pointsService.addPointsForCoursePurchase(userId);
+      } else {
+        points = await this.pointsService.addPointsForCourseCreation(
+          courseId,
+          userId,
+        );
+      }
+
+      this.socketGateway.notifyClientContractUpdated({
+        userId,
+        points,
+        balance,
+        status: StatusEnum.Success,
+        type,
+        message: this.utilsService.getTranslatedMessage(
+          language,
+          `${type.toLowerCase()}_success`,
+          '',
+          '🏆',
+        ),
+      });
+    } catch (error) {
+      console.error('Error during course action:', error);
+      this.sendStatus(userId, type, language, StatusEnum.Error);
+    }
+  }
+
+  private sendStatus(
+    userId: number,
+    type: DeployType,
+    language: LanguageType,
+    status: StatusEnum,
+  ) {
+    this.socketGateway.notifyClientContractUpdated({
+      userId,
+      status,
+      type,
+      message: this.utilsService.getTranslatedMessage(
+        language,
+        `${type.toLowerCase()}_${status === StatusEnum.Success ? StatusEnum.Success : StatusEnum.Error}`,
+        '',
+        '🔄',
+      ),
+    });
   }
 }

@@ -21,9 +21,9 @@ export class PointsService {
   async addPointsForCourseCreation(
     courseId: string,
     userId: number,
-  ): Promise<void> {
+  ): Promise<number> {
     try {
-      await this.prisma.user.update({
+      const user = await this.prisma.user.update({
         where: {
           id: userId,
           courses: {
@@ -40,15 +40,7 @@ export class PointsService {
         },
       });
 
-      await this.prisma.course.update({
-        where: {
-          id: courseId,
-          userId,
-        },
-        data: {
-          isDeployed: true,
-        },
-      });
+      return user.points;
     } catch (error) {
       this.logger.error({
         method: 'points-addPointsForCourseCreation',
@@ -61,9 +53,9 @@ export class PointsService {
     }
   }
 
-  async addPointsForCoursePurchase(userId: number): Promise<void> {
+  async addPointsForCoursePurchase(userId: number): Promise<number> {
     try {
-      await this.prisma.user.update({
+      const user = await this.prisma.user.update({
         where: {
           id: userId,
         },
@@ -73,6 +65,8 @@ export class PointsService {
           },
         },
       });
+
+      return user.points;
     } catch (error) {
       this.logger.error({
         method: 'points-addPointsForCoursePurchase',
