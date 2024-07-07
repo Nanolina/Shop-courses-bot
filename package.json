@@ -40,7 +40,8 @@
     "reflect-metadata": "^0.2.0",
     "rxjs": "^7.8.1",
     "socket.io": "^4.7.5",
-    "streamifier": "^0.1.1"
+    "streamifier": "^0.1.1",
+    "ton": "^13.9.0"
   },
   "devDependencies": {
     "@nestjs/cli": "^10.0.0",

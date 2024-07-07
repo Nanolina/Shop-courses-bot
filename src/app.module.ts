@@ -5,10 +5,11 @@ import { CourseModule } from './course/course.module';
 import { LessonModule } from './lesson/lesson.module';
 import { LoggerModule } from './logger/logger.module';
 import { ModuleModule } from './module/module.module';
+import { PointsModule } from './points/points.module';
 import { PrismaService } from './prisma/prisma.service';
 import { SocketModule } from './socket/socket.module';
 import { TelegramModule } from './telegram-bot/telegram.module';
-import { PointsModule } from './points/points.module';
+import { TonModule } from './ton/ton.module';
 
 @Module({
   imports: [
@@ -19,10 +20,11 @@ import { PointsModule } from './points/points.module';
     TelegramModule,
     LessonModule,
     SocketModule,
+    PointsModule,
+    TonModule,
     ConfigModule.forRoot({
       isGlobal: true,
     }),
-    PointsModule,
   ],
   providers: [PrismaService],
 })
