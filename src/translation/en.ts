@@ -16,13 +16,12 @@ export const en = {
     'Click the button below and start learning your courses today',
 
   // Socket Notifications
-  course_activated_success:
-    'Data successfully updated on the blockchain! Thank you for activating the course! You have been awarded 20 points!',
-  course_activated_error:
+  course_create_success:
+    'Data successfully updated on the blockchain! Thank you for activating the course! You have been awarded 20 points',
+  course_create_error:
     'Failed to update data on the blockchain. Please try to activate the course again',
-  course_purchased_success:
-    'Data successfully updated on the blockchain! Thank you for purchasing the course! You have been awarded 20 points!',
-  course_purchased_error:
+  course_purchase_success:
+    'Data successfully updated on the blockchain! Thank you for purchasing the course! You have been awarded 20 points',
+  course_purchase_error:
     'Failed to update data on the blockchain. Please try to purchase the course again',
-  something_went_wrong: 'Something went wrong. Please try again',
 };

@@ -16,7 +16,6 @@ import {
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Request } from 'express';
 import { AuthGuard } from '../auth/auth.guard';
-import { PointsService } from './../points/points.service';
 import { CreateCourseDto, UpdateCourseDto } from './dto';
 import {
   CourseAllUsersService,
@@ -30,7 +29,6 @@ export class CourseController {
     private readonly courseAllUsersService: CourseAllUsersService,
     private readonly courseCustomerService: CourseCustomerService,
     private readonly courseSellerService: CourseSellerService,
-    private readonly pointsService: PointsService,
   ) {}
 
   // all users

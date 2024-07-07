@@ -13,7 +13,7 @@ export class TelegramUtilsService {
     iconEnd?: string,
   ) {
     const message = getTranslatedText(text, language);
-    return `${iconStart} ${message}${iconEnd ? `! ${iconEnd}` : ''}`;
+    return `${iconStart ? iconStart : ''} ${message} ${iconEnd ? iconEnd : ''}`;
   }
 
   getWebUrl(userId: number) {
