@@ -1,6 +1,9 @@
+import { InjectRedis } from '@nestjs-modules/ioredis';
 import { Injectable } from '@nestjs/common';
+import { Redis } from 'ioredis';
 import { fromNano } from 'ton';
 import { DeployEnum, DeployType, LanguageType, StatusEnum } from 'types';
+import { v4 as uuidv4 } from 'uuid';
 import { CourseCustomerService } from '../course/services';
 import { MyLogger } from '../logger/my-logger.service';
 import { PointsService } from '../points/points.service';
@@ -20,6 +23,7 @@ export class TonMonitorService {
     private utilsService: TelegramUtilsService,
     private readonly courseCustomerService: CourseCustomerService,
     private readonly logger: MyLogger,
+    @InjectRedis() private readonly redis: Redis,
   ) {}
 
   async monitorContract(userId: number, dto: MonitorContractDto) {
@@ -31,11 +35,27 @@ export class TonMonitorService {
       language = 'en',
     } = dto;
 
+    const sessionKeyBase = `monitor:${contractAddress}:${initialBalance}`;
+    const newSessionId = uuidv4();
+    const newSessionKey = `${sessionKeyBase}:${newSessionId}`;
+
+    const existingSessionKeys = await this.redis.keys(`${sessionKeyBase}:*`);
+
+    // Terminate all existing sessions
+    for (const key of existingSessionKeys) {
+      const existingSessionId = await this.redis.get(key);
+      if (existingSessionId) {
+        clearInterval(parseInt(existingSessionId));
+        await this.redis.del(key);
+      }
+    }
+
     let attempts = 0;
     const interval = setInterval(async () => {
       if (++attempts > maxAttempts) {
         this.sendErrorNotification(userId, type, language);
-        return clearInterval(interval);
+        clearInterval(interval);
+        await this.redis.del(newSessionKey);
       }
 
       try {
@@ -52,6 +72,7 @@ export class TonMonitorService {
             newBalanceNumber,
           );
           clearInterval(interval);
+          await this.redis.del(newSessionKey);
         }
       } catch (error) {
         this.logger.error({
@@ -60,8 +81,12 @@ export class TonMonitorService {
         });
         this.sendErrorNotification(userId, type, language);
         clearInterval(interval);
+        await this.redis.del(newSessionKey);
       }
     }, 20000); // Check every 20 seconds
+
+    // Save the interval ID in Redis
+    await this.redis.set(newSessionKey, interval[Symbol.toPrimitive]());
   }
 
   private async handleBalanceIncrease(

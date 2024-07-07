@@ -1,3 +1,4 @@
+import { RedisModule } from '@nestjs-modules/ioredis';
 import { Module } from '@nestjs/common';
 import { CourseCustomerService } from '../course/services';
 import { LoggerModule } from '../logger/logger.module';
@@ -10,7 +11,13 @@ import { TonController } from './ton.controller';
 import { TonService } from './ton.service';
 
 @Module({
-  imports: [LoggerModule],
+  imports: [
+    LoggerModule,
+    RedisModule.forRoot({
+      type: 'single',
+      url: 'redis://localhost:6379',
+    }),
+  ],
   controllers: [TonController],
   providers: [
     TonService,
