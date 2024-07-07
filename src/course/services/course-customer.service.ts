@@ -25,12 +25,11 @@ export class CourseCustomerService {
     });
   }
 
-  async purchase(id: string, userId: number): Promise<boolean> {
+  async purchase(id: string, userId: number): Promise<void> {
     const course = await this.prisma.course.findFirst({
       where: {
         id,
         isActive: true,
-        isDeployed: true,
       },
     });
 
@@ -56,13 +55,10 @@ export class CourseCustomerService {
             connect: {
               id,
               isActive: true,
-              isDeployed: true,
             },
           },
         },
       });
-
-      return true;
     } catch (error) {
       this.logger.error({ method: 'course-purchase', error: error?.message });
       throw new InternalServerErrorException(

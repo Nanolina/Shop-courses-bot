@@ -9,7 +9,7 @@ export class TelegramUtilsService {
   getTranslatedMessage(
     language: string,
     text: string,
-    iconStart: string,
+    iconStart?: string,
     iconEnd?: string,
   ) {
     const message = getTranslatedText(text, language);

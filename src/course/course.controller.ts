@@ -5,7 +5,6 @@ import {
   Get,
   HttpCode,
   HttpStatus,
-  InternalServerErrorException,
   Param,
   Patch,
   Post,
@@ -68,31 +67,6 @@ export class CourseController {
   @UseGuards(AuthGuard)
   findAllPurchasedCourses(@Req() req: Request) {
     return this.courseCustomerService.findAllPurchasedCourses(req.user.id);
-  }
-
-  // customer
-  @Post(':id/purchase')
-  @HttpCode(HttpStatus.OK)
-  @UseGuards(AuthGuard)
-  async purchase(@Req() req: Request, @Param('id') id: string) {
-    const isPurchased = await this.courseCustomerService.purchase(
-      id,
-      req.user.id,
-    );
-    if (isPurchased) {
-      await this.pointsService.addPointsForCoursePurchase(req.user.id);
-      return { message: 'The purchase was successful' };
-    } else {
-      throw new InternalServerErrorException(`Failed to purchase course ${id}`);
-    }
-  }
-
-  // seller
-  @Post(':id/points/add/creation')
-  @HttpCode(HttpStatus.OK)
-  @UseGuards(AuthGuard)
-  addPointsForCreatingCourse(@Req() req: Request, @Param('id') id: string) {
-    return this.pointsService.addPointsForCourseCreation(id, req.user.id);
   }
 
   // all users

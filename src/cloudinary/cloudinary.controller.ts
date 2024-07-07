@@ -1,5 +1,6 @@
 import { Body, Controller, HttpStatus, Post, Res } from '@nestjs/common';
 import { Response } from 'express';
+import { StatusEnum } from 'types';
 import { LessonService } from '../lesson/lesson.service';
 import { MyLogger } from '../logger/my-logger.service';
 import { SocketGateway } from '../socket/socket.gateway';
@@ -38,21 +39,21 @@ export class CloudinaryController {
         log: 'Lesson is updated with new videoUrl',
       });
 
-      this.socketGateway.notifyClient(
-        'success',
+      this.socketGateway.notifyClientVideoUploaded({
         userId,
-        `Your video has been uploaded successfully for lesson ${lesson.name}`,
-      );
+        status: StatusEnum.Success,
+        message: `Your video has been uploaded successfully for lesson ${lesson.name}`,
+      });
 
       res.status(HttpStatus.OK).send('Webhook processed successfully');
     } catch (error) {
       this.logger.error({ method: 'cloudinary-handleWebhook', error });
-      this.socketGateway.notifyClient(
-        'error',
+      this.socketGateway.notifyClientVideoUploaded({
         userId,
-
-        'Unfortunately, it was not possible to upload your video for lesson',
-      );
+        status: StatusEnum.Error,
+        message:
+          'Unfortunately, it was not possible to upload your video for lesson',
+      });
 
       res
         .status(HttpStatus.INTERNAL_SERVER_ERROR)

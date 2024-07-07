@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { CourseCustomerService } from '../course/services';
 import { LoggerModule } from '../logger/logger.module';
 import { PointsService } from '../points/points.service';
 import { PrismaService } from '../prisma/prisma.service';
@@ -18,6 +19,7 @@ import { TonService } from './ton.service';
     SocketGateway,
     PointsService,
     TelegramUtilsService,
+    CourseCustomerService,
   ],
 })
 export class TonModule {}
