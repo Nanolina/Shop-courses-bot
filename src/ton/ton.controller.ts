@@ -1,4 +1,11 @@
-import { Body, Controller, Post, Req, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  NotAcceptableException,
+  Post,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { Request } from 'express';
 import { AuthGuard } from '../auth/auth.guard';
 import { MyLogger } from '../logger/my-logger.service';
@@ -19,6 +26,12 @@ export class TonController {
     @Body()
     monitorData: MonitorContractDto,
   ) {
+    if (!monitorData.hasAcceptedTerms) {
+      throw new NotAcceptableException(
+        'Please accept the terms of the contract',
+      );
+    }
+
     try {
       await this.tonMonitorService.monitorContract(req.user.id, monitorData);
     } catch (error) {

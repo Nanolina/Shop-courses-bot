@@ -1,1 +1,1 @@
-export { MonitorContractDto } from './monitor-contract';
+export { MonitorContractDto } from './monitor-contract.dto';

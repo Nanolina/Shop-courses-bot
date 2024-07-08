@@ -1,6 +1,8 @@
 import { RedisModule } from '@nestjs-modules/ioredis';
 import { Module } from '@nestjs/common';
-import { CourseCustomerService } from '../course/services';
+import { CloudinaryService } from '../cloudinary/cloudinary.service';
+import { CourseCustomerService, CourseSellerService } from '../course/services';
+import { ImageService } from '../image/image.service';
 import { LoggerModule } from '../logger/logger.module';
 import { PointsService } from '../points/points.service';
 import { PrismaService } from '../prisma/prisma.service';
@@ -27,6 +29,9 @@ import { TonService } from './ton.service';
     PointsService,
     TelegramUtilsService,
     CourseCustomerService,
+    CourseSellerService,
+    ImageService,
+    CloudinaryService,
   ],
 })
 export class TonModule {}

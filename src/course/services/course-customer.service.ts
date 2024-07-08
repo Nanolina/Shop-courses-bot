@@ -25,7 +25,11 @@ export class CourseCustomerService {
     });
   }
 
-  async purchase(id: string, userId: number): Promise<void> {
+  async purchase(
+    id: string,
+    userId: number,
+    hasAcceptedTerms: boolean,
+  ): Promise<void> {
     const course = await this.prisma.course.findFirst({
       where: {
         id,
@@ -40,6 +44,7 @@ export class CourseCustomerService {
     try {
       await this.prisma.coursePurchase.create({
         data: {
+          hasAcceptedTerms,
           sellerId: course.userId,
           customer: {
             connectOrCreate: {

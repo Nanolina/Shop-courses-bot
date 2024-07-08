@@ -35,6 +35,7 @@ CREATE TABLE "Course" (
     "imageUrl" TEXT,
     "imagePublicId" TEXT,
     "isActive" BOOLEAN NOT NULL DEFAULT true,
+    "hasAcceptedTerms" BOOLEAN NOT NULL DEFAULT false,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -77,6 +78,7 @@ CREATE TABLE "CoursePurchase" (
     "customerId" BIGINT NOT NULL,
     "sellerId" BIGINT NOT NULL,
     "courseId" TEXT NOT NULL,
+    "hasAcceptedTerms" BOOLEAN NOT NULL DEFAULT false,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
