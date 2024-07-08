@@ -10,6 +10,7 @@ import { PrismaService } from './prisma/prisma.service';
 import { SocketModule } from './socket/socket.module';
 import { TelegramModule } from './telegram-bot/telegram.module';
 import { TonModule } from './ton/ton.module';
+import { UserModule } from './user/user.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { TonModule } from './ton/ton.module';
     ConfigModule.forRoot({
       isGlobal: true,
     }),
+    UserModule,
   ],
   providers: [PrismaService],
 })
