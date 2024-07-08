@@ -1,11 +1,25 @@
+-- CreateEnum
+CREATE TYPE "ReasonType" AS ENUM ('CourseCreation', 'CoursePurchase');
+
 -- CreateTable
 CREATE TABLE "User" (
     "id" BIGINT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
-    "points" INTEGER NOT NULL DEFAULT 0,
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Points" (
+    "id" TEXT NOT NULL,
+    "userId" BIGINT NOT NULL,
+    "points" INTEGER NOT NULL,
+    "reason" "ReasonType" NOT NULL,
+    "referenceId" TEXT,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "Points_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -68,6 +82,12 @@ CREATE TABLE "CoursePurchase" (
 
     CONSTRAINT "CoursePurchase_pkey" PRIMARY KEY ("id")
 );
+
+-- CreateIndex
+CREATE INDEX "idx_points_user" ON "Points"("userId");
+
+-- AddForeignKey
+ALTER TABLE "Points" ADD CONSTRAINT "Points_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Course" ADD CONSTRAINT "Course_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

@@ -11,9 +11,21 @@ model User {
   id        BigInt           @id
   createdAt DateTime         @default(now())
   updatedAt DateTime         @updatedAt
-  points    Int              @default(0)
   courses   Course[]
   purchases CoursePurchase[]
+  points    Points[]
+}
+
+model Points {
+  id          String     @id @default(uuid())
+  userId      BigInt
+  points      Int
+  reason      ReasonType
+  referenceId String?
+  createdAt   DateTime   @default(now())
+  user        User       @relation(fields: [userId], references: [id])
+
+  @@index([userId], map: "idx_points_user")
 }
 
 model Course {
@@ -63,12 +75,17 @@ model Lesson {
 }
 
 model CoursePurchase {
-  id           String   @id @default(uuid())
-  customerId   BigInt
-  sellerId     BigInt
-  courseId     String
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-  course       Course   @relation(fields: [courseId], references: [id])
-  customer     User     @relation(fields: [customerId], references: [id])
+  id         String   @id @default(uuid())
+  customerId BigInt
+  sellerId   BigInt
+  courseId   String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  course     Course   @relation(fields: [courseId], references: [id])
+  customer   User     @relation(fields: [customerId], references: [id])
+}
+
+enum ReasonType {
+  CourseCreation
+  CoursePurchase
 }
