@@ -4,6 +4,7 @@ export const en = {
   my_created_courses: 'My Created Courses',
   my_purchased_courses: 'My Purchased Courses',
   choose_course: 'Choose a Course',
+  personal_data: 'My Personal Data',
 
   // Bot Messages
   start:
@@ -14,6 +15,10 @@ export const en = {
     'Ready to make changes to your created courses? Just click below and make any necessary adjustments',
   purchased_courses:
     'Click the button below and start learning your courses today',
+  personal_data_edit:
+    'Ready to update your personal information? Click the button below to review and change your information',
+  email_required:
+    'Your e-mail is required for further work. You can add or change it by clicking the button below',
 
   // Socket Notifications
   course_create_success:
@@ -24,4 +29,8 @@ export const en = {
     'Data successfully updated on the blockchain! Thank you for purchasing the course! You have been awarded 20 points',
   course_purchase_error:
     'Failed to update data on the blockchain. Please try to purchase the course again',
+
+  // User
+  phone_required: 'Your phone number is required for further work',
+  phone_share: 'Share your phone number',
 };
