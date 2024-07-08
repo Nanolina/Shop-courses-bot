@@ -73,6 +73,14 @@ export class TelegramUtilsService {
           inline_keyboard: [[{ text, web_app: { url } }]],
         };
         break;
+      case 'personaldata':
+        url = `${webAppUrl}/user`;
+        text = this.getTranslatedMessage(language, 'personal_data', '👤');
+        replyMarkup = {
+          inline_keyboard: [[{ text, web_app: { url } }]],
+          remove_keyboard: true,
+        };
+        break;
       case 'start':
       default:
         url = webAppUrl;
@@ -84,5 +92,23 @@ export class TelegramUtilsService {
     }
 
     return { reply_markup: replyMarkup };
+  }
+
+  getPhoneRequestOptions(language: string) {
+    const text = this.getTranslatedMessage(language, 'phone_share', '', '✅');
+    return {
+      reply_markup: {
+        keyboard: [
+          [
+            {
+              text,
+              request_contact: true,
+            },
+          ],
+        ],
+        resize_keyboard: true,
+        one_time_keyboard: true,
+      },
+    };
   }
 }

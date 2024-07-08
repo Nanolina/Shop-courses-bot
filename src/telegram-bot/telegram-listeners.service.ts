@@ -15,7 +15,7 @@ export class TelegramListenersService {
       const { chat, from, text } = msg;
       const chatId = chat.id;
       const userId = from.id;
-      const languageCode = from.language_code;
+      const language = from.language_code;
       const webAppUrl = this.utilsService.getWebUrl(userId);
 
       if (!userId) {
@@ -26,13 +26,34 @@ export class TelegramListenersService {
         );
       }
 
-      await this.textCommandHandler.handleTextCommand(
+      await this.textCommandHandler.handleTextCommand({
         text,
+        userId,
         chatId,
         bot,
         webAppUrl,
-        languageCode,
-      );
+        language,
+      });
+    });
+
+    bot.on('contact', async (msg) => {
+      const { chat, from } = msg;
+      const chatId = chat.id;
+      const userId = from.id;
+      const language = from.language_code;
+      const webAppUrl = this.utilsService.getWebUrl(userId);
+      const phone = msg.contact.phone_number;
+
+      if (phone) {
+        await this.textCommandHandler.handlePhoneMessage({
+          phone,
+          userId,
+          chatId,
+          bot,
+          webAppUrl,
+          language,
+        });
+      }
     });
   }
 }
