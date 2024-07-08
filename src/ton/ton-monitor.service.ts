@@ -100,11 +100,16 @@ export class TonMonitorService {
       let points;
       if (type === DeployEnum.Purchase) {
         await this.courseCustomerService.purchase(courseId, userId);
-        points = await this.pointsService.addPointsForCoursePurchase(userId);
-      } else {
-        points = await this.pointsService.addPointsForCourseCreation(
+        points = await this.pointsService.add(
           courseId,
           userId,
+          'CoursePurchase',
+        );
+      } else {
+        points = await this.pointsService.add(
+          courseId,
+          userId,
+          'CourseCreation',
         );
       }
 
