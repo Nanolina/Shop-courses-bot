@@ -4,13 +4,14 @@ import { Redis } from 'ioredis';
 import { fromNano } from 'ton';
 import { DeployEnum, DeployType, LanguageType, StatusEnum } from 'types';
 import { v4 as uuidv4 } from 'uuid';
-import { CourseCustomerService } from '../course/services';
+import { CourseCustomerService, CourseSellerService } from '../course/services';
 import { MyLogger } from '../logger/my-logger.service';
 import { PointsService } from '../points/points.service';
 import { SocketGateway } from '../socket/socket.gateway';
 import { TelegramUtilsService } from '../telegram-bot/telegram-utils.service';
 import { MonitorContractDto } from './dto';
 import { TonService } from './ton.service';
+import { HandleBalanceIncreaseType } from './types';
 
 const maxAttempts = 15; // 15 attempts every 20 seconds for 5 min
 
@@ -22,6 +23,7 @@ export class TonMonitorService {
     private pointsService: PointsService,
     private utilsService: TelegramUtilsService,
     private readonly courseCustomerService: CourseCustomerService,
+    private readonly courseSellerService: CourseSellerService,
     private readonly logger: MyLogger,
     @InjectRedis() private readonly redis: Redis,
   ) {}
@@ -33,6 +35,7 @@ export class TonMonitorService {
       courseId,
       type,
       language = 'en',
+      hasAcceptedTerms,
     } = dto;
 
     const sessionKeyBase = `monitor:${contractAddress}:${initialBalance}`;
@@ -64,13 +67,14 @@ export class TonMonitorService {
         );
 
         if (newBalanceNumber > initialBalance) {
-          await this.handleBalanceIncrease(
+          await this.handleBalanceIncrease({
             userId,
             courseId,
             type,
             language,
-            newBalanceNumber,
-          );
+            hasAcceptedTerms,
+            balance: newBalanceNumber,
+          });
           clearInterval(interval);
           await this.redis.del(newSessionKey);
         }
@@ -89,23 +93,27 @@ export class TonMonitorService {
     await this.redis.set(newSessionKey, interval[Symbol.toPrimitive]());
   }
 
-  private async handleBalanceIncrease(
-    userId: number,
-    courseId: string,
-    type: DeployType,
-    language: LanguageType,
-    balance: number,
-  ) {
+  private async handleBalanceIncrease(dto: HandleBalanceIncreaseType) {
+    const { userId, courseId, type, language, hasAcceptedTerms, balance } = dto;
     try {
       let points;
       if (type === DeployEnum.Purchase) {
-        await this.courseCustomerService.purchase(courseId, userId);
+        await this.courseCustomerService.purchase(
+          courseId,
+          userId,
+          hasAcceptedTerms,
+        );
         points = await this.pointsService.add(
           courseId,
           userId,
           'CoursePurchase',
         );
       } else {
+        await this.courseSellerService.changeHasAcceptedTerms(
+          courseId,
+          userId,
+          hasAcceptedTerms,
+        );
         points = await this.pointsService.add(
           courseId,
           userId,

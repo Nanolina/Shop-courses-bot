@@ -1,4 +1,5 @@
 import {
+  IsBoolean,
   IsDefined,
   IsNumber,
   IsOptional,
@@ -22,6 +23,10 @@ export class MonitorContractDto {
   @IsUUID()
   @IsString()
   courseId: string;
+
+  @IsDefined()
+  @IsBoolean()
+  hasAcceptedTerms: boolean;
 
   @IsOptional()
   @Validate(IsValidDeployTypeConstraint)

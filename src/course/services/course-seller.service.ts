@@ -161,4 +161,31 @@ export class CourseSellerService {
       );
     }
   }
+
+  async changeHasAcceptedTerms(
+    id: string,
+    userId: number,
+    hasAcceptedTerms: boolean,
+  ): Promise<void> {
+    try {
+      await this.prisma.course.update({
+        where: {
+          id,
+          userId,
+        },
+        data: {
+          hasAcceptedTerms,
+        },
+      });
+    } catch (error) {
+      this.logger.error({
+        method: 'course-changeHasAcceptedTerms',
+        error: error?.message,
+      });
+      throw new InternalServerErrorException(
+        'Failed to change field to accept terms',
+        error?.message,
+      );
+    }
+  }
 }
