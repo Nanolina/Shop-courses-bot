@@ -4,6 +4,11 @@ CREATE TYPE "ReasonType" AS ENUM ('CourseCreation', 'CoursePurchase');
 -- CreateTable
 CREATE TABLE "User" (
     "id" BIGINT NOT NULL,
+    "firstName" TEXT,
+    "lastName" TEXT,
+    "username" TEXT,
+    "phone" TEXT,
+    "email" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
