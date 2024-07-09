@@ -1,7 +1,11 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { randomInt } from 'crypto';
-import { calculateEndDate } from '../functions';
+import { calculateEndDate, convertToNumber } from '../functions';
 import { MyLogger } from '../logger/my-logger.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { ChangeEmailDto } from './dto';
@@ -105,5 +109,22 @@ export class UserService {
 
     await this.saveUserCodeData(id, dto, codeEmail, codeEmailExpiresAt);
     return codeEmail;
+  }
+
+  async verifyCode(id: number, codeEmail: string): Promise<void> {
+    const codeEmailNumber = convertToNumber(codeEmail);
+    const user = await this.prisma.user.findFirst({
+      where: {
+        id,
+        codeEmail: codeEmailNumber,
+        codeEmailExpiresAt: {
+          gte: new Date(),
+        },
+      },
+    });
+
+    if (!user) {
+      throw new ForbiddenException('Invalid code');
+    }
   }
 }

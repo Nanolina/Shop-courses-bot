@@ -3,7 +3,9 @@ import {
   Controller,
   HttpCode,
   HttpStatus,
+  Param,
   Patch,
+  Post,
   Req,
   UseGuards,
 } from '@nestjs/common';
@@ -36,5 +38,12 @@ export class UserController {
       email: changeEmailDto.email,
     };
     await this.emailService.sendCode(req.user.id, emailDto);
+  }
+
+  @Post('email/code/:codeEmail')
+  @HttpCode(HttpStatus.OK)
+  @UseGuards(AuthGuard)
+  verifyCode(@Req() req: Request, @Param('codeEmail') codeEmail: string) {
+    return this.userService.verifyCode(req.user.id, codeEmail);
   }
 }
