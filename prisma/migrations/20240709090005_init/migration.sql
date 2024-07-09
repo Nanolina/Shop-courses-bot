@@ -1,6 +1,9 @@
 -- CreateEnum
 CREATE TYPE "ReasonType" AS ENUM ('CourseCreation', 'CoursePurchase');
 
+-- CreateEnum
+CREATE TYPE "EmailTemplate" AS ENUM ('CODE');
+
 -- CreateTable
 CREATE TABLE "User" (
     "id" BIGINT NOT NULL,
@@ -9,6 +12,9 @@ CREATE TABLE "User" (
     "username" TEXT,
     "phone" TEXT,
     "email" TEXT,
+    "isVerifiedEmail" BOOLEAN NOT NULL DEFAULT false,
+    "codeEmail" INTEGER,
+    "codeEmailExpiresAt" TIMESTAMP(3),
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -90,6 +96,21 @@ CREATE TABLE "CoursePurchase" (
     CONSTRAINT "CoursePurchase_pkey" PRIMARY KEY ("id")
 );
 
+-- CreateTable
+CREATE TABLE "Email" (
+    "id" TEXT NOT NULL,
+    "userId" BIGINT NOT NULL,
+    "email" TEXT NOT NULL,
+    "code" INTEGER NOT NULL,
+    "subject" TEXT NOT NULL,
+    "template" "EmailTemplate" NOT NULL,
+    "errorMessage" TEXT,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "Email_pkey" PRIMARY KEY ("id")
+);
+
 -- CreateIndex
 CREATE INDEX "idx_points_user" ON "Points"("userId");
 
@@ -110,3 +131,6 @@ ALTER TABLE "CoursePurchase" ADD CONSTRAINT "CoursePurchase_courseId_fkey" FOREI
 
 -- AddForeignKey
 ALTER TABLE "CoursePurchase" ADD CONSTRAINT "CoursePurchase_customerId_fkey" FOREIGN KEY ("customerId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Email" ADD CONSTRAINT "Email_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

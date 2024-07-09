@@ -1,0 +1,23 @@
+<html lang='en'>
+  <head>
+    <meta charset='UTF-8' />
+    <meta name='viewport' content='width=device-width, initial-scale=1.0' />
+    <style>
+      body { display: flex; justify-content: center; align-items: center;
+      height: 100vh; background-color: #f4f4f4; margin: 0; font-family: Arial,
+      sans-serif; } .container { background-color: #fff; padding: 20px;
+      border-radius: 10px; box-shadow: 1px 1px 8px rgba(0,0,0,0.1); text-align:
+      center; width: 300px; } .code { color: #6c00ad; font-size: 24px; margin:
+      20px 0; } .valid { color: grey; font-size: 12px; } .header { color:
+      #6c00ad; margin-bottom: 20px; }
+    </style>
+  </head>
+  <body>
+    <div class='container'>
+      <h3 class='header'>Online Courses</h3>
+      <p>Here is a one-time code to {{codeType}}</p>
+      <p class='code'>{{code}}</p>
+      <p class='valid'>Valid for: {{minutes}} Minutes</p>
+    </div>
+  </body>
+</html>

@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { EmailService } from '../email/email.service';
 import { LoggerModule } from '../logger/logger.module';
 import { PrismaService } from '../prisma/prisma.service';
 import { UserService } from '../user/user.service';
@@ -17,6 +18,7 @@ import { TelegramUtilsService } from './telegram-utils.service';
     PrismaService,
     TextCommandHandler,
     UserService,
+    EmailService,
   ],
   exports: [TelegramBotService],
 })
