@@ -8,7 +8,7 @@ import { randomInt } from 'crypto';
 import { calculateEndDate, convertToNumber } from '../functions';
 import { MyLogger } from '../logger/my-logger.service';
 import { PrismaService } from '../prisma/prisma.service';
-import { ChangeEmailDto } from './dto';
+import { ChangeEmailDto, UpdateDto } from './dto';
 import { GetEmailCodeResponse, GetUserDataResponse } from './types';
 
 @Injectable()
@@ -92,10 +92,6 @@ export class UserService {
         },
       });
     } catch (error) {
-      this.logger.error({
-        method: 'user-saveUserCodeData',
-        error: error?.message,
-      });
       throw new InternalServerErrorException(
         'Failed to save user code data',
         error?.message,
@@ -139,5 +135,28 @@ export class UserService {
       email: user.email,
       code: user.codeEmail,
     };
+  }
+
+  async update(id: number, dto: UpdateDto): Promise<void> {
+    try {
+      await this.prisma.user.upsert({
+        where: {
+          id,
+        },
+        update: {
+          firstName: dto.firstName,
+          lastName: dto.lastName,
+        },
+        create: {
+          id,
+          firstName: dto.firstName,
+          lastName: dto.lastName,
+        },
+      });
+    } catch (error) {
+      throw new InternalServerErrorException(
+        'Something went wrong with updating data',
+      );
+    }
   }
 }
