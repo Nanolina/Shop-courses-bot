@@ -12,7 +12,7 @@ import {
 import { Request } from 'express';
 import { AuthGuard } from '../auth/auth.guard';
 import { EmailService } from '../email/email.service';
-import { ChangeEmailDto } from './dto';
+import { ChangeEmailDto, UpdateDto } from './dto';
 import { UserService } from './user.service';
 
 @Controller('user')
@@ -38,6 +38,13 @@ export class UserController {
       email: changeEmailDto.email,
     };
     await this.emailService.sendCode(req.user.id, emailDto);
+  }
+
+  @Patch()
+  @HttpCode(HttpStatus.OK)
+  @UseGuards(AuthGuard)
+  async update(@Req() req: Request, @Body() updateDto: UpdateDto) {
+    return await this.userService.update(req.user.id, updateDto);
   }
 
   @Post('email/code/resend')

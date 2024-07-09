@@ -39,15 +39,14 @@ export class TelegramListenersService {
     bot.on('contact', async (msg) => {
       const { chat, from } = msg;
       const chatId = chat.id;
-      const userId = from.id;
       const language = from.language_code;
-      const webAppUrl = this.utilsService.getWebUrl(userId);
+      const webAppUrl = this.utilsService.getWebUrl(from.id);
       const phone = msg.contact.phone_number;
 
       if (phone) {
         await this.textCommandHandler.handlePhoneMessage({
           phone,
-          userId,
+          user: from,
           chatId,
           bot,
           webAppUrl,
