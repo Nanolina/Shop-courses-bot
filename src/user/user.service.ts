@@ -4,19 +4,21 @@ import {
   InternalServerErrorException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { User } from '@tma.js/init-data-node';
 import { randomInt } from 'crypto';
+import { UserFromTG } from 'types';
+import { EmailService } from '../email/email.service';
 import { calculateEndDate, convertToNumber } from '../functions';
 import { MyLogger } from '../logger/my-logger.service';
 import { PrismaService } from '../prisma/prisma.service';
-import { ChangeEmailDto, UpdateDto } from './dto';
-import { GetEmailCodeResponse, GetUserDataResponse } from './types';
+import { UpdateDto } from './dto';
+import { GetUserDataResponse } from './types';
 
 @Injectable()
 export class UserService {
   constructor(
     private prisma: PrismaService,
     private configService: ConfigService,
+    private emailService: EmailService,
     private readonly logger: MyLogger,
   ) {}
 
@@ -30,10 +32,11 @@ export class UserService {
     return {
       phone: user.phone,
       email: user.email,
+      isVerifiedEmail: user.isVerifiedEmail,
     };
   }
 
-  async savePhone(user: User, phone: string) {
+  async savePhone(user: UserFromTG, phone: string) {
     try {
       await this.prisma.user.upsert({
         where: {
@@ -41,15 +44,15 @@ export class UserService {
         },
         update: {
           phone,
-          firstName: user.firstName,
-          lastName: user.lastName,
+          firstName: user.first_name,
+          lastName: user.last_name,
           username: user.username,
         },
         create: {
           phone,
           id: user.id,
-          firstName: user.firstName,
-          lastName: user.lastName,
+          firstName: user.first_name,
+          lastName: user.last_name,
           username: user.username,
         },
       });
@@ -71,47 +74,57 @@ export class UserService {
     return calculateEndDate(codeExpires);
   }
 
-  private async saveUserCodeData(
-    id: number,
-    dto: ChangeEmailDto,
-    codeEmail: number,
-    codeEmailExpiresAt: Date,
-  ) {
+  async update(id: number, dto: UpdateDto) {
+    const { email, firstName, lastName } = dto;
     try {
+      let codeEmail;
+      let codeEmailExpiresAt;
+
+      if (email) {
+        codeEmail = this.generateEmailCode();
+        codeEmailExpiresAt = this.getCodeExpirationDate();
+      }
+
       await this.prisma.user.upsert({
         where: {
           id,
         },
         update: {
-          codeEmail,
-          codeEmailExpiresAt,
-          email: dto.email,
-          firstName: dto.firstName,
-          lastName: dto.lastName,
+          ...(firstName && {
+            firstName,
+          }),
+          ...(lastName && {
+            lastName,
+          }),
+          ...(email && {
+            email,
+            isVerifiedEmail: false,
+            codeEmail,
+            codeEmailExpiresAt,
+          }),
         },
         create: {
           id,
+          email,
+          firstName,
+          lastName,
           codeEmail,
           codeEmailExpiresAt,
-          email: dto.email,
-          firstName: dto.firstName,
-          lastName: dto.lastName,
         },
       });
+
+      if (email) {
+        await this.emailService.sendCode(id, {
+          email,
+          code: codeEmail,
+        });
+      }
     } catch (error) {
       throw new InternalServerErrorException(
-        'Failed to save user code data',
+        'Failed to update data',
         error?.message,
       );
     }
-  }
-
-  async generateCode(id: number, dto: ChangeEmailDto): Promise<number> {
-    const codeEmail = this.generateEmailCode();
-    const codeEmailExpiresAt = this.getCodeExpirationDate();
-
-    await this.saveUserCodeData(id, dto, codeEmail, codeEmailExpiresAt);
-    return codeEmail;
   }
 
   async verifyCode(id: number, codeEmail: string): Promise<void> {
@@ -129,42 +142,14 @@ export class UserService {
     if (!user) {
       throw new ForbiddenException('Invalid code');
     }
-  }
 
-  async getEmailCode(id: number): Promise<GetEmailCodeResponse> {
-    const user = await this.prisma.user.findFirst({
+    await this.prisma.user.update({
       where: {
         id,
       },
+      data: {
+        isVerifiedEmail: true,
+      },
     });
-
-    return {
-      email: user.email,
-      code: user.codeEmail,
-    };
-  }
-
-  async update(id: number, dto: UpdateDto): Promise<void> {
-    try {
-      await this.prisma.user.upsert({
-        where: {
-          id,
-        },
-        update: {
-          firstName: dto.firstName,
-          lastName: dto.lastName,
-        },
-        create: {
-          id,
-          firstName: dto.firstName,
-          lastName: dto.lastName,
-        },
-      });
-    } catch (error) {
-      throw new InternalServerErrorException(
-        'Something went wrong with updating data',
-        error?.message,
-      );
-    }
   }
 }
