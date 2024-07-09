@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { CourseModule } from './course/course.module';
+import { EmailModule } from './email/email.module';
 import { LessonModule } from './lesson/lesson.module';
 import { LoggerModule } from './logger/logger.module';
 import { ModuleModule } from './module/module.module';
@@ -23,10 +24,11 @@ import { UserModule } from './user/user.module';
     SocketModule,
     PointsModule,
     TonModule,
+    EmailModule,
+    UserModule,
     ConfigModule.forRoot({
       isGlobal: true,
     }),
-    UserModule,
   ],
   providers: [PrismaService],
 })
