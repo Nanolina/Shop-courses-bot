@@ -9,7 +9,7 @@ import { calculateEndDate, convertToNumber } from '../functions';
 import { MyLogger } from '../logger/my-logger.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { ChangeEmailDto } from './dto';
-import { GetUserDataResponse } from './types';
+import { GetEmailCodeResponse, GetUserDataResponse } from './types';
 
 @Injectable()
 export class UserService {
@@ -126,5 +126,18 @@ export class UserService {
     if (!user) {
       throw new ForbiddenException('Invalid code');
     }
+  }
+
+  async getEmailCode(id: number): Promise<GetEmailCodeResponse> {
+    const user = await this.prisma.user.findFirst({
+      where: {
+        id,
+      },
+    });
+
+    return {
+      email: user.email,
+      code: user.codeEmail,
+    };
   }
 }

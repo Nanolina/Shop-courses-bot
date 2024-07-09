@@ -40,6 +40,14 @@ export class UserController {
     await this.emailService.sendCode(req.user.id, emailDto);
   }
 
+  @Post('email/code/resend')
+  @HttpCode(HttpStatus.OK)
+  @UseGuards(AuthGuard)
+  async resendCode(@Req() req: Request) {
+    const emailDto = await this.userService.getEmailCode(req.user.id);
+    await this.emailService.sendCode(req.user.id, emailDto);
+  }
+
   @Post('email/code/:codeEmail')
   @HttpCode(HttpStatus.OK)
   @UseGuards(AuthGuard)
