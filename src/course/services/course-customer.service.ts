@@ -3,6 +3,7 @@ import {
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
+import { User } from '@tma.js/init-data-node';
 import { MyLogger } from '../../logger/my-logger.service';
 import { PrismaService } from '../../prisma/prisma.service';
 
@@ -27,8 +28,8 @@ export class CourseCustomerService {
 
   async purchase(
     id: string,
-    userId: number,
     hasAcceptedTerms: boolean,
+    user: User,
   ): Promise<void> {
     const course = await this.prisma.course.findFirst({
       where: {
@@ -49,10 +50,13 @@ export class CourseCustomerService {
           customer: {
             connectOrCreate: {
               where: {
-                id: userId,
+                id: user.id,
               },
               create: {
-                id: userId,
+                id: user.id,
+                firstName: user.firstName,
+                lastName: user.lastName,
+                username: user.username,
               },
             },
           },

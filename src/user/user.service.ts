@@ -4,6 +4,7 @@ import {
   InternalServerErrorException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { User } from '@tma.js/init-data-node';
 import { randomInt } from 'crypto';
 import { calculateEndDate, convertToNumber } from '../functions';
 import { MyLogger } from '../logger/my-logger.service';
@@ -32,18 +33,24 @@ export class UserService {
     };
   }
 
-  async savePhone(id: number, phone: string) {
+  async savePhone(user: User, phone: string) {
     try {
       await this.prisma.user.upsert({
         where: {
-          id,
+          id: user.id,
         },
         update: {
           phone,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          username: user.username,
         },
         create: {
-          id,
           phone,
+          id: user.id,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          username: user.username,
         },
       });
     } catch (error) {
@@ -156,6 +163,7 @@ export class UserService {
     } catch (error) {
       throw new InternalServerErrorException(
         'Something went wrong with updating data',
+        error?.message,
       );
     }
   }

@@ -1,3 +1,4 @@
+import { User } from '@tma.js/init-data-node';
 import * as TelegramBot from 'node-telegram-bot-api';
 
 export type HandleTextCommandType = {
@@ -11,7 +12,7 @@ export type HandleTextCommandType = {
 
 export type HandlePhoneMessageType = {
   phone: string;
-  userId: number;
+  user: User;
   chatId: number;
   bot: TelegramBot;
   webAppUrl: string;

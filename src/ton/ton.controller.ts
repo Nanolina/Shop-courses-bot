@@ -33,7 +33,7 @@ export class TonController {
     }
 
     try {
-      await this.tonMonitorService.monitorContract(req.user.id, monitorData);
+      await this.tonMonitorService.monitorContract(req.user, monitorData);
     } catch (error) {
       this.logger.error({
         method: 'ton-monitorContract',

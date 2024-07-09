@@ -42,13 +42,8 @@ export class CourseSellerService {
             imagePublicId: imageInCloudinary?.public_id,
           }),
           user: {
-            connectOrCreate: {
-              where: {
-                id: userId,
-              },
-              create: {
-                id: userId,
-              },
+            connect: {
+              id: userId,
             },
           },
         },

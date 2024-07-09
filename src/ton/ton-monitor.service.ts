@@ -1,5 +1,6 @@
 import { InjectRedis } from '@nestjs-modules/ioredis';
 import { Injectable } from '@nestjs/common';
+import { User } from '@tma.js/init-data-node';
 import { Redis } from 'ioredis';
 import { fromNano } from 'ton';
 import { DeployEnum, DeployType, LanguageType, StatusEnum } from 'types';
@@ -28,7 +29,7 @@ export class TonMonitorService {
     @InjectRedis() private readonly redis: Redis,
   ) {}
 
-  async monitorContract(userId: number, dto: MonitorContractDto) {
+  async monitorContract(user: User, dto: MonitorContractDto) {
     const {
       contractAddress,
       initialBalance,
@@ -56,7 +57,7 @@ export class TonMonitorService {
     let attempts = 0;
     const interval = setInterval(async () => {
       if (++attempts > maxAttempts) {
-        this.sendErrorNotification(userId, type, language);
+        this.sendErrorNotification(user.id, type, language);
         clearInterval(interval);
         await this.redis.del(newSessionKey);
       }
@@ -68,7 +69,7 @@ export class TonMonitorService {
 
         if (newBalanceNumber > initialBalance) {
           await this.handleBalanceIncrease({
-            userId,
+            user,
             courseId,
             type,
             language,
@@ -83,7 +84,7 @@ export class TonMonitorService {
           method: 'ton-monitor-monitorContract',
           error: error?.message,
         });
-        this.sendErrorNotification(userId, type, language);
+        this.sendErrorNotification(user.id, type, language);
         clearInterval(interval);
         await this.redis.del(newSessionKey);
       }
@@ -94,39 +95,39 @@ export class TonMonitorService {
   }
 
   private async handleBalanceIncrease(dto: HandleBalanceIncreaseType) {
-    const { userId, courseId, type, language, hasAcceptedTerms, balance } = dto;
+    const { user, courseId, type, language, hasAcceptedTerms, balance } = dto;
     try {
       let points;
       if (type === DeployEnum.Purchase) {
         await this.courseCustomerService.purchase(
           courseId,
-          userId,
           hasAcceptedTerms,
+          user,
         );
         points = await this.pointsService.add(
           courseId,
-          userId,
+          user.id,
           'CoursePurchase',
         );
       } else {
         await this.courseSellerService.changeHasAcceptedTerms(
           courseId,
-          userId,
+          user.id,
           hasAcceptedTerms,
         );
         points = await this.pointsService.add(
           courseId,
-          userId,
+          user.id,
           'CourseCreation',
         );
       }
 
       this.socketGateway.notifyClientContractUpdated({
-        userId,
         points,
         balance,
-        status: StatusEnum.Success,
         type,
+        userId: user.id,
+        status: StatusEnum.Success,
         message: this.utilsService.getTranslatedMessage(
           language,
           `course_${type}_success`,
@@ -139,7 +140,7 @@ export class TonMonitorService {
         method: 'ton-monitor-handleBalanceIncrease',
         error: error?.message,
       });
-      this.sendErrorNotification(userId, type, language);
+      this.sendErrorNotification(user.id, type, language);
     }
   }
 

@@ -128,9 +128,9 @@ export class TextCommandHandler {
 
   // Handler of the phone receiving event
   async handlePhoneMessage(dto: HandlePhoneMessageType) {
-    const { phone, userId } = dto;
+    const { phone, user } = dto;
     // Save the phone number to the database
-    await this.userService.savePhone(userId, phone);
+    await this.userService.savePhone(user, phone);
     // Response
     await this.getPersonalDataEditMessage(dto);
   }

@@ -36,7 +36,10 @@ export class EmailService {
         error,
       });
 
-      throw new InternalServerErrorException('Failed to create email record');
+      throw new InternalServerErrorException(
+        'Failed to create email record',
+        error?.message,
+      );
     }
 
     try {
@@ -63,6 +66,7 @@ export class EmailService {
       this.logger.error({ method: 'email-sendCode-send', error });
       throw new InternalServerErrorException(
         'Something went wrong with sending email',
+        error?.message,
       );
     }
   }
