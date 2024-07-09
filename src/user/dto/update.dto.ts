@@ -8,4 +8,8 @@ export class UpdateDto {
   @IsOptional()
   @IsString()
   lastName?: string;
+
+  @IsOptional()
+  @IsString()
+  email?: string;
 }

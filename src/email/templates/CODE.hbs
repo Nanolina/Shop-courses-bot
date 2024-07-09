@@ -3,21 +3,51 @@
     <meta charset='UTF-8' />
     <meta name='viewport' content='width=device-width, initial-scale=1.0' />
     <style>
-      body { display: flex; justify-content: center; align-items: center;
-      height: 100vh; background-color: #f4f4f4; margin: 0; font-family: Arial,
-      sans-serif; } .container { background-color: #fff; padding: 20px;
-      border-radius: 10px; box-shadow: 1px 1px 8px rgba(0,0,0,0.1); text-align:
-      center; width: 300px; } .code { color: #6c00ad; font-size: 24px; margin:
-      20px 0; } .valid { color: grey; font-size: 12px; } .header { color:
-      #6c00ad; margin-bottom: 20px; }
+      body {
+        font-family: Arial, sans-serif;
+        font-size: 18px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      }
+      .container {
+        background-color: #fff;
+        padding: 40px;
+        text-align: center;
+      }
+      .code {
+        font-size: 36px;
+        font-weight: 600;
+        letter-spacing: 10px;
+        color: #007980;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        padding: 10px;
+        border-radius: 10px;
+        background-color: #c8fbfd94;
+      }
+      .valid {
+        color: grey;
+        font-size: 16px;
+        font-style: italic;
+      }
+      .header {
+        color: #007980;
+        font-size: 32px;
+      }
+      .logo {
+        max-width: 50%;
+        max-height: 50%;
+      }
     </style>
   </head>
   <body>
     <div class='container'>
+      <img src="https://res.cloudinary.com/dkqwhqrmh/image/upload/q_auto,f_auto/v1720538521/Logo_without_background_enrscj.png" alt="Logo" class="logo"/>
       <h3 class='header'>Online Courses</h3>
-      <p>Here is a one-time code to {{codeType}}</p>
+      <p>Here is a one-time code to verify your email address</p>
       <p class='code'>{{code}}</p>
-      <p class='valid'>Valid for: {{minutes}} Minutes</p>
+      <p class='valid'>Valid for: {{minutes}} minutes</p>
     </div>
   </body>
 </html>

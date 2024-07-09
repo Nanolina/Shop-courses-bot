@@ -43,14 +43,25 @@ export class EmailService {
     }
 
     try {
+      const minutesFromEnv = this.configService.get<string>(
+        'EMAIL_CODE_EXPIRES_IN',
+      );
+      // Don't take last letter
+      const minutes = minutesFromEnv.slice(0, minutesFromEnv.length - 1);
+
       await this.mailerService.sendMail({
         subject,
         template,
         to: email,
-        from: this.configService.get<string>('SMTP_USER'),
+        from: `"No Reply" <${this.configService.get<string>('SMTP_USER')}>`,
+        headers: {
+          'X-Priority': '1 (Highest)',
+          'X-MSMail-Priority': 'High',
+          Importance: 'High',
+        },
         context: {
           code,
-          minutes: this.configService.get<string>('EMAIL_CODE_EXPIRES_IN'),
+          minutes,
         },
       });
     } catch (error) {

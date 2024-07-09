@@ -21,7 +21,8 @@ export class TextCommandHandler {
       // Create
       case '/create':
         // Check if the user has a phone number in the database
-        const { phone, email } = await this.userService.getUserData(userId);
+        const { phone, email, isVerifiedEmail } =
+          await this.userService.getUserData(userId);
 
         // If no phone
         if (!phone) {
@@ -38,7 +39,7 @@ export class TextCommandHandler {
           break;
 
           // If no email
-        } else if (!email) {
+        } else if (!email || !isVerifiedEmail) {
           // Send a message to a user after saving a phone number
           message = this.utilsService.getTranslatedMessage(
             language,
