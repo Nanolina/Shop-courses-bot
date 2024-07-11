@@ -26,11 +26,6 @@ export class TonController {
     @Body()
     monitorData: MonitorContractDto,
   ) {
-    if (!monitorData.hasAcceptedTerms) {
-      throw new NotAcceptableException(
-        'Please accept the terms of the contract',
-      );
-    }
 
     try {
       await this.tonMonitorService.monitorContract(req.user, monitorData);

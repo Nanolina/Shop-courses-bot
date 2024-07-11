@@ -24,9 +24,9 @@ export class MonitorContractDto {
   @IsString()
   courseId: string;
 
-  @IsDefined()
+  @IsOptional()
   @IsBoolean()
-  hasAcceptedTerms: boolean;
+  hasAcceptedTerms?: boolean;
 
   @IsOptional()
   @Validate(IsValidDeployTypeConstraint)
