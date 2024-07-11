@@ -11,7 +11,7 @@ import { calculateEndDate, convertToNumber } from '../functions';
 import { MyLogger } from '../logger/my-logger.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { UpdateDto } from './dto';
-import { GetUserDataResponse } from './types';
+import { GetUserDataResponse, UpdateResponse } from './types';
 
 @Injectable()
 export class UserService {
@@ -30,6 +30,8 @@ export class UserService {
     });
 
     return {
+      firstName: user.firstName,
+      lastName: user.lastName,
       phone: user.phone,
       email: user.email,
       isVerifiedEmail: user.isVerifiedEmail,
@@ -74,18 +76,24 @@ export class UserService {
     return calculateEndDate(codeExpires);
   }
 
-  async update(id: number, dto: UpdateDto) {
+  async update(
+    id: number,
+    dto: UpdateDto,
+    isCodeResend: boolean = false,
+  ): Promise<UpdateResponse> {
     const { email, firstName, lastName } = dto;
+    const userWithOldData = await this.getUserData(id);
     try {
       let codeEmail;
       let codeEmailExpiresAt;
 
-      if (email) {
+      const isChangedEmail = email !== userWithOldData.email;
+      if (isChangedEmail || isCodeResend) {
         codeEmail = this.generateEmailCode();
         codeEmailExpiresAt = this.getCodeExpirationDate();
       }
 
-      await this.prisma.user.upsert({
+      const user = await this.prisma.user.upsert({
         where: {
           id,
         },
@@ -96,9 +104,11 @@ export class UserService {
           ...(lastName && {
             lastName,
           }),
-          ...(email && {
+          ...(isChangedEmail && {
             email,
             isVerifiedEmail: false,
+          }),
+          ...((isChangedEmail || isCodeResend) && {
             codeEmail,
             codeEmailExpiresAt,
           }),
@@ -113,12 +123,16 @@ export class UserService {
         },
       });
 
-      if (email) {
+      if (isChangedEmail || isCodeResend) {
         await this.emailService.sendCode(id, {
           email,
           code: codeEmail,
         });
       }
+
+      return {
+        isVerifiedEmail: user.isVerifiedEmail,
+      };
     } catch (error) {
       throw new InternalServerErrorException(
         'Failed to update data',
