@@ -8,7 +8,7 @@ export const coursesDataAlinaProd = [
     price: 12,
     currency: 'TON',
     imageUrl:
-      'https://res.cloudinary.com/dbrquscbv/image/upload/v1718612312/course/Screenshot_2024-06-17_at_12.17.53_rkxonh.png',
+      'https://res.cloudinary.com/dbrquscbv/image/upload/q_auto/f_auto/c_scale,w_1280/v1718612312/course/Screenshot_2024-06-17_at_12.17.53_rkxonh.png',
     imagePublicId: 'course/Screenshot_2024-06-17_at_12.17.53_rkxonh',
     modules: [
       {
@@ -35,7 +35,7 @@ export const coursesDataAlinaProd = [
     price: 18,
     currency: 'TON',
     imageUrl:
-      'https://res.cloudinary.com/dbrquscbv/image/upload/v1718613014/course/Screenshot_2024-06-17_at_12.29.47_ziavve.png',
+      'https://res.cloudinary.com/dbrquscbv/image/upload/q_auto/f_auto/c_scale,w_1280/v1718613014/course/Screenshot_2024-06-17_at_12.29.47_ziavve.png',
     imagePublicId: 'course/Screenshot_2024-06-17_at_12.29.47_ziavve',
     modules: [
       {
@@ -70,7 +70,7 @@ export const coursesDataAlinaProd = [
     price: 15,
     currency: 'TON',
     imageUrl:
-      'https://res.cloudinary.com/dbrquscbv/image/upload/v1718613360/course/Screenshot_2024-06-17_at_12.35.26_fnncbe.png',
+      'https://res.cloudinary.com/dbrquscbv/image/upload/q_auto/f_auto/c_scale,w_1280/v1718613360/course/Screenshot_2024-06-17_at_12.35.26_fnncbe.png',
     imagePublicId: 'course/Screenshot_2024-06-17_at_12.35.26_fnncbe',
     modules: [
       {
@@ -98,7 +98,7 @@ export const coursesDataAlinaProd = [
     price: 22,
     currency: 'TON',
     imageUrl:
-      'https://res.cloudinary.com/dbrquscbv/image/upload/v1718613813/course/Screenshot_2024-06-17_at_12.43.03_fuivco.png',
+      'https://res.cloudinary.com/dbrquscbv/image/upload/q_auto/f_auto/c_scale,w_1280/v1718613813/course/Screenshot_2024-06-17_at_12.43.03_fuivco.png',
     imagePublicId: 'course/Screenshot_2024-06-17_at_12.43.03_fuivco',
     modules: [
       {
@@ -142,7 +142,7 @@ export const coursesDataAlinaProd = [
     price: 20,
     currency: 'TON',
     imageUrl:
-      'https://res.cloudinary.com/dbrquscbv/image/upload/v1718615669/course/pexels-zvolskiy-1721932_l0fuve.jpg',
+      'https://res.cloudinary.com/dbrquscbv/image/upload/q_auto/f_auto/c_scale,w_1280/v1718615669/course/pexels-zvolskiy-1721932_l0fuve.jpg',
     imagePublicId: 'course/pexels-zvolskiy-1721932_l0fuve',
     modules: [
       {
@@ -155,7 +155,7 @@ export const coursesDataAlinaProd = [
             description:
               'Learn how to mix the batter to achieve a light and fluffy sponge.',
             imageUrl:
-              'https://res.cloudinary.com/dbrquscbv/image/upload/v1718615463/course/Screenshot_2024-06-17_at_13.05.49_justvk.png',
+              'https://res.cloudinary.com/dbrquscbv/image/upload/q_auto/f_auto/c_scale,w_1280/v1718615463/course/Screenshot_2024-06-17_at_13.05.49_justvk.png',
             imagePublicId: 'course/Screenshot_2024-06-17_at_13.05.49_justvk',
             videoUrl:
               'https://res.cloudinary.com/dbrquscbv/video/upload/v1718615770/lesson/veawrugaxhmye2ttkpyu.mp4',
@@ -167,7 +167,7 @@ export const coursesDataAlinaProd = [
         name: 'Assembling the cake',
         description: 'Learn how to properly assemble a sponge cake',
         imageUrl:
-          'https://res.cloudinary.com/dbrquscbv/image/upload/v1718615463/course/Screenshot_2024-06-17_at_13.06.38_hwaxid.png',
+          'https://res.cloudinary.com/dbrquscbv/image/upload/q_auto/f_auto/c_scale,w_1280/v1718615463/course/Screenshot_2024-06-17_at_13.06.38_hwaxid.png',
         imagePublicId: 'course/Screenshot_2024-06-17_at_13.06.38_hwaxid',
         lessons: [
           {
@@ -191,7 +191,7 @@ export const coursesDataAlinaProd = [
     price: 15,
     currency: 'TON',
     imageUrl:
-      'https://res.cloudinary.com/dbrquscbv/image/upload/v1718791722/course/Screenshot_2024-06-19_at_14.08.02_aequij.png',
+      'https://res.cloudinary.com/dbrquscbv/image/upload/q_auto/f_auto/c_scale,w_1280/v1718791722/course/Screenshot_2024-06-19_at_14.08.02_aequij.png',
     imagePublicId: 'course/Screenshot_2024-06-19_at_14.08.02_aequij',
     modules: [
       {
@@ -221,7 +221,7 @@ export const coursesDataAlinaDev = [
     price: 12,
     currency: 'TON',
     imageUrl:
-      'https://res.cloudinary.com/dkqwhqrmh/image/upload/v1719212245/Screenshot_2024-06-17_at_12.17.53_rkxonh_wftifa.png',
+      'https://res.cloudinary.com/dkqwhqrmh/image/upload/q_auto/f_auto/c_scale,w_1280/v1719212245/Screenshot_2024-06-17_at_12.17.53_rkxonh_wftifa.png',
     imagePublicId: 'Screenshot_2024-06-17_at_12.17.53_rkxonh_wftifa',
     modules: [
       {
@@ -248,7 +248,7 @@ export const coursesDataAlinaDev = [
     price: 18,
     currency: 'TON',
     imageUrl:
-      'https://res.cloudinary.com/dkqwhqrmh/image/upload/v1719212242/pexels-polina-tankilevitch-5385707_f7iguu_gtn4s0.jpg',
+      'https://res.cloudinary.com/dkqwhqrmh/image/upload/q_auto/f_auto/c_scale,w_1280/v1719212242/pexels-polina-tankilevitch-5385707_f7iguu_gtn4s0.jpg',
     imagePublicId: 'pexels-polina-tankilevitch-5385707_f7iguu_gtn4s0',
     modules: [
       {
@@ -283,7 +283,7 @@ export const coursesDataAlinaDev = [
     price: 15,
     currency: 'TON',
     imageUrl:
-      'https://res.cloudinary.com/dkqwhqrmh/image/upload/v1719212255/Screenshot_2024-06-17_at_12.35.26_fnncbe_fwwefd.png',
+      'https://res.cloudinary.com/dkqwhqrmh/image/upload/q_auto/f_auto/c_scale,w_1280/v1719212255/Screenshot_2024-06-17_at_12.35.26_fnncbe_fwwefd.png',
     imagePublicId: 'Screenshot_2024-06-17_at_12.35.26_fnncbe_fwwefd',
     modules: [
       {
@@ -311,7 +311,7 @@ export const coursesDataAlinaDev = [
     price: 22,
     currency: 'TON',
     imageUrl:
-      'https://res.cloudinary.com/dkqwhqrmh/image/upload/v1719212246/Screenshot_2024-06-17_at_12.43.03_fuivco_scar8x.png',
+      'https://res.cloudinary.com/dkqwhqrmh/image/upload/q_auto/f_auto/c_scale,w_1280/v1719212246/Screenshot_2024-06-17_at_12.43.03_fuivco_scar8x.png',
     imagePublicId: 'Screenshot_2024-06-17_at_12.43.03_fuivco_scar8x',
     modules: [
       {
@@ -355,7 +355,7 @@ export const coursesDataAlinaDev = [
     price: 20,
     currency: 'TON',
     imageUrl:
-      'https://res.cloudinary.com/dkqwhqrmh/image/upload/v1719212243/pexels-zvolskiy-1721932_l0fuve_ytrplq.jpg',
+      'https://res.cloudinary.com/dkqwhqrmh/image/upload/q_auto/f_auto/c_scale,w_1280/v1719212243/pexels-zvolskiy-1721932_l0fuve_ytrplq.jpg',
     imagePublicId: 'pexels-zvolskiy-1721932_l0fuve_ytrplq',
     modules: [
       {
@@ -368,7 +368,7 @@ export const coursesDataAlinaDev = [
             description:
               'Learn how to mix the batter to achieve a light and fluffy sponge.',
             imageUrl:
-              'https://res.cloudinary.com/dbrquscbv/image/upload/v1718615463/course/Screenshot_2024-06-17_at_13.05.49_justvk.png',
+              'https://res.cloudinary.com/dbrquscbv/image/upload/q_auto/f_auto/c_scale,w_1280/v1718615463/course/Screenshot_2024-06-17_at_13.05.49_justvk.png',
             imagePublicId: 'course/Screenshot_2024-06-17_at_13.05.49_justvk',
             videoUrl:
               'https://res.cloudinary.com/dkqwhqrmh/video/upload/v1719212349/veawrugaxhmye2ttkpyu_s3mlev.mp4',
@@ -380,7 +380,7 @@ export const coursesDataAlinaDev = [
         name: 'Assembling the cake',
         description: 'Learn how to properly assemble a sponge cake',
         imageUrl:
-          'https://res.cloudinary.com/dbrquscbv/image/upload/v1718615463/course/Screenshot_2024-06-17_at_13.06.38_hwaxid.png',
+          'https://res.cloudinary.com/dbrquscbv/image/upload/q_auto/f_auto/c_scale,w_1280/v1718615463/course/Screenshot_2024-06-17_at_13.06.38_hwaxid.png',
         imagePublicId: 'course/Screenshot_2024-06-17_at_13.06.38_hwaxid',
         lessons: [
           {
@@ -404,7 +404,7 @@ export const coursesDataAlinaDev = [
     price: 15,
     currency: 'TON',
     imageUrl:
-      'https://res.cloudinary.com/dkqwhqrmh/image/upload/v1719212260/Screenshot_2024-06-19_at_14.08.02_aequij_irojrw.png',
+      'https://res.cloudinary.com/dkqwhqrmh/image/upload/q_auto/f_auto/c_scale,w_1280/v1719212260/Screenshot_2024-06-19_at_14.08.02_aequij_irojrw.png',
     imagePublicId: 'Screenshot_2024-06-19_at_14.08.02_aequij_irojrw',
     modules: [
       {

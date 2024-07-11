@@ -8,7 +8,7 @@ export const coursedDataSnezhannaProd = [
     price: 25,
     currency: 'TON',
     imageUrl:
-      'https://res.cloudinary.com/dbrquscbv/image/upload/v1718614671/course/Screenshot_2024-06-17_at_12.53.42_ceemyl.png',
+      'https://res.cloudinary.com/dbrquscbv/image/upload/q_auto/f_auto/c_scale,w_1280/v1718614671/course/Screenshot_2024-06-17_at_12.53.42_ceemyl.png',
     imagePublicId: 'course/Screenshot_2024-06-17_at_12.53.42_ceemyl',
     modules: [
       {
@@ -36,7 +36,7 @@ export const coursedDataSnezhannaProd = [
     price: 15,
     currency: 'TON',
     imageUrl:
-      'https://res.cloudinary.com/dbrquscbv/image/upload/v1718614669/course/Screenshot_2024-06-17_at_12.54.34_ilmhfz.png',
+      'https://res.cloudinary.com/dbrquscbv/image/upload/q_auto/f_auto/c_scale,w_1280/v1718614669/course/Screenshot_2024-06-17_at_12.54.34_ilmhfz.png',
     imagePublicUrl: 'course/Screenshot_2024-06-17_at_12.54.34_ilmhfz',
     modules: [
       {
@@ -62,7 +62,7 @@ export const coursedDataSnezhannaProd = [
     price: 10,
     currency: 'TON',
     imageUrl:
-      'https://res.cloudinary.com/dbrquscbv/image/upload/v1718614682/course/Screenshot_2024-06-17_at_12.56.27_n09tn9.png',
+      'https://res.cloudinary.com/dbrquscbv/image/upload/q_auto/f_auto/c_scale,w_1280/v1718614682/course/Screenshot_2024-06-17_at_12.56.27_n09tn9.png',
     imagePublicId: 'course/Screenshot_2024-06-17_at_12.56.27_n09tn9',
     modules: [
       {
@@ -88,7 +88,7 @@ export const coursedDataSnezhannaProd = [
     price: 20,
     currency: 'TON',
     imageUrl:
-      'https://res.cloudinary.com/dbrquscbv/image/upload/v1718614703/course/Screenshot_2024-06-17_at_12.58.00_nmugaa.png',
+      'https://res.cloudinary.com/dbrquscbv/image/upload/q_auto/f_auto/c_scale,w_1280/v1718614703/course/Screenshot_2024-06-17_at_12.58.00_nmugaa.png',
     imagePublicId: 'course/Screenshot_2024-06-17_at_12.58.00_nmugaa',
     modules: [
       {
@@ -109,7 +109,7 @@ export const coursedDataSnezhannaProd = [
         name: 'The first picture',
         description: 'Create your first painting',
         imageUrl:
-          'https://res.cloudinary.com/dbrquscbv/image/upload/v1718614671/course/Screenshot_2024-06-17_at_12.56.59_cn0gkc.png',
+          'https://res.cloudinary.com/dbrquscbv/image/upload/q_auto/f_auto/c_scale,w_1280/v1718614671/course/Screenshot_2024-06-17_at_12.56.59_cn0gkc.png',
         imagePublicId: 'course/Screenshot_2024-06-17_at_12.56.59_cn0gkc',
         lessons: [
           {
@@ -134,7 +134,7 @@ export const coursedDataSnezhannaDev = [
     price: 25,
     currency: 'TON',
     imageUrl:
-      'https://res.cloudinary.com/dkqwhqrmh/image/upload/v1719212243/Screenshot_2024-06-17_at_12.53.42_ceemyl_hyt0mo.png',
+      'https://res.cloudinary.com/dkqwhqrmh/image/upload/q_auto/f_auto/c_scale,w_1280/v1719212243/Screenshot_2024-06-17_at_12.53.42_ceemyl_hyt0mo.png',
     imagePublicId: 'Screenshot_2024-06-17_at_12.53.42_ceemyl_hyt0mo',
     modules: [
       {
@@ -162,7 +162,7 @@ export const coursedDataSnezhannaDev = [
     price: 15,
     currency: 'TON',
     imageUrl:
-      'https://res.cloudinary.com/dkqwhqrmh/image/upload/v1719212245/Screenshot_2024-06-17_at_12.54.34_ilmhfz_scbh3m.png',
+      'https://res.cloudinary.com/dkqwhqrmh/image/upload/q_auto/f_auto/c_scale,w_1280/v1719212245/Screenshot_2024-06-17_at_12.54.34_ilmhfz_scbh3m.png',
     imagePublicUrl: 'Screenshot_2024-06-17_at_12.54.34_ilmhfz_scbh3m',
     modules: [
       {
@@ -188,7 +188,7 @@ export const coursedDataSnezhannaDev = [
     price: 10,
     currency: 'TON',
     imageUrl:
-      'https://res.cloudinary.com/dkqwhqrmh/image/upload/v1719212261/Screenshot_2024-06-17_at_12.56.27_n09tn9_msvxkn.png',
+      'https://res.cloudinary.com/dkqwhqrmh/image/upload/q_auto/f_auto/c_scale,w_1280/v1719212261/Screenshot_2024-06-17_at_12.56.27_n09tn9_msvxkn.png',
     imagePublicId: 'Screenshot_2024-06-17_at_12.56.27_n09tn9_msvxkn',
     modules: [
       {
@@ -214,7 +214,7 @@ export const coursedDataSnezhannaDev = [
     price: 20,
     currency: 'TON',
     imageUrl:
-      'https://res.cloudinary.com/dkqwhqrmh/image/upload/v1719212260/Screenshot_2024-06-17_at_12.58.00_nmugaa_venw6k.png',
+      'https://res.cloudinary.com/dkqwhqrmh/image/upload/q_auto/f_auto/c_scale,w_1280/v1719212260/Screenshot_2024-06-17_at_12.58.00_nmugaa_venw6k.png',
     imagePublicId: 'Screenshot_2024-06-17_at_12.58.00_nmugaa_venw6k',
     modules: [
       {
@@ -235,7 +235,7 @@ export const coursedDataSnezhannaDev = [
         name: 'The first picture',
         description: 'Create your first painting',
         imageUrl:
-          'https://res.cloudinary.com/dbrquscbv/image/upload/v1718614671/course/Screenshot_2024-06-17_at_12.56.59_cn0gkc.png',
+          'https://res.cloudinary.com/dbrquscbv/image/upload/q_auto/f_auto/c_scale,w_1280/v1718614671/course/Screenshot_2024-06-17_at_12.56.59_cn0gkc.png',
         imagePublicId: 'course/Screenshot_2024-06-17_at_12.56.59_cn0gkc',
         lessons: [
           {

@@ -1,16 +1,12 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Course } from '@prisma/client';
 import { CUSTOMER, SELLER, USER } from '../../consts';
-import { MyLogger } from '../../logger/my-logger.service';
 import { PrismaService } from '../../prisma/prisma.service';
 import { FindOneResponse } from '../types';
 
 @Injectable()
 export class CourseAllUsersService {
-  constructor(
-    private prisma: PrismaService,
-    private readonly logger: MyLogger,
-  ) {}
+  constructor(private prisma: PrismaService) {}
 
   async findAll(): Promise<Course[]> {
     return await this.prisma.course.findMany({

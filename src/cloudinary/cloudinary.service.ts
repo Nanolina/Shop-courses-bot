@@ -14,6 +14,11 @@ export class CloudinaryService {
         const upload = v2.uploader.upload_stream(
           {
             folder,
+            transformation: [
+              { width: 1280, height: 720, crop: 'limit' },
+              { quality: 'auto' },
+              { fetch_format: 'auto' },
+            ],
           },
           (error, result) => {
             if (error) return reject(error);
