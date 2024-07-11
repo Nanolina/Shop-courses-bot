@@ -70,7 +70,7 @@ export class CourseSellerService {
     }
   }
 
-  async findAllCreatedCourses(userId: number) {
+  async findAllCreatedCourses(userId: number): Promise<Course[]> {
     return await this.prisma.course.findMany({
       where: {
         userId,

@@ -38,7 +38,7 @@ export class UserService {
     };
   }
 
-  async savePhone(user: UserFromTG, phone: string) {
+  async savePhone(user: UserFromTG, phone: string): Promise<void> {
     try {
       await this.prisma.user.upsert({
         where: {

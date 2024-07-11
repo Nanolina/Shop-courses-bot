@@ -1,5 +1,6 @@
 // Type
 export type EntityType = 'course' | 'module' | 'lesson';
+export type RoleType = 'user' | 'customer' | 'seller';
 export type DeployType = 'create' | 'purchase';
 export type StatusType = 'success' | 'error';
 export type LanguageType = 'en' | 'ru';

@@ -1,16 +1,10 @@
-import {
-  Body,
-  Controller,
-  NotAcceptableException,
-  Post,
-  Req,
-  UseGuards,
-} from '@nestjs/common';
+import { Body, Controller, Post, Req, UseGuards } from '@nestjs/common';
 import { Request } from 'express';
 import { AuthGuard } from '../auth/auth.guard';
 import { MyLogger } from '../logger/my-logger.service';
 import { MonitorContractDto } from './dto';
 import { TonMonitorService } from './ton-monitor.service';
+import { MonitorContractResponse } from './types';
 
 @Controller('ton')
 export class TonController {
@@ -25,8 +19,7 @@ export class TonController {
     @Req() req: Request,
     @Body()
     monitorData: MonitorContractDto,
-  ) {
-
+  ): Promise<MonitorContractResponse> {
     try {
       await this.tonMonitorService.monitorContract(req.user, monitorData);
     } catch (error) {

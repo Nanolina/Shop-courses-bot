@@ -15,10 +15,12 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
+import { Lesson } from '@prisma/client';
 import { Request } from 'express';
 import { AuthGuard } from '../auth/auth.guard';
 import { CreateLessonDto, UpdateLessonDto } from './dto';
 import { LessonService } from './lesson.service';
+import { FindAllResponse } from './types';
 
 @Controller('lesson')
 export class LessonController {
@@ -27,7 +29,10 @@ export class LessonController {
   @Get('module/:moduleId')
   @HttpCode(HttpStatus.OK)
   @UseGuards(AuthGuard)
-  findAll(@Req() req: Request, @Param('moduleId') moduleId: string) {
+  findAll(
+    @Req() req: Request,
+    @Param('moduleId') moduleId: string,
+  ): Promise<FindAllResponse> {
     return this.lessonService.findAll(moduleId, req.user.id);
   }
 
@@ -40,7 +45,7 @@ export class LessonController {
     @Param('moduleId') moduleId: string,
     @Body() createLessonDto: CreateLessonDto,
     @UploadedFiles() files: Express.Multer.File[],
-  ) {
+  ): Promise<Lesson> {
     const image = files.find((file) => file.mimetype.startsWith('image/'));
     const video = files.find((file) => file.mimetype.startsWith('video/'));
 
@@ -73,7 +78,7 @@ export class LessonController {
   @Get(':id')
   @HttpCode(HttpStatus.OK)
   @UseGuards(AuthGuard)
-  findOne(@Req() req: Request, @Param('id') id: string) {
+  findOne(@Req() req: Request, @Param('id') id: string): Promise<Lesson> {
     return this.lessonService.findOne(id, req.user.id);
   }
 
@@ -86,7 +91,7 @@ export class LessonController {
     @Param('id') id: string,
     @Body() updateLessonDto: UpdateLessonDto,
     @UploadedFiles() files: Express.Multer.File[],
-  ) {
+  ): Promise<Lesson> {
     let image;
     let video;
     const userId = req.user.id;
@@ -130,7 +135,7 @@ export class LessonController {
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   @UseGuards(AuthGuard)
-  async delete(@Req() req: Request, @Param('id') id: string) {
+  async delete(@Req() req: Request, @Param('id') id: string): Promise<void> {
     await this.lessonService.delete(id, req.user.id);
   }
 }

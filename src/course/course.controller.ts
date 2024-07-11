@@ -15,6 +15,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { Course } from '@prisma/client';
 import { Request } from 'express';
 import { AuthGuard } from '../auth/auth.guard';
 import { CreateCourseDto, UpdateCourseDto } from './dto';
@@ -23,6 +24,7 @@ import {
   CourseCustomerService,
   CourseSellerService,
 } from './services';
+import { FindOneResponse } from './types';
 
 @Controller('course')
 export class CourseController {
@@ -36,7 +38,7 @@ export class CourseController {
   @Get()
   @UseInterceptors(CacheInterceptor)
   @HttpCode(HttpStatus.OK)
-  findAll() {
+  findAll(): Promise<Course[]> {
     return this.courseAllUsersService.findAll();
   }
 
@@ -49,7 +51,7 @@ export class CourseController {
     @Req() req: Request,
     @Body() createCourseDto: CreateCourseDto,
     @UploadedFile() image: Express.Multer.File,
-  ) {
+  ): Promise<Course> {
     return this.courseSellerService.create(req.user.id, createCourseDto, image);
   }
 
@@ -57,7 +59,7 @@ export class CourseController {
   @Get('created')
   @HttpCode(HttpStatus.OK)
   @UseGuards(AuthGuard)
-  findAllCreatedCourses(@Req() req: Request) {
+  findAllCreatedCourses(@Req() req: Request): Promise<Course[]> {
     return this.courseSellerService.findAllCreatedCourses(req.user.id);
   }
 
@@ -65,7 +67,7 @@ export class CourseController {
   @Get('purchased')
   @HttpCode(HttpStatus.OK)
   @UseGuards(AuthGuard)
-  findAllPurchasedCourses(@Req() req: Request) {
+  findAllPurchasedCourses(@Req() req: Request): Promise<Course[]> {
     return this.courseCustomerService.findAllPurchasedCourses(req.user.id);
   }
 
@@ -73,7 +75,9 @@ export class CourseController {
   @Get('category/:category')
   @UseInterceptors(CacheInterceptor)
   @HttpCode(HttpStatus.OK)
-  findAllCoursesOneCategory(@Param('category') category: string) {
+  findAllCoursesOneCategory(
+    @Param('category') category: string,
+  ): Promise<Course[]> {
     return this.courseAllUsersService.findAllCoursesOneCategory(category);
   }
 
@@ -81,7 +85,10 @@ export class CourseController {
   @Get(':id')
   @HttpCode(HttpStatus.OK)
   @UseGuards(AuthGuard)
-  findOne(@Req() req: Request, @Param('id') id: string) {
+  findOne(
+    @Req() req: Request,
+    @Param('id') id: string,
+  ): Promise<FindOneResponse> {
     return this.courseAllUsersService.findOne(id, req.user.id);
   }
 
@@ -95,7 +102,7 @@ export class CourseController {
     @Param('id') id: string,
     @Body() updateCourseDto: UpdateCourseDto,
     @UploadedFile() image: Express.Multer.File,
-  ) {
+  ): Promise<Course> {
     return this.courseSellerService.update(
       id,
       req.user.id,
@@ -108,7 +115,7 @@ export class CourseController {
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   @UseGuards(AuthGuard)
-  async delete(@Req() req: Request, @Param('id') id: string) {
+  async delete(@Req() req: Request, @Param('id') id: string): Promise<void> {
     await this.courseSellerService.delete(id, req.user.id);
   }
 }

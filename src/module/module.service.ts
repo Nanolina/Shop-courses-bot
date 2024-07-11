@@ -4,11 +4,13 @@ import {
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
+import { Module } from '@prisma/client';
 import { CUSTOMER, SELLER } from '../consts';
 import { ImageService } from '../image/image.service';
 import { MyLogger } from '../logger/my-logger.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateModuleDto, UpdateModuleDto } from './dto';
+import { FindAllResponse } from './types';
 
 @Injectable()
 export class ModuleService {
@@ -23,7 +25,7 @@ export class ModuleService {
     userId: number,
     dto: CreateModuleDto,
     image: Express.Multer.File,
-  ) {
+  ): Promise<Module> {
     try {
       let imageInCloudinary;
 
@@ -61,7 +63,7 @@ export class ModuleService {
     }
   }
 
-  async findAll(courseId: string, userId: number) {
+  async findAll(courseId: string, userId: number): Promise<FindAllResponse> {
     // Check if the user is a seller of modules
     const sellerModules = await this.prisma.module.findMany({
       where: {
@@ -124,7 +126,7 @@ export class ModuleService {
     );
   }
 
-  async findOne(id: string, userId: number) {
+  async findOne(id: string, userId: number): Promise<Module> {
     const course = await this.prisma.course.findFirst({
       where: {
         modules: {
@@ -173,7 +175,7 @@ export class ModuleService {
     userId: number,
     dto: UpdateModuleDto,
     file: Express.Multer.File,
-  ) {
+  ): Promise<Module> {
     try {
       const module = await this.prisma.module.findFirst({
         where: {
@@ -222,7 +224,7 @@ export class ModuleService {
     }
   }
 
-  async delete(id: string, userId: number) {
+  async delete(id: string, userId: number): Promise<void> {
     try {
       const module = await this.prisma.module.findFirst({
         where: {

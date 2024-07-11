@@ -40,7 +40,7 @@ export class UserController {
   @Post('email/code/resend')
   @HttpCode(HttpStatus.OK)
   @UseGuards(AuthGuard)
-  async resendCode(@Req() req: Request) {
+  async resendCode(@Req() req: Request): Promise<UpdateResponse> {
     const userId = req.user.id;
     const { email } = await this.userService.getUserData(userId);
     return this.userService.update(userId, { email }, true);
@@ -49,7 +49,10 @@ export class UserController {
   @Post('email/code/:codeEmail')
   @HttpCode(HttpStatus.OK)
   @UseGuards(AuthGuard)
-  verifyCode(@Req() req: Request, @Param('codeEmail') codeEmail: string) {
+  verifyCode(
+    @Req() req: Request,
+    @Param('codeEmail') codeEmail: string,
+  ): Promise<void> {
     return this.userService.verifyCode(req.user.id, codeEmail);
   }
 }
