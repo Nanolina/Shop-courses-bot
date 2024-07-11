@@ -1,4 +1,11 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import {
+  Inject,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
+import { Course } from '@prisma/client';
+import { Cache } from 'cache-manager';
 import { ImageService } from '../../image/image.service';
 import { MyLogger } from '../../logger/my-logger.service';
 import { PrismaService } from '../../prisma/prisma.service';
@@ -10,13 +17,14 @@ export class CourseSellerService {
     private prisma: PrismaService,
     private imageService: ImageService,
     private readonly logger: MyLogger,
+    @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) {}
 
   async create(
     userId: number,
     dto: CreateCourseDto,
     file: Express.Multer.File,
-  ) {
+  ): Promise<Course> {
     try {
       let imageInCloudinary;
 
@@ -29,7 +37,7 @@ export class CourseSellerService {
         }
       }
 
-      return await this.prisma.course.create({
+      const course = await this.prisma.course.create({
         data: {
           name: dto.name,
           description: dto.description,
@@ -48,6 +56,11 @@ export class CourseSellerService {
           },
         },
       });
+
+      // Invalidate cache
+      await this.cacheManager.reset();
+
+      return course;
     } catch (error) {
       this.logger.error({ method: 'course-create', error: error?.message });
       throw new InternalServerErrorException(
@@ -71,9 +84,9 @@ export class CourseSellerService {
     userId: number,
     dto: UpdateCourseDto,
     file: Express.Multer.File,
-  ) {
+  ): Promise<Course> {
     try {
-      const course = await this.prisma.course.findFirst({
+      const oldCourse = await this.prisma.course.findFirst({
         where: {
           id,
           userId,
@@ -83,12 +96,12 @@ export class CourseSellerService {
 
       const { imageUrl, imagePublicId } = await this.imageService.getImageUrl(
         'course',
-        course,
+        oldCourse,
         dto,
         file,
       );
 
-      return await this.prisma.course.update({
+      const course = await this.prisma.course.update({
         where: {
           id,
           userId,
@@ -105,6 +118,11 @@ export class CourseSellerService {
           currency: dto.currency,
         },
       });
+
+      // Invalidate cache
+      await this.cacheManager.reset();
+
+      return course;
     } catch (error) {
       this.logger.error({ method: 'course-update', error: error?.message });
       throw new InternalServerErrorException(
@@ -114,7 +132,7 @@ export class CourseSellerService {
     }
   }
 
-  async delete(id: string, userId: number) {
+  async delete(id: string, userId: number): Promise<void> {
     try {
       // Course
       await this.prisma.course.update({
@@ -148,6 +166,9 @@ export class CourseSellerService {
           },
         },
       });
+
+      // Invalidate cache
+      await this.cacheManager.reset();
     } catch (error) {
       this.logger.error({ method: 'course-delete', error: error?.message });
       throw new InternalServerErrorException(

@@ -1,3 +1,4 @@
+import { CacheInterceptor } from '@nestjs/cache-manager';
 import {
   Body,
   Controller,
@@ -33,6 +34,7 @@ export class CourseController {
 
   // all users
   @Get()
+  @UseInterceptors(CacheInterceptor)
   @HttpCode(HttpStatus.OK)
   findAll() {
     return this.courseAllUsersService.findAll();
@@ -69,6 +71,7 @@ export class CourseController {
 
   // all users
   @Get('category/:category')
+  @UseInterceptors(CacheInterceptor)
   @HttpCode(HttpStatus.OK)
   findAllCoursesOneCategory(@Param('category') category: string) {
     return this.courseAllUsersService.findAllCoursesOneCategory(category);
