@@ -9,3 +9,7 @@ export type HandleBalanceIncreaseType = {
   hasAcceptedTerms: boolean;
   balance: number;
 };
+
+export type MonitorContractResponse = {
+  message: string;
+}

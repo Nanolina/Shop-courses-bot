@@ -5,6 +5,7 @@ import {
   NotFoundException,
   NotImplementedException,
 } from '@nestjs/common';
+import { Lesson } from '@prisma/client';
 import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 import { CUSTOMER, SELLER } from '../consts';
 import { ImageService } from '../image/image.service';
@@ -12,6 +13,7 @@ import { MyLogger } from '../logger/my-logger.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateLessonDto } from './dto/create-lesson.dto';
 import { UpdateLessonDto } from './dto/update-lesson.dto';
+import { FindAllResponse } from './types';
 
 @Injectable()
 export class LessonService {
@@ -27,7 +29,7 @@ export class LessonService {
     userId: number,
     dto: CreateLessonDto,
     image: Express.Multer.File,
-  ) {
+  ): Promise<Lesson> {
     try {
       // image
       let imageInCloudinary;
@@ -70,7 +72,7 @@ export class LessonService {
     }
   }
 
-  async findAll(moduleId: string, userId: number) {
+  async findAll(moduleId: string, userId: number): Promise<FindAllResponse> {
     // Check if the user is a seller of lessons
     const sellerLessons = await this.prisma.lesson.findMany({
       where: {
@@ -141,7 +143,7 @@ export class LessonService {
     );
   }
 
-  async findOne(id: string, userId: number) {
+  async findOne(id: string, userId: number): Promise<Lesson> {
     const lessonInDB = await this.prisma.lesson.findFirst({
       where: {
         id,
@@ -190,7 +192,7 @@ export class LessonService {
     userId: number,
     dto: UpdateLessonDto,
     file: Express.Multer.File,
-  ) {
+  ): Promise<Lesson> {
     try {
       const lesson = await this.prisma.lesson.findFirst({
         where: {
@@ -244,7 +246,7 @@ export class LessonService {
     }
   }
 
-  async delete(id: string, userId: number) {
+  async delete(id: string, userId: number): Promise<void> {
     try {
       const lesson = await this.prisma.lesson.findFirst({
         where: {
@@ -292,7 +294,7 @@ export class LessonService {
     videoUrl: string,
     videoPublicId: string,
     userId: number,
-  ) {
+  ): Promise<Lesson> {
     return await this.prisma.lesson.update({
       where: {
         id: lessonId,
@@ -314,7 +316,7 @@ export class LessonService {
     video: Express.Multer.File,
     lessonId: string,
     userId: number,
-  ) {
+  ): Promise<void> {
     try {
       const videoUploadResult = await this.cloudinaryService.uploadVideoFile(
         video,
@@ -342,7 +344,10 @@ export class LessonService {
     }
   }
 
-  async deleteVideoFromCloudinary(lessonId: string, userId: number) {
+  async deleteVideoFromCloudinary(
+    lessonId: string,
+    userId: number,
+  ): Promise<void> {
     const lesson = await this.prisma.lesson.findFirst({
       where: {
         id: lessonId,

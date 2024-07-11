@@ -4,9 +4,11 @@ import {
   NotImplementedException,
 } from '@nestjs/common';
 import { Course, Lesson, Module } from '@prisma/client';
+import { UploadApiErrorResponse, UploadApiResponse } from 'cloudinary';
 import { EntityType } from 'types';
 import { CloudinaryService } from '../cloudinary/cloudinary.service';
 import { MyLogger } from '../logger/my-logger.service';
+import { GetImageUrlResponse } from './types';
 
 @Injectable()
 export class ImageService {
@@ -15,7 +17,9 @@ export class ImageService {
     private readonly logger: MyLogger,
   ) {}
 
-  async deleteImageFromCloudinary(typeFromDB: Course | Module | Lesson) {
+  async deleteImageFromCloudinary(
+    typeFromDB: Course | Module | Lesson,
+  ): Promise<void> {
     if (typeFromDB.imageUrl && typeFromDB.imagePublicId) {
       try {
         await this.cloudinaryService.deleteImageFile(typeFromDB.imagePublicId);
@@ -32,7 +36,7 @@ export class ImageService {
     file: Express.Multer.File,
     type: EntityType,
     typeFromDB?: Course | Module | Lesson,
-  ) {
+  ): Promise<UploadApiErrorResponse | UploadApiResponse> {
     if (!file) throw new BadRequestException('No image file provided');
 
     if (typeFromDB) {
@@ -47,7 +51,7 @@ export class ImageService {
     typeFromDB: Course | Module | Lesson,
     dto: any,
     file: Express.Multer.File,
-  ) {
+  ): Promise<GetImageUrlResponse> {
     let imageInCloudinary;
 
     // If the user sends both a link to an image and a file, we take only the link

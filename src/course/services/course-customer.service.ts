@@ -3,6 +3,7 @@ import {
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
+import { Course } from '@prisma/client';
 import { User } from '@tma.js/init-data-node';
 import { MyLogger } from '../../logger/my-logger.service';
 import { PrismaService } from '../../prisma/prisma.service';
@@ -14,7 +15,7 @@ export class CourseCustomerService {
     private readonly logger: MyLogger,
   ) {}
 
-  async findAllPurchasedCourses(userId: number) {
+  async findAllPurchasedCourses(userId: number): Promise<Course[]> {
     return await this.prisma.course.findMany({
       where: {
         purchases: {

@@ -1,7 +1,9 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { Course } from '@prisma/client';
 import { CUSTOMER, SELLER, USER } from '../../consts';
 import { MyLogger } from '../../logger/my-logger.service';
 import { PrismaService } from '../../prisma/prisma.service';
+import { FindOneResponse } from '../types';
 
 @Injectable()
 export class CourseAllUsersService {
@@ -10,7 +12,7 @@ export class CourseAllUsersService {
     private readonly logger: MyLogger,
   ) {}
 
-  async findAll() {
+  async findAll(): Promise<Course[]> {
     return await this.prisma.course.findMany({
       where: {
         isActive: true,
@@ -18,7 +20,7 @@ export class CourseAllUsersService {
     });
   }
 
-  async findAllCoursesOneCategory(category: string) {
+  async findAllCoursesOneCategory(category: string): Promise<Course[]> {
     return await this.prisma.course.findMany({
       where: {
         category,
@@ -27,7 +29,7 @@ export class CourseAllUsersService {
     });
   }
 
-  async findOne(id: string, userId: number) {
+  async findOne(id: string, userId: number): Promise<FindOneResponse> {
     const customerCourse = await this.prisma.course.findFirst({
       where: {
         id,

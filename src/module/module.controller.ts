@@ -14,10 +14,12 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { Module } from '@prisma/client';
 import { Request } from 'express';
 import { AuthGuard } from '../auth/auth.guard';
 import { CreateModuleDto, UpdateModuleDto } from './dto';
 import { ModuleService } from './module.service';
+import { FindAllResponse } from './types';
 
 @Controller('module')
 export class ModuleController {
@@ -26,7 +28,10 @@ export class ModuleController {
   @Get('course/:courseId')
   @HttpCode(HttpStatus.OK)
   @UseGuards(AuthGuard)
-  findAll(@Req() req: Request, @Param('courseId') courseId: string) {
+  findAll(
+    @Req() req: Request,
+    @Param('courseId') courseId: string,
+  ): Promise<FindAllResponse> {
     return this.moduleService.findAll(courseId, req.user.id);
   }
 
@@ -39,7 +44,7 @@ export class ModuleController {
     @Param('courseId') courseId: string,
     @Body() createModuleDto: CreateModuleDto,
     @UploadedFile() image: Express.Multer.File,
-  ) {
+  ): Promise<Module> {
     return this.moduleService.create(
       courseId,
       req.user.id,
@@ -51,7 +56,7 @@ export class ModuleController {
   @Get(':id')
   @HttpCode(HttpStatus.OK)
   @UseGuards(AuthGuard)
-  findOne(@Req() req: Request, @Param('id') id: string) {
+  findOne(@Req() req: Request, @Param('id') id: string): Promise<Module> {
     return this.moduleService.findOne(id, req.user.id);
   }
 
@@ -64,14 +69,14 @@ export class ModuleController {
     @Param('id') id: string,
     @Body() updateModuleDto: UpdateModuleDto,
     @UploadedFile() image: Express.Multer.File,
-  ) {
+  ): Promise<Module> {
     return this.moduleService.update(id, req.user.id, updateModuleDto, image);
   }
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   @UseGuards(AuthGuard)
-  async delete(@Req() req: Request, @Param('id') id: string) {
+  async delete(@Req() req: Request, @Param('id') id: string): Promise<void> {
     await this.moduleService.delete(id, req.user.id);
   }
 }

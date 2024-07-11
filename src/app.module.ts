@@ -1,5 +1,7 @@
+import { CacheModule, CacheStore } from '@nestjs/cache-manager';
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { redisStore } from 'cache-manager-redis-store';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { CourseModule } from './course/course.module';
 import { EmailModule } from './email/email.module';
@@ -28,6 +30,17 @@ import { UserModule } from './user/user.module';
     UserModule,
     ConfigModule.forRoot({
       isGlobal: true,
+    }),
+    CacheModule.registerAsync({
+      isGlobal: true,
+      imports: [ConfigModule],
+      useFactory: async (configService: ConfigService) => ({
+        ttl: configService.get('CACHE_TTL'),
+        store: (await redisStore({
+          url: configService.get('REDIS_URL'),
+        })) as unknown as CacheStore,
+      }),
+      inject: [ConfigService],
     }),
   ],
   providers: [PrismaService],
