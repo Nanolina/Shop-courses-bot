@@ -35,17 +35,21 @@ async function main() {
               price: course.price,
               currency: course.currency,
               imageUrl: course.imageUrl,
+              imagePublicId: course.imagePublicId,
               modules: {
                 create: course.modules.map((module) => ({
                   name: module.name,
                   description: module.description,
                   imageUrl: module.imageUrl,
+                  imagePublicId: module.imagePublicId,
                   lessons: {
                     create: module.lessons.map((lesson) => ({
                       name: lesson.name,
                       description: lesson.description,
                       imageUrl: lesson.imageUrl,
+                      imagePublicId: lesson.imagePublicId,
                       videoUrl: lesson.videoUrl,
+                      videoPublicId: lesson.videoPublicId,
                     })),
                   },
                 })),
