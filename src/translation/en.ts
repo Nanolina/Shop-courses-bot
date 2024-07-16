@@ -1,3 +1,5 @@
+import { pointsNumber } from '../data';
+
 export const en = {
   // Buttons
   create_course: 'Create New Course',
@@ -21,12 +23,11 @@ export const en = {
     'Your e-mail is required for further work. You can add or change it by clicking the button below',
 
   // Socket Notifications
-  course_create_success:
-    'Data successfully updated on the blockchain! Thank you for activating the course! You have been awarded 20 points',
+  course_create_success: `Data successfully updated on the blockchain! Thank you for activating the course! You have been awarded ${pointsNumber} points`,
   course_create_error:
     'Failed to update data on the blockchain. Please try to activate the course again',
   course_purchase_success:
-    'Data successfully updated on the blockchain! Thank you for purchasing the course! You have been awarded 20 points',
+    'Data successfully updated on the blockchain! Thank you for purchasing the course! You have been awarded ${pointsNumber} points',
   course_purchase_error:
     'Failed to update data on the blockchain. Please try to purchase the course again',
 
