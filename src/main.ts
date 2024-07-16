@@ -6,8 +6,19 @@ import { readFileSync } from 'fs';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
+  // Config
+  const configService = new ConfigService();
+
+  // Urls for cors
+  const webAppUrls = [
+    configService.get<string>('WEB_APP_URL_ALINA'),
+    configService.get<string>('WEB_APP_URL_SNEZHANNA'),
+    configService.get<string>('WEB_APP_URL'),
+  ];
+
   let appOptions = {};
 
+  // Https
   if (process.env.ENABLE_HTTPS === 'true') {
     const pathPrivateKey = process.env.PATH_PRIVATE_KEY;
     const pathCertificate = process.env.PATH_CERTIFICATE;
@@ -19,12 +30,11 @@ async function bootstrap() {
   }
 
   const app = await NestFactory.create(AppModule, {
-    cors: true,
+    cors: {
+      origin: webAppUrls,
+    },
     ...appOptions,
   });
-
-  // Config
-  const configService = app.get(ConfigService);
 
   // Validation
   app.useGlobalPipes(new ValidationPipe());
