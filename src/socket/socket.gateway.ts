@@ -7,7 +7,11 @@ import {
 
 @WebSocketGateway({
   cors: {
-    origin: '*',
+    origin: [
+      process.env.WEB_APP_URL_ALINA,
+      process.env.WEB_APP_URL_SNEZHANNA,
+      process.env.WEB_APP_URL,
+    ],
   },
 })
 export class SocketGateway {
