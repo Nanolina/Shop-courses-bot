@@ -30,13 +30,17 @@ export class TonMonitorService {
   ) {}
 
   async monitorContract(user: User, dto: MonitorContractDto) {
+    this.logger.log({
+      method: 'ton-monitor-monitorContract',
+      log: dto,
+    });
     const {
       contractAddress,
       initialBalance,
       courseId,
       type,
       language = 'en',
-      hasAcceptedTerms,
+      hasAcceptedTerms = false,
     } = dto;
 
     const sessionKeyBase = `monitor:${contractAddress}:${initialBalance}`;
@@ -48,6 +52,7 @@ export class TonMonitorService {
     // Terminate all existing sessions
     for (const key of existingSessionKeys) {
       const existingSessionId = await this.redis.get(key);
+
       if (existingSessionId) {
         clearInterval(parseInt(existingSessionId));
         await this.redis.del(key);
@@ -95,6 +100,10 @@ export class TonMonitorService {
   }
 
   private async handleBalanceIncrease(dto: HandleBalanceIncreaseType) {
+    this.logger.log({
+      method: 'ton-monitor-handleBalanceIncrease',
+      log: dto,
+    });
     const { user, courseId, type, language, hasAcceptedTerms, balance } = dto;
     try {
       let points;
@@ -122,10 +131,29 @@ export class TonMonitorService {
         );
       }
 
+      this.logger.log({
+        method: 'ton-monitor-notifyClientContractUpdated',
+        log: {
+          points,
+          balance,
+          type,
+          courseId,
+          userId: user.id,
+          status: StatusEnum.Success,
+          message: this.utilsService.getTranslatedMessage(
+            language,
+            `course_${type}_success`,
+            '',
+            '🏆',
+          ),
+        },
+      });
+
       this.socketGateway.notifyClientContractUpdated({
         points,
         balance,
         type,
+        courseId,
         userId: user.id,
         status: StatusEnum.Success,
         message: this.utilsService.getTranslatedMessage(

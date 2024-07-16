@@ -22,7 +22,7 @@ export class UserService {
     private readonly logger: MyLogger,
   ) {}
 
-  async getUserData(id: number): Promise<GetUserDataResponse> {
+  async getUserData(id: number | bigint): Promise<GetUserDataResponse> {
     const user = await this.prisma.user.findFirst({
       where: {
         id,
@@ -38,17 +38,23 @@ export class UserService {
     };
   }
 
-  async savePhone(user: UserFromTG, phone: string): Promise<void> {
+  async saveDataFromTG(user: UserFromTG, phone: string): Promise<void> {
     try {
+      const { firstName, lastName } = await this.getUserData(user.id);
       await this.prisma.user.upsert({
         where: {
           id: user.id,
         },
+        // Change data only if they are not in our DB
         update: {
           phone,
-          firstName: user.first_name,
-          lastName: user.last_name,
           username: user.username,
+          ...(!firstName && {
+            firstName: user.first_name,
+          }),
+          ...(!lastName && {
+            lastName: user.last_name,
+          }),
         },
         create: {
           phone,
@@ -59,9 +65,12 @@ export class UserService {
         },
       });
     } catch (error) {
-      this.logger.error({ method: 'user-savePhone', error: error?.message });
+      this.logger.error({
+        method: 'user-saveDataFromTG',
+        error: error?.message,
+      });
       throw new InternalServerErrorException(
-        'Failed to save phone',
+        'Failed to save data from TG',
         error?.message,
       );
     }
@@ -88,7 +97,10 @@ export class UserService {
       let codeEmailExpiresAt;
 
       const isChangedEmail = email !== userWithOldData.email;
-      if (isChangedEmail || isCodeResend) {
+      const needSendNewCode =
+        isChangedEmail || !userWithOldData.isVerifiedEmail || isCodeResend;
+
+      if (needSendNewCode) {
         codeEmail = this.generateEmailCode();
         codeEmailExpiresAt = this.getCodeExpirationDate();
       }
@@ -101,14 +113,14 @@ export class UserService {
           ...(firstName && {
             firstName,
           }),
-          ...(lastName && {
+          ...((lastName || lastName === '') && {
             lastName,
           }),
           ...(isChangedEmail && {
             email,
             isVerifiedEmail: false,
           }),
-          ...((isChangedEmail || isCodeResend) && {
+          ...(needSendNewCode && {
             codeEmail,
             codeEmailExpiresAt,
           }),
@@ -123,7 +135,7 @@ export class UserService {
         },
       });
 
-      if (isChangedEmail || isCodeResend) {
+      if (needSendNewCode) {
         await this.emailService.sendCode(id, {
           email,
           code: codeEmail,

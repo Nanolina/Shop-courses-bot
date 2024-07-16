@@ -41,6 +41,7 @@ export class CloudinaryController {
 
       this.socketGateway.notifyClientVideoUploaded({
         userId,
+        lessonId,
         status: StatusEnum.Success,
         message: `Your video has been uploaded successfully for lesson ${lesson.name}`,
       });
@@ -50,6 +51,7 @@ export class CloudinaryController {
       this.logger.error({ method: 'cloudinary-handleWebhook', error });
       this.socketGateway.notifyClientVideoUploaded({
         userId,
+        lessonId,
         status: StatusEnum.Error,
         message:
           'Unfortunately, it was not possible to upload your video for lesson',

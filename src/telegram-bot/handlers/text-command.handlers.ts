@@ -1,11 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { UserService } from '../../user/user.service';
 import { TelegramUtilsService } from '../telegram-utils.service';
-import {
-  GetPersonalDataEditMessageType,
-  HandlePhoneMessageType,
-  HandleTextCommandType,
-} from '../types';
+import { HandlePhoneMessageType, HandleTextCommandType } from '../types';
 
 @Injectable()
 export class TextCommandHandler {
@@ -117,37 +113,39 @@ export class TextCommandHandler {
 
       // Personal data
       case '/personaldata':
-        await this.getPersonalDataEditMessage({
-          chatId,
-          bot,
-          webAppUrl,
+        message = this.utilsService.getTranslatedMessage(
           language,
-        });
+          'personal_data_edit',
+          '🔒',
+          '📝',
+        );
+        await bot.sendMessage(
+          chatId,
+          message,
+          this.utilsService.getOptions('personaldata', webAppUrl, language),
+        );
         break;
     }
   }
 
   // Handler of the phone receiving event
   async handlePhoneMessage(dto: HandlePhoneMessageType) {
-    const { phone, user } = dto;
-    // Save the phone number to the database
-    await this.userService.savePhone(user, phone);
-    // Response
-    await this.getPersonalDataEditMessage(dto);
-  }
+    const { phone, user, chatId, bot, webAppUrl, language } = dto;
 
-  async getPersonalDataEditMessage(dto: GetPersonalDataEditMessageType) {
-    const { chatId, bot, webAppUrl, language } = dto;
+    // Save the new data from TG with phone number to the database
+    await this.userService.saveDataFromTG(user, phone);
+
+    // Response
     const message = this.utilsService.getTranslatedMessage(
       language,
-      'personal_data_edit',
-      '🔒',
+      'create',
+      '🌱',
       '📝',
     );
     await bot.sendMessage(
       chatId,
       message,
-      this.utilsService.getOptions('personaldata', webAppUrl, language),
+      this.utilsService.getOptions('create', webAppUrl, language),
     );
   }
 }

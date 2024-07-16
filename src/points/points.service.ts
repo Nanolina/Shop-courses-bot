@@ -1,5 +1,6 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { ReasonType } from '@prisma/client';
+import { pointsNumber } from '../data';
 import { MyLogger } from '../logger/my-logger.service';
 import { PrismaService } from '../prisma/prisma.service';
 
@@ -31,7 +32,7 @@ export class PointsService {
     try {
       await this.prisma.points.create({
         data: {
-          points: 20,
+          points: pointsNumber,
           reason: reasonType,
           referenceId: courseId,
           userId,
