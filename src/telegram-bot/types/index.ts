@@ -3,7 +3,7 @@ import { UserFromTG } from 'types';
 
 export type HandleTextCommandType = {
   text: string;
-  userId: number;
+  userId: number | bigint;
   chatId: number;
   bot: TelegramBot;
   webAppUrl: string;
