@@ -136,16 +136,13 @@ export class TextCommandHandler {
     await this.userService.saveDataFromTG(user, phone);
 
     // Response
-    const message = this.utilsService.getTranslatedMessage(
-      language,
-      'create',
-      '🌱',
-      '📝',
-    );
-    await bot.sendMessage(
+    await this.handleTextCommand({
+      text: '/create',
+      userId: user.id,
       chatId,
-      message,
-      this.utilsService.getOptions('create', webAppUrl, language),
-    );
+      bot,
+      webAppUrl,
+      language,
+    });
   }
 }
