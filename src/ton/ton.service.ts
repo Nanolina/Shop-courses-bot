@@ -1,6 +1,8 @@
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { Address, TonClient } from 'ton';
 
+const isProduction = process.env.ENVIRONMENT === 'production';
+
 @Injectable()
 export class TonService implements OnModuleInit {
   private readonly logger = new Logger(TonService.name);
@@ -9,7 +11,9 @@ export class TonService implements OnModuleInit {
   async onModuleInit() {
     try {
       this.client = new TonClient({
-        endpoint: 'https://testnet.toncenter.com/api/v2/jsonRPC',
+        endpoint: isProduction
+          ? 'https://toncenter.com/api/v2/jsonRPC'
+          : 'https://testnet.toncenter.com/api/v2/jsonRPC',
         apiKey:
           '93c3e09c01f9948be45aed0f3d9cec71a754567766ca1980fd8830e1af033048',
       });
