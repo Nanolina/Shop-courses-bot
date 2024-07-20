@@ -46,31 +46,36 @@ export class CloudinaryService {
     });
   }
 
-  uploadVideoFile(
-    file: Express.Multer.File,
+  async uploadVideoFromUrl(
+    fileUrl: string,
     lessonId: string,
     userId: number,
+    chatId: number,
   ): Promise<UploadApiErrorResponse | UploadApiResponse> {
-    return new Promise<UploadApiErrorResponse | UploadApiResponse>(
-      (resolve, reject) => {
-        const uploadStream = v2.uploader.upload_stream(
-          {
-            resource_type: 'video',
-            folder: 'lesson',
-            context: { lessonId, userId },
+    console.log('CLOUDINARY');
+    return new Promise((resolve, reject) => {
+      v2.uploader.upload_large(
+        fileUrl,
+        {
+          resource_type: 'video',
+          folder: 'lesson',
+          context: {
+            lessonId,
+            userId,
+            chatId,
           },
-          (error, result) => {
-            if (error) {
-              reject(error);
-            } else {
-              resolve(result);
-            }
-          },
-        );
-
-        streamifier.createReadStream(file.buffer).pipe(uploadStream);
-      },
-    );
+          chunk_size: 20 * 1024 * 1024, // 20 MB
+        },
+        (error, result) => {
+          if (error) {
+            console.error('Upload error:', error);
+            return reject(error);
+          }
+          console.log('Upload result:', result);
+          resolve(result);
+        },
+      );
+    });
   }
 
   deleteVideoFile(

@@ -174,7 +174,7 @@ export class ModuleService {
     id: string,
     userId: number,
     dto: UpdateModuleDto,
-    file: Express.Multer.File,
+    image: Express.Multer.File,
   ): Promise<Module> {
     try {
       const module = await this.prisma.module.findFirst({
@@ -197,7 +197,7 @@ export class ModuleService {
         'module',
         module,
         dto,
-        file,
+        image,
       );
 
       return await this.prisma.module.update({

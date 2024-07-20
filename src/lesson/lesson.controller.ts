@@ -1,5 +1,4 @@
 import {
-  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -10,21 +9,27 @@ import {
   Patch,
   Post,
   Req,
-  UploadedFiles,
+  UploadedFile,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { FilesInterceptor } from '@nestjs/platform-express';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { Lesson } from '@prisma/client';
 import { Request } from 'express';
 import { AuthGuard } from '../auth/auth.guard';
-import { CreateLessonDto, UpdateLessonDto } from './dto';
+import { TelegramBotService } from '../telegram-bot/telegram-bot.service';
+import { UserService } from '../user/user.service';
+import { CreateLessonDto, UpdateLessonDto, UpdateVideoUrlDto } from './dto';
 import { LessonService } from './lesson.service';
 import { FindAllResponse } from './types';
 
 @Controller('lesson')
 export class LessonController {
-  constructor(private readonly lessonService: LessonService) {}
+  constructor(
+    private readonly lessonService: LessonService,
+    private readonly userService: UserService,
+    private readonly telegramBotService: TelegramBotService,
+  ) {}
 
   @Get('module/:moduleId')
   @HttpCode(HttpStatus.OK)
@@ -39,40 +44,39 @@ export class LessonController {
   @Post('module/:moduleId')
   @HttpCode(HttpStatus.CREATED)
   @UseGuards(AuthGuard)
-  @UseInterceptors(FilesInterceptor('files', 2))
+  @UseInterceptors(FileInterceptor('image'))
   async create(
     @Req() req: Request,
     @Param('moduleId') moduleId: string,
     @Body() createLessonDto: CreateLessonDto,
-    @UploadedFiles() files: Express.Multer.File[],
+    @UploadedFile() image: Express.Multer.File,
   ): Promise<Lesson> {
-    const image = files.find((file) => file.mimetype.startsWith('image/'));
-    const video = files.find((file) => file.mimetype.startsWith('video/'));
-
-    if (!(video || createLessonDto.videoUrl)) {
-      throw new BadRequestException(
-        'You should submit a video or link to a video to create a lesson',
-      );
-    }
-
-    // Creating a lesson without video URL and public ID
-    const lesson = await this.lessonService.create(
+    return await this.lessonService.create(
       moduleId,
       req.user.id,
       createLessonDto,
       image,
     );
+  }
 
-    // Asynchronous loading of video
-    if (video && !createLessonDto.videoUrl) {
-      this.lessonService.uploadVideoAndUpdateLesson(
-        video,
-        lesson.id,
-        req.user.id,
-      );
-    }
-
-    return lesson;
+  @Post(':id/video')
+  @HttpCode(HttpStatus.OK)
+  @UseGuards(AuthGuard)
+  async openBotToSendVideo(
+    @Req() req: Request,
+    @Param('id') id: string,
+  ): Promise<void> {
+    const userId = req.user.id;
+    console.log('userId', userId);
+    const { chatId } = await this.userService.getUserData(userId);
+    console.log('chatId', chatId);
+    const lessonName = await this.lessonService.getLessonName(id, userId);
+    console.log('lessonName', lessonName);
+    return this.telegramBotService.sendMessageToGetVideo(
+      chatId,
+      id,
+      lessonName,
+    );
   }
 
   @Get(':id')
@@ -82,54 +86,37 @@ export class LessonController {
     return this.lessonService.findOne(id, req.user.id);
   }
 
+  @Patch(':id/video-url')
+  @HttpCode(HttpStatus.OK)
+  @UseGuards(AuthGuard)
+  async updateVideoUrl(
+    @Req() req: Request,
+    @Param('id') id: string,
+    @Body() updateLessonDto: UpdateVideoUrlDto,
+  ): Promise<string> {
+    return await this.lessonService.updateVideoUrl(
+      id,
+      req.user.id,
+      updateLessonDto,
+    );
+  }
+
   @Patch(':id')
   @HttpCode(HttpStatus.OK)
   @UseGuards(AuthGuard)
-  @UseInterceptors(FilesInterceptor('files', 2))
+  @UseInterceptors(FileInterceptor('image'))
   async update(
     @Req() req: Request,
     @Param('id') id: string,
     @Body() updateLessonDto: UpdateLessonDto,
-    @UploadedFiles() files: Express.Multer.File[],
+    @UploadedFile() image: Express.Multer.File,
   ): Promise<Lesson> {
-    let image;
-    let video;
-    const userId = req.user.id;
-    if (files && files.length) {
-      image = files.find((file) => file.mimetype.startsWith('image/'));
-      video = files.find((file) => file.mimetype.startsWith('video/'));
-    }
-
-    // Creating a lesson without video URL and public ID
-    const lesson = await this.lessonService.update(
+    return await this.lessonService.update(
       id,
-      userId,
+      req.user.id,
       updateLessonDto,
       image,
     );
-
-    // Delete the video from everywhere
-    if (updateLessonDto.isRemoveVideo) {
-      await this.lessonService.deleteVideoFromCloudinary(id, userId);
-      await this.lessonService.updateLessonVideo(id, null, null, userId);
-    }
-
-    // Asynchronous upload new video file to Cloudinary
-    else if (video && !updateLessonDto.videoUrl) {
-      this.lessonService.uploadVideoAndUpdateLesson(video, id, userId);
-
-      // Add new video link, delete old one
-    } else if (!video && updateLessonDto.videoUrl) {
-      await this.lessonService.deleteVideoFromCloudinary(id, userId);
-      await this.lessonService.updateLessonVideo(
-        id,
-        updateLessonDto.videoUrl,
-        null,
-        userId,
-      );
-    }
-
-    return lesson;
   }
 
   @Delete(':id')

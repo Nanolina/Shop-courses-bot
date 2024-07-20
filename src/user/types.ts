@@ -4,6 +4,7 @@ export type GetUserDataResponse = {
   phone: string;
   email: string;
   isVerifiedEmail: boolean;
+  chatId: bigint | null;
 };
 
 export type GetEmailCodeResponse = {

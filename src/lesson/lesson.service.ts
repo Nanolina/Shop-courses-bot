@@ -11,6 +11,7 @@ import { CUSTOMER, SELLER } from '../consts';
 import { ImageService } from '../image/image.service';
 import { MyLogger } from '../logger/my-logger.service';
 import { PrismaService } from '../prisma/prisma.service';
+import { UpdateVideoUrlDto } from './dto';
 import { CreateLessonDto } from './dto/create-lesson.dto';
 import { UpdateLessonDto } from './dto/update-lesson.dto';
 import { FindAllResponse } from './types';
@@ -23,6 +24,25 @@ export class LessonService {
     private cloudinaryService: CloudinaryService,
     private readonly logger: MyLogger,
   ) {}
+
+  async getLessonName(lessonId: string, userId: number): Promise<string> {
+    const lesson = await this.prisma.lesson.findFirst({
+      where: {
+        id: lessonId,
+        module: {
+          course: {
+            userId,
+          },
+        },
+      },
+      select: {
+        name: true,
+      },
+    });
+
+    console.log('lesson', lesson);
+    return lesson.name;
+  }
 
   async create(
     moduleId: string,
@@ -51,7 +71,6 @@ export class LessonService {
           ...(imageInCloudinary && {
             imagePublicId: imageInCloudinary?.public_id,
           }),
-          videoUrl: dto.videoUrl,
           module: {
             connect: {
               id: moduleId,
@@ -187,11 +206,46 @@ export class LessonService {
     return lesson;
   }
 
+  async updateVideoUrl(
+    id: string,
+    userId: number,
+    dto: UpdateVideoUrlDto,
+  ): Promise<string> {
+    try {
+      const lesson = await this.prisma.lesson.update({
+        where: {
+          id,
+          module: {
+            course: {
+              userId,
+              isActive: true,
+            },
+          },
+        },
+        data: {
+          videoUrl: dto.videoUrl,
+          videoPublicId: '',
+        },
+      });
+
+      return lesson.videoUrl;
+    } catch (error) {
+      this.logger.error({
+        method: 'lesson-updateVideoUrl',
+        error: error?.message,
+      });
+      throw new InternalServerErrorException(
+        'Failed to update video url',
+        error?.message,
+      );
+    }
+  }
+
   async update(
     id: string,
     userId: number,
     dto: UpdateLessonDto,
-    file: Express.Multer.File,
+    image: Express.Multer.File,
   ): Promise<Lesson> {
     try {
       const lesson = await this.prisma.lesson.findFirst({
@@ -216,7 +270,7 @@ export class LessonService {
         'lesson',
         lesson,
         dto,
-        file,
+        image,
       );
 
       return await this.prisma.lesson.update({
@@ -234,7 +288,6 @@ export class LessonService {
           imagePublicId,
           name: dto.name,
           description: dto.description,
-          videoUrl: dto.videoUrl,
         },
       });
     } catch (error) {
@@ -312,37 +365,37 @@ export class LessonService {
     });
   }
 
-  async uploadVideoAndUpdateLesson(
-    video: Express.Multer.File,
-    lessonId: string,
-    userId: number,
-  ): Promise<void> {
-    try {
-      const videoUploadResult = await this.cloudinaryService.uploadVideoFile(
-        video,
-        lessonId,
-        userId,
-      );
+  // async uploadVideoAndUpdateLesson(
+  //   video: Express.Multer.File,
+  //   lessonId: string,
+  //   userId: number,
+  // ): Promise<void> {
+  //   try {
+  //     const videoUploadResult = await this.cloudinaryService.uploadVideoFile(
+  //       video,
+  //       lessonId,
+  //       userId,
+  //     );
 
-      // Check that the download has completed
-      if (videoUploadResult.status === 'finished') {
-        const { url, public_id } = videoUploadResult;
+  //     // Check that the download has completed
+  //     if (videoUploadResult.status === 'finished') {
+  //       const { url, public_id } = videoUploadResult;
 
-        // Remove the video from the cloudinary for replacement
-        await this.deleteVideoFromCloudinary(lessonId, userId);
+  //       // Remove the video from the cloudinary for replacement
+  //       await this.deleteVideoFromCloudinary(lessonId, userId);
 
-        // Update DB to new url and public_id
-        await this.updateLessonVideo(lessonId, url, public_id, userId);
-      } else {
-        this.logger.log({
-          method: 'uploadVideoAndUpdateLesson',
-          log: 'Video is still processing',
-        });
-      }
-    } catch (error) {
-      this.logger.error({ method: 'uploadVideoAndUpdateLesson-upload', error });
-    }
-  }
+  //       // Update DB to new url and public_id
+  //       await this.updateLessonVideo(lessonId, url, public_id, userId);
+  //     } else {
+  //       this.logger.log({
+  //         method: 'uploadVideoAndUpdateLesson',
+  //         log: 'Video is still processing',
+  //       });
+  //     }
+  //   } catch (error) {
+  //     this.logger.error({ method: 'uploadVideoAndUpdateLesson-upload', error });
+  //   }
+  // }
 
   async deleteVideoFromCloudinary(
     lessonId: string,

@@ -133,7 +133,7 @@ export class TextCommandHandler {
     const { phone, user, chatId, bot, webAppUrl, language } = dto;
 
     // Save the new data from TG with phone number to the database
-    await this.userService.saveDataFromTG(user, phone);
+    await this.userService.saveDataFromTG(user, phone, chatId);
 
     // Response
     await this.handleTextCommand({

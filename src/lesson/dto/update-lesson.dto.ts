@@ -24,9 +24,4 @@ export class UpdateLessonDto {
   @IsOptional()
   @IsString()
   videoUrl?: string;
-
-  @IsOptional()
-  @Type(() => Boolean)
-  @IsBoolean()
-  isRemoveVideo?: string;
 }
