@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
-import { CloudinaryService } from '../cloudinary/cloudinary.service';
-import { ImageService } from '../image/image.service';
+import { CloudinaryModule } from '../cloudinary/cloudinary.module';
+import { ImageModule } from '../image/image.module';
 import { LoggerModule } from '../logger/logger.module';
 import { PrismaService } from '../prisma/prisma.service';
 import { CourseController } from './course.controller';
@@ -11,15 +11,14 @@ import {
 } from './services';
 
 @Module({
-  imports: [LoggerModule],
+  imports: [LoggerModule, CloudinaryModule, ImageModule],
   controllers: [CourseController],
   providers: [
     CourseAllUsersService,
     CourseCustomerService,
     CourseSellerService,
     PrismaService,
-    ImageService,
-    CloudinaryService,
   ],
+  exports: [CourseCustomerService, CourseSellerService],
 })
 export class CourseModule {}
