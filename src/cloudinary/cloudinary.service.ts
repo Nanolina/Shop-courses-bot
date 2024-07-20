@@ -1,5 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { UploadApiErrorResponse, UploadApiResponse, v2 } from 'cloudinary';
+import * as fs from 'fs';
+import * as path from 'path';
 import * as streamifier from 'streamifier';
 import { EntityType } from 'types';
 
@@ -46,14 +48,27 @@ export class CloudinaryService {
     });
   }
 
-  uploadVideoFile(
+  async uploadVideoFile(
     file: Express.Multer.File,
     lessonId: string,
     userId: number,
   ): Promise<UploadApiErrorResponse | UploadApiResponse> {
-    return new Promise<UploadApiErrorResponse | UploadApiResponse>(
-      (resolve, reject) => {
-        const uploadStream = v2.uploader.upload_stream(
+    const tempDir = path.join(__dirname, '..', 'temp');
+    const tempFilePath = path.join(tempDir, file.originalname);
+
+    // Ensure the temp directory exists
+    if (!fs.existsSync(tempDir)) {
+      fs.mkdirSync(tempDir, { recursive: true });
+    }
+
+    try {
+      // Save the file temporarily on the server
+      await fs.promises.writeFile(tempFilePath, file.buffer);
+
+      // Upload the file to Cloudinary
+      const result = await new Promise<UploadApiResponse>((resolve, reject) => {
+        v2.uploader.upload_large(
+          tempFilePath,
           {
             resource_type: 'video',
             folder: 'lesson',
@@ -67,10 +82,22 @@ export class CloudinaryService {
             }
           },
         );
+      });
 
-        streamifier.createReadStream(file.buffer).pipe(uploadStream);
-      },
-    );
+      return result;
+    } catch (error) {
+      console.error('Error during upload:', error);
+      throw error;
+    } finally {
+      // Check if the file exists before deleting
+      try {
+        await fs.promises.access(tempFilePath);
+        await fs.promises.unlink(tempFilePath);
+        console.log('Temporary file deleted');
+      } catch (error) {
+        console.error(`Failed to delete temp file: ${tempFilePath}`, error);
+      }
+    }
   }
 
   deleteVideoFile(
