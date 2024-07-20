@@ -32,5 +32,6 @@ import { EmailService } from './email.service';
     }),
   ],
   providers: [PrismaService, EmailService],
+  exports: [EmailService],
 })
 export class EmailModule {}

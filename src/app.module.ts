@@ -5,6 +5,7 @@ import { redisStore } from 'cache-manager-redis-store';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { CourseModule } from './course/course.module';
 import { EmailModule } from './email/email.module';
+import { ImageModule } from './image/image.module';
 import { LessonModule } from './lesson/lesson.module';
 import { LoggerModule } from './logger/logger.module';
 import { ModuleModule } from './module/module.module';
@@ -28,6 +29,7 @@ import { UserModule } from './user/user.module';
     TonModule,
     EmailModule,
     UserModule,
+    ImageModule,
     ConfigModule.forRoot({
       isGlobal: true,
     }),

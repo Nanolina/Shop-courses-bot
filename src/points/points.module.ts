@@ -8,5 +8,6 @@ import { PointsService } from './points.service';
   imports: [LoggerModule],
   controllers: [PointsController],
   providers: [PointsService, PrismaService],
+  exports: [PointsService],
 })
 export class PointsModule {}

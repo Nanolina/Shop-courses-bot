@@ -1,25 +1,22 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { EmailService } from '../email/email.service';
 import { LoggerModule } from '../logger/logger.module';
 import { PrismaService } from '../prisma/prisma.service';
-import { UserService } from '../user/user.service';
+import { UserModule } from '../user/user.module';
 import { TextCommandHandler } from './handlers';
 import { TelegramBotService } from './telegram-bot.service';
 import { TelegramListenersService } from './telegram-listeners.service';
 import { TelegramUtilsService } from './telegram-utils.service';
 
 @Module({
-  imports: [ConfigModule, LoggerModule],
+  imports: [ConfigModule, LoggerModule, UserModule],
   providers: [
     TelegramBotService,
     TelegramListenersService,
     TelegramUtilsService,
     PrismaService,
     TextCommandHandler,
-    UserService,
-    EmailService,
   ],
-  exports: [TelegramBotService],
+  exports: [TelegramBotService, TelegramUtilsService],
 })
 export class TelegramModule {}
