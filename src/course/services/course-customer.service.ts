@@ -1,4 +1,3 @@
-import { InjectRedis } from '@nestjs-modules/ioredis';
 import {
   Injectable,
   InternalServerErrorException,
@@ -6,7 +5,6 @@ import {
 } from '@nestjs/common';
 import { Course } from '@prisma/client';
 import { User } from '@tma.js/init-data-node';
-import { Redis } from 'ioredis';
 import { MyLogger } from '../../logger/my-logger.service';
 import { PrismaService } from '../../prisma/prisma.service';
 
@@ -15,7 +13,6 @@ export class CourseCustomerService {
   constructor(
     private prisma: PrismaService,
     private readonly logger: MyLogger,
-    @InjectRedis() private readonly redis: Redis,
   ) {}
 
   async findAllPurchasedCourses(userId: number): Promise<Course[]> {
@@ -47,9 +44,6 @@ export class CourseCustomerService {
       throw new NotFoundException('Course not found');
     }
 
-    // Get chatId by userId from Redis
-    const chatId = BigInt(await this.redis.get(`userId:${userId}`));
-
     try {
       await this.prisma.coursePurchase.create({
         data: {
@@ -65,9 +59,6 @@ export class CourseCustomerService {
                 firstName: user.firstName,
                 lastName: user.lastName,
                 username: user.username,
-                ...(chatId && {
-                  chatId,
-                }),
               },
             },
           },

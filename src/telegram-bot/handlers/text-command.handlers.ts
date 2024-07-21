@@ -1,6 +1,4 @@
-import { InjectRedis } from '@nestjs-modules/ioredis';
 import { Injectable } from '@nestjs/common';
-import { Redis } from 'ioredis';
 import { UserService } from '../../user/user.service';
 import { TelegramUtilsService } from '../telegram-utils.service';
 import { HandlePhoneMessageType, HandleTextCommandType } from '../types';
@@ -10,7 +8,6 @@ export class TextCommandHandler {
   constructor(
     private utilsService: TelegramUtilsService,
     private userService: UserService,
-    @InjectRedis() private readonly redis: Redis,
   ) {}
 
   async handleTextCommand(dto: HandleTextCommandType) {
@@ -108,8 +105,6 @@ export class TextCommandHandler {
           '🎓',
         );
 
-        // Save chatId by userId in the Redis
-        await this.redis.set(`userId:${userId}`, chatId.toString());
         await bot.sendMessage(
           chatId,
           message,
@@ -139,7 +134,7 @@ export class TextCommandHandler {
     const { phone, user, chatId, bot, webAppUrl, language } = dto;
 
     // Save the new data from TG with phone number to the database
-    await this.userService.saveDataFromTG(user, phone, chatId);
+    await this.userService.saveDataFromTG(user, phone);
 
     // Response
     await this.handleTextCommand({
