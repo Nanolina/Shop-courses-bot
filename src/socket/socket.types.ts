@@ -4,6 +4,7 @@ export interface INotifyClientVideoUploadedParams {
   status: StatusType;
   userId: number;
   lessonId: string;
+  url?: string;
   message: string;
 }
 
