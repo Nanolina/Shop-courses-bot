@@ -1,9 +1,11 @@
 import { PrismaClient } from '@prisma/client';
+import { config } from 'dotenv';
 import { coursesDataAlinaDev, coursesDataAlinaProd } from './coursesDataAlina';
 import {
   coursedDataSnezhannaDev,
   coursedDataSnezhannaProd,
 } from './coursesSnezhanna';
+config();
 
 const prisma = new PrismaClient();
 const isProduction = process.env.ENVIRONMENT === 'production';
