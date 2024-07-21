@@ -42,6 +42,7 @@ export class CloudinaryController {
       this.socketGateway.notifyClientVideoUploaded({
         userId,
         lessonId,
+        url,
         status: StatusEnum.Success,
         message: `Your video has been uploaded successfully for lesson ${lesson.name}`,
       });
