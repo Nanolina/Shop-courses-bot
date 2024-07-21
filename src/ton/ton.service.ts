@@ -1,5 +1,7 @@
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
+import { config } from 'dotenv';
 import { Address, TonClient } from 'ton';
+config();
 
 @Injectable()
 export class TonService implements OnModuleInit {

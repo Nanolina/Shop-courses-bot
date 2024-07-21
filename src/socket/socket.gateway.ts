@@ -1,9 +1,11 @@
 import { WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
+import { config } from 'dotenv';
 import { Server } from 'socket.io';
 import {
   INotifyClientContractUpdatedParams,
   INotifyClientVideoUploadedParams,
 } from './socket.types';
+config();
 
 @WebSocketGateway({
   cors: {

@@ -2,8 +2,10 @@ import { ValidationPipe } from '@nestjs/common';
 import { HttpsOptions } from '@nestjs/common/interfaces/external/https-options.interface';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
+import { config } from 'dotenv';
 import { readFileSync } from 'fs';
 import { AppModule } from './app.module';
+config();
 
 async function bootstrap() {
   // Config
