@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ForbiddenException,
   Injectable,
   InternalServerErrorException,
@@ -318,6 +319,10 @@ export class LessonService {
     userId: number,
   ): Promise<void> {
     try {
+      if (!video || !lessonId || !userId) {
+        throw new BadRequestException('Invalid argument(s)');
+      }
+
       const videoUploadResult = await this.cloudinaryService.uploadVideoFile(
         video,
         lessonId,

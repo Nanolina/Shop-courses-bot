@@ -10,6 +10,7 @@ CREATE TABLE "User" (
     "firstName" TEXT,
     "lastName" TEXT,
     "username" TEXT,
+    "chatId" BIGINT,
     "phone" TEXT,
     "email" TEXT,
     "isVerifiedEmail" BOOLEAN NOT NULL DEFAULT false,
