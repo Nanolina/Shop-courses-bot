@@ -35,7 +35,7 @@ export const coursesDataAlinaProd = [
     price: 18,
     currency: 'TON',
     imageUrl:
-      'https://res.cloudinary.com/dbrquscbv/image/upload/q_auto/f_auto/c_scale,w_1280/v1718613014/course/Screenshot_2024-06-17_at_12.29.47_ziavve.png',
+      'https://res.cloudinary.com/dbrquscbv/image/upload/q_auto/f_auto/c_scale,w_1280/v1718789614/course/pexels-polina-tankilevitch-5385707_f7iguu.jpg',
     imagePublicId: 'course/Screenshot_2024-06-17_at_12.29.47_ziavve',
     modules: [
       {

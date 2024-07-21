@@ -38,11 +38,7 @@ export class UserService {
     };
   }
 
-  async saveDataFromTG(
-    user: UserFromTG,
-    phone: string,
-    chatId: bigint,
-  ): Promise<void> {
+  async saveDataFromTG(user: UserFromTG, phone: string): Promise<void> {
     try {
       const { firstName, lastName } = await this.getUserData(user.id);
       await this.prisma.user.upsert({
@@ -52,7 +48,6 @@ export class UserService {
         // Change data only if they are not in our DB
         update: {
           phone,
-          chatId,
           username: user.username,
           ...(!firstName && {
             firstName: user.first_name,
@@ -63,7 +58,6 @@ export class UserService {
         },
         create: {
           phone,
-          chatId,
           id: user.id,
           firstName: user.first_name,
           lastName: user.last_name,
