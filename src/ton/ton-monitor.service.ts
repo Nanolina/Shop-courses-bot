@@ -61,6 +61,7 @@ export class TonMonitorService {
 
     let attempts = 0;
     const interval = setInterval(async () => {
+      console.log('attempts', attempts);
       if (++attempts > maxAttempts) {
         this.sendErrorNotification(user.id, type, language);
         clearInterval(interval);
@@ -71,6 +72,8 @@ export class TonMonitorService {
         const newBalanceNumber = parseFloat(
           fromNano(await this.tonService.getAccountBalance(contractAddress)),
         );
+        console.log('newBalanceNumber', newBalanceNumber);
+        console.log('initialBalance', initialBalance);
 
         if (newBalanceNumber > initialBalance) {
           await this.handleBalanceIncrease({
