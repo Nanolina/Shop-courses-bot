@@ -30,11 +30,11 @@ export class UserService {
     });
 
     return {
-      firstName: user.firstName,
-      lastName: user.lastName,
-      phone: user.phone,
-      email: user.email,
-      isVerifiedEmail: user.isVerifiedEmail,
+      firstName: user?.firstName || null,
+      lastName: user?.lastName || null,
+      phone: user?.phone || null,
+      email: user?.email || null,
+      isVerifiedEmail: user?.isVerifiedEmail || null,
     };
   }
 
